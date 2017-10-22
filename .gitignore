@@ -1,0 +1,17 @@
+# Please use this file to avoid staging/committing files that are NOT useful for
+# development. Refer to git-scm.com/docs/gitignore for more information.
+
+# Emacs backup files
+*~
+
+# C/C++ unlinked object code
+*.o
+
+# Database Files
+*.db
+
+# Zip archives (so as not to track the SQLite amalgam archive)
+*.zip
+
+# Specific Files #
+db/TEST_create-database
