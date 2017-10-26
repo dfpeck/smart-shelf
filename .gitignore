@@ -1,6 +1,12 @@
 # Please use this file to avoid staging/committing files that are NOT useful for
 # development. Refer to git-scm.com/docs/gitignore for more information.
 
+# Files w/o '.' (except "Makefile") in base directory (i.e. UNIX binaries)
+*
+!Makefile
+!*.*
+!*/
+
 # Emacs backup files
 *~
 
@@ -13,5 +19,7 @@
 # Zip archives (so as not to track the SQLite amalgam archive)
 *.zip
 
+# Windows executables
+*.exe
+
 # Specific Files #
-db/TEST_create-database

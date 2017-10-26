@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include "sqlite3.h"
-#include "db-common.h"
+#include "common.h"
 
 using namespace std;
 
@@ -52,7 +52,39 @@ const short EVENT_COUNT = 6;
 const string EVENT_TYPES[EVENT_COUNT] = {"ADDED", "REMOVED", "REPLACED",
                                          "REDUCED", "REFILLED", "SLID"};
 
-/** FUNCTIONS **/
+/** HELPER/UTILITY FUNCTIONS **/
+bool fcheck (const string &fname) {
+  FILE *file;
+  bool return_value = false;
+
+  file = fopen(fname.c_str(), "r");
+  cout << "File: " << file << endl;
+  if (file) {
+    fclose(file);
+    return_value = true;
+  }
+
+  return return_value;
+}
+
+/** DATABASE FUNCTIONS **/
+sqlite3* open_db (const string &fname) {
+  sqlite3 *db; //database
+  int rc;
+
+  cout << "TEST open_db" << endl;
+  if (!fcheck(fname)) {
+    db = create_db(fname);
+  }
+  else {
+    rc = sqlite3_open(fname.c_str(), &db);
+    if (rc)
+      cerr << "Can't access" << fname << ": " << sqlite3_errmsg(db) << endl;
+  }
+
+  return db;
+}
+
 sqlite3* create_db (const string &fname) {
   sqlite3 *db; // database connection
   string stmt;
@@ -62,7 +94,7 @@ sqlite3* create_db (const string &fname) {
   /* Create Database File */
   rc = sqlite3_open(fname.c_str(), &db);
   if (rc) {
-    cerr << "Can't open " << fname << ": " << sqlite3_errmsg(db) << endl;
+    cerr << "Can't access " << fname << ": " << sqlite3_errmsg(db) << endl;
     return db;
   }
 
@@ -86,6 +118,5 @@ sqlite3* create_db (const string &fname) {
     }
   }
 
-  sqlite3_close(db);
   return db;
 }
