@@ -1,5 +1,6 @@
 CXX = g++ -g -std=c++11
 CC = gcc
+DOX = doxygen
 
 LIB = -lpthread -ldl
 
@@ -12,5 +13,10 @@ db/common.o: db/common.cpp db/sqlite3.o
 db/sqlite3.o: db/sqlite3.c
 	$(CC) -o $@ -c $^
 
+# Docmentation #
+docs:
+	rm -r html; $(DOX); rm -r latex
+
+# Operations #
 clean:
 	rm */*.o

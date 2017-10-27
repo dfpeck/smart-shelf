@@ -5,7 +5,7 @@
 
 using namespace std;
 
-/** CONSTANTS **/
+/* CONSTANTS */
 namespace SQL{
   const string CREATE_ITEMTYPES =
     "CREATE TABLE ItemTypes ("
@@ -23,7 +23,7 @@ namespace SQL{
   const string CREATE_ITEMS =
     "CREATE TABLE Items ("
     "itemid INTEGER NOT NULL, "
-    "type INTEGER NOT NULL, "
+    "itemtype INTEGER NOT NULL, "
     "PRIMARY KEY (itemid), "
     "FOREIGN KEY (type) REFERENCES ItemTypes(typeid)"
     ");";
@@ -31,7 +31,7 @@ namespace SQL{
     "CREATE TABLE History ("
     "item INTEGER NOT NULL, "
     "time DATETIME NOT NULL, "
-    "event DATETIME NOT NULL, "
+    "event INTEGER NOT NULL, "
     "sensor1 REAL NOT NULL, "
     "sensor2 REAL NOT NULL, "
     "sensor3 REAL NOT NULL, "
@@ -52,7 +52,7 @@ const short EVENT_COUNT = 6;
 const string EVENT_TYPES[EVENT_COUNT] = {"ADDED", "REMOVED", "REPLACED",
                                          "REDUCED", "REFILLED", "SLID"};
 
-/** HELPER/UTILITY FUNCTIONS **/
+/* HELPER/UTILITY FUNCTIONS */
 bool fcheck (const string &fname) {
   FILE *file;
   bool return_value = false;
@@ -67,7 +67,7 @@ bool fcheck (const string &fname) {
   return return_value;
 }
 
-/** DATABASE FUNCTIONS **/
+/* DATABASE FUNCTIONS */
 sqlite3* open_db (const string &fname) {
   sqlite3 *db; //database
   int rc;
