@@ -12,6 +12,7 @@ Code for The Green's automatic inventory system.
         (e.g. 4-space indents), let me know; it's not much fuss to
         change. ---dfpeck
 - Restrict line length to 80 characters (as best as possible).
+### C/C++
 - In names, use underscores as separators when a name...
     - begins with a lowercase character
     - consists entirely of uppercase characters<br>
@@ -20,7 +21,7 @@ Code for The Green's automatic inventory system.
         - o `THIS_IS_ALSO_CORRECT`
         - o `DittoForThis`
         - x `thisIsIncorrect`
-        - x `As_Is_This`
+        - x `This_Too_Is_Incorrect`
 
 ## Directories and Filenames
 - Output binaries/executables to the repository's base directory.
