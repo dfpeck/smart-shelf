@@ -1,6 +1,7 @@
 package com.taylorhoss.matserver;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
@@ -71,9 +72,11 @@ public class Server {
                         }
                     });
 
-                    SocketServerReplyThread socketServerReplyThread =
-                            new SocketServerReplyThread(socket, count);
-                    socketServerReplyThread.run();
+                    SocketServerRequestThread request = new SocketServerRequestThread(socket, count);
+                    request.run();
+
+                    SocketServerReplyThread reply = new SocketServerReplyThread(socket, count);
+                    reply.run();
 
                 }
             } catch (IOException e) {
@@ -95,16 +98,14 @@ public class Server {
 
         @Override
         public void run() {
-            OutputStream outputStream;
-            String msgReply = "Hello from Server, you are #" + cnt;
+            OutputStream out;
+            String msgReply = "Hello from Server, you are #" + cnt + "\n"
+                    + "Answer to request: Bucket of Bolts";
 
             try {
-                // Open ostream to connected socket
-                outputStream = hostThreadSocket.getOutputStream();
-                PrintStream printStream = new PrintStream(outputStream);
-                // Send our message to the client
-                printStream.print(msgReply);
-                printStream.close();
+                // send message through socket via OutputStream
+                out = hostThreadSocket.getOutputStream();
+                out.write(msgReply.getBytes());
 
                 message += "Sent: " + msgReply + "\n";
 
@@ -134,6 +135,56 @@ public class Server {
 
     }
 
+    private class SocketServerRequestThread extends Thread {
+
+        private Socket hostThreadSocket;
+        int cnt;
+        StringBuilder sb = new StringBuilder();
+
+        SocketServerRequestThread(Socket socket, int c) {
+            hostThreadSocket = socket;
+            cnt = c;
+        }
+
+        @Override
+        public void run() {
+
+            try {
+                InputStream in = hostThreadSocket.getInputStream();
+
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+
+                // Read from input stream. Note: inputStream.read() will block
+                // if no data return
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    sb.append(new String(buffer, 0, bytesRead));
+                }
+
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                message += "IOException in SocketServerRequestThread"
+                        + e.toString() + "\n";
+            } finally {
+                if (hostThreadSocket != null) {
+                    try {
+                        hostThreadSocket.close();
+                    } catch (IOException e){
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                        message += "IOException in SocketServerRequestThread"
+                                + e.toString() + "\n";
+                    }
+                }
+            }
+        }
+
+        //return sb.toString();
+    }
+
+
+    // This finds the IP address that the socket is hosted on, so the server's IP/port
     // For all network interfaces and all IPs connected to said interfaces print
     // those that are site local addresses (an address which doesn't have the
     // global prefix and thus is only on this network).
