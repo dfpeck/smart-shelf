@@ -39,9 +39,16 @@
             android:text="Clear" />
 
         <TextView
+            android:id="@+id/requestTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Data Requested: First item on mat"/>
+
+        <TextView
             android:id="@+id/responseTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Data Received:"/>
 
     </LinearLayout>
 

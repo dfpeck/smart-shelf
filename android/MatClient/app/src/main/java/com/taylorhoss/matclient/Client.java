@@ -1,13 +1,19 @@
 package com.taylorhoss.matclient;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.AsyncTask;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import static android.R.attr.port;
 
 /**
  * Created by Hoss on 10/26/2017.
@@ -15,66 +21,85 @@ import java.net.UnknownHostException;
  * http://androidsrc.net/android-client-server-using-sockets-client-implementation/
  */
 
-public class Client extends AsyncTask<Void, Void, String> {
+public class Client extends AsyncTask<String, String, String> {
 
-    String dstAddress;
-    int dstPort;
-    String response = "";
+    Activity activity;
+    Button button;
     TextView textResponse;
+    IOException ioException;
+    UnknownHostException unknownHostException;
 
-    Client(String addr, int port, TextView textResponse) {
-        dstAddress = addr;
-        dstPort = port;
-        this.textResponse = textResponse;
+    Client(Activity activity, TextView textView, Button button) {
+        super();
+        this.activity = activity;
+        this.textResponse = textView;
+        this.button = button;
+        this.ioException = null;
+        this.unknownHostException = null;
     }
 
     @Override
-    protected String doInBackground(Void... arg0) {
+    protected String doInBackground(String... params) {
 
         Socket socket = null;
+        StringBuilder sb = new StringBuilder();
 
         try {
-            socket = new Socket(dstAddress, dstPort);
+            socket = new Socket(params[0], Integer.parseInt(params[1]));
+
+            // send request through socket
+            OutputStream out = socket.getOutputStream();
+            out.write(params[2].getBytes());
 
             // Create byte stream to dump read bytes into
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(
-                    1024);
-            byte[] buffer = new byte[1024];
+            InputStream in = socket.getInputStream();
 
+            byte[] buffer = new byte[1024];
             int bytesRead;
-            InputStream inputStream = socket.getInputStream();
 
             // Read from input stream. Note: inputStream.read() will block
             // if no data return
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                byteArrayOutputStream.write(buffer, 0, bytesRead);
-                response += byteArrayOutputStream.toString("UTF-8");
+            while ((bytesRead = in.read(buffer)) != -1) {
+                sb.append(new String(buffer, 0, bytesRead));
             }
 
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            response = "UnknownHostException: " + e.toString();
+            this.unknownHostException = e;
+            return "Error: unknownHostException";
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            response = "IOException: " + e.toString();
+            this.ioException = e;
+            return "Error: ioException";
         } finally {
             if (socket != null) {
                 try {
                     socket.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    this.ioException = e;
+                    return "Error: ioException";
                 }
             }
         }
-        return response;
+        return sb.toString();
     }
 
     @Override
     protected void onPostExecute(String result) {
-        textResponse.setText(response);
+        if (this.ioException != null) {
+            new AlertDialog.Builder(this.activity)
+                    .setTitle("An error occurred")
+                    .setMessage(this.ioException.toString())
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } else if (this.unknownHostException != null) {
+            new AlertDialog.Builder(this.activity)
+                    .setTitle("An error occurred")
+                    .setMessage(this.unknownHostException.toString())
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } else {
+            this.textResponse.setText(result);
+        }
+        this.button.setEnabled(true);
         super.onPostExecute(result);
     }
 

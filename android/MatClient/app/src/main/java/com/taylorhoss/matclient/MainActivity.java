@@ -7,10 +7,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import static android.R.attr.button;
+
 public class MainActivity extends AppCompatActivity {
 
-    TextView response;
-    EditText editTextAddress, editTextPort;
+    TextView request, response;
+    EditText address, port;
     Button buttonConnect, buttonClear;
 
     @Override
@@ -18,25 +20,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        editTextAddress = (EditText) findViewById(R.id.addressEditText);
-        editTextPort = (EditText) findViewById(R.id.portEditText);
+        address = (EditText) findViewById(R.id.addressEditText);
+        port = (EditText) findViewById(R.id.portEditText);
         buttonConnect = (Button) findViewById(R.id.connectButton);
         buttonClear = (Button) findViewById(R.id.clearButton);
         response = (TextView) findViewById(R.id.responseTextView);
+        request = (TextView) findViewById(R.id.requestTextView);
 
         buttonConnect.setOnClickListener(new View.OnClickListener() {
-
             @Override
-            public void onClick(View arg0) {
-                Client myClient = new Client(editTextAddress.getText().toString(),
-                        Integer.parseInt(editTextPort.getText().toString()),
-                        response);
-                myClient.execute();
+            public void onClick(View view) {
+                buttonConnect.setEnabled(false);
+                Client myClient = new Client(MainActivity.this, response, buttonConnect);
+
+                myClient.execute(
+                        address.getText().toString(),
+                        port.getText().toString(),
+                        request.getText().toString());
             }
         });
 
         buttonClear.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 response.setText("");
