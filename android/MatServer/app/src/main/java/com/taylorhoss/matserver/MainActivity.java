@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
     TextView infoip, msg;
     boolean started;
 
+    // sets initial ContentView, grabs TextViews for input & output.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         started = false;
     }
 
+    // When a button is tapped start the server unless it has already been started.
     public void onButtonTap(View v){
         if(started == true){
             Toast myToast = Toast.makeText(getApplicationContext(), "Server already started.", Toast.LENGTH_LONG);

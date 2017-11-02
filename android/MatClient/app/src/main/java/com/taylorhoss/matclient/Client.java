@@ -11,7 +11,8 @@ import java.net.UnknownHostException;
 
 /**
  * Created by Hoss on 10/26/2017.
- * Base code courtesy of: http://androidsrc.net/android-client-server-using-sockets-client-implementation/
+ * Base code courtesy of:
+ * http://androidsrc.net/android-client-server-using-sockets-client-implementation/
  */
 
 public class Client extends AsyncTask<Void, Void, String> {
@@ -35,6 +36,7 @@ public class Client extends AsyncTask<Void, Void, String> {
         try {
             socket = new Socket(dstAddress, dstPort);
 
+            // Create byte stream to dump read bytes into
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(
                     1024);
             byte[] buffer = new byte[1024];
@@ -42,9 +44,8 @@ public class Client extends AsyncTask<Void, Void, String> {
             int bytesRead;
             InputStream inputStream = socket.getInputStream();
 
-			/*
-             * notice: inputStream.read() will block if no data return
-			 */
+            // Read from input stream. Note: inputStream.read() will block
+            // if no data return
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 byteArrayOutputStream.write(buffer, 0, bytesRead);
                 response += byteArrayOutputStream.toString("UTF-8");
