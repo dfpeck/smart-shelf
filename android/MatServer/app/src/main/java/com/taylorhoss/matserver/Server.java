@@ -1,5 +1,7 @@
 package com.taylorhoss.matserver;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,10 +24,11 @@ public class Server {
     ServerSocket serverSocket;
     String message = "";
     static final int socketServerPort = 8080;
+    private static final String TAG = "MatServer-Main";
 
     public Server(MainActivity activity) {
         this.activity = activity;
-        Thread socketServerThread = new Thread(new SocketServerThread());
+        SocketServerThread socketServerThread = new SocketServerThread();
         socketServerThread.start();
     }
 
@@ -60,6 +63,7 @@ public class Server {
                     // block the call until connection is created and return
                     // Socket object
                     Socket socket = serverSocket.accept();
+                    Log.i(TAG, "accepted socket...");
                     count++;
                     message += "#" + count + " from "
                             + socket.getInetAddress() + ":"
@@ -72,11 +76,12 @@ public class Server {
                         }
                     });
 
+                    Log.i(TAG, "attempting to run request thread...");
                     SocketServerRequestThread request = new SocketServerRequestThread(socket, count);
-                    request.run();
+                    request.start();
 
-                    SocketServerReplyThread reply = new SocketServerReplyThread(socket, count);
-                    reply.run();
+                    //SocketServerReplyThread reply = new SocketServerReplyThread(socket, count);
+                    //reply.run();
 
                 }
             } catch (IOException e) {
@@ -140,8 +145,10 @@ public class Server {
         private Socket hostThreadSocket;
         int cnt;
         StringBuilder sb = new StringBuilder();
+        private static final String TAG = "MatServer-Req";
 
         SocketServerRequestThread(Socket socket, int c) {
+            Log.i(TAG, "socket thread constructor...");
             hostThreadSocket = socket;
             cnt = c;
         }
@@ -150,37 +157,54 @@ public class Server {
         public void run() {
 
             try {
+                // Create byte stream to dump read bytes into
                 InputStream in = hostThreadSocket.getInputStream();
 
-                byte[] buffer = new byte[1024];
-                int bytesRead;
+                int byteRead = 0;
 
                 // Read from input stream. Note: inputStream.read() will block
                 // if no data return
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    sb.append(new String(buffer, 0, bytesRead));
+                Log.i(TAG, "attempting to read in from socket...");
+                while (byteRead != -1) {
+                    byteRead = in.read();
+                    Log.i(TAG, "appending bytes to string...");
+                    if (byteRead == 126){
+                        byteRead = -1;
+                    }else {
+                        sb.append((char) byteRead);
+                        Log.i(TAG, "done with first loop...");
+                        Log.i(TAG, "string current state: " + sb.toString());
+                        Log.i(TAG, "byteRead: " + (char) byteRead);
+                    }
                 }
+
+                // send it back (testing)
+                Log.i(TAG, "outputting response to socket...");
+                OutputStream out = hostThreadSocket.getOutputStream();
+                out.write((sb.toString() + "~").getBytes());
+                out.flush();
 
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                Log.i(TAG, "IOException...");
                 message += "IOException in SocketServerRequestThread"
                         + e.toString() + "\n";
             } finally {
                 if (hostThreadSocket != null) {
                     try {
+                        Log.i(TAG, "closing socket...");
                         hostThreadSocket.close();
                     } catch (IOException e){
                         // TODO Auto-generated catch block
                         e.printStackTrace();
+                        Log.i(TAG, "IOException on closing socket...");
                         message += "IOException in SocketServerRequestThread"
                                 + e.toString() + "\n";
                     }
                 }
             }
         }
-
-        //return sb.toString();
     }
 
 
