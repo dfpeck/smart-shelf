@@ -68,14 +68,10 @@ public class Client extends AsyncTask<String, String, String> {
             Log.i(TAG, "Reading in response from socket...");
             while (byteRead != -1) {
                 byteRead = in.read();
-                Log.i(TAG, "appending bytes to string...");
                 if (byteRead == 126){
                     byteRead = -1;
                 }else {
                     sb.append((char) byteRead);
-                    Log.i(TAG, "done with first loop...");
-                    Log.i(TAG, "string current state: " + sb.toString());
-                    Log.i(TAG, "byteRead: " + (char) byteRead);
                 }
             }
 

@@ -80,64 +80,12 @@ public class Server {
                     SocketServerRequestThread request = new SocketServerRequestThread(socket, count);
                     request.start();
 
-                    //SocketServerReplyThread reply = new SocketServerReplyThread(socket, count);
-                    //reply.run();
-
                 }
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
-    }
-
-    private class SocketServerReplyThread extends Thread {
-
-        private Socket hostThreadSocket;
-        int cnt;
-
-        SocketServerReplyThread(Socket socket, int c) {
-            hostThreadSocket = socket;
-            cnt = c;
-        }
-
-        @Override
-        public void run() {
-            OutputStream out;
-            String msgReply = "Hello from Server, you are #" + cnt + "\n"
-                    + "Answer to request: Bucket of Bolts";
-
-            try {
-                // send message through socket via OutputStream
-                out = hostThreadSocket.getOutputStream();
-                out.write(msgReply.getBytes());
-
-                message += "Sent: " + msgReply + "\n";
-
-                activity.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        activity.msg.setText(message);
-                    }
-                });
-
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                message += "IOException in SocketServerReplyThread"
-                        + e.toString() + "\n";
-            }
-
-            activity.runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    activity.msg.setText(message);
-                }
-            });
-        }
-
     }
 
     private class SocketServerRequestThread extends Thread {
@@ -167,22 +115,21 @@ public class Server {
                 Log.i(TAG, "attempting to read in from socket...");
                 while (byteRead != -1) {
                     byteRead = in.read();
-                    Log.i(TAG, "appending bytes to string...");
                     if (byteRead == 126){
                         byteRead = -1;
                     }else {
                         sb.append((char) byteRead);
-                        Log.i(TAG, "done with first loop...");
-                        Log.i(TAG, "string current state: " + sb.toString());
-                        Log.i(TAG, "byteRead: " + (char) byteRead);
                     }
                 }
 
-                // send it back (testing)
-                Log.i(TAG, "outputting response to socket...");
-                OutputStream out = hostThreadSocket.getOutputStream();
-                out.write((sb.toString() + "~").getBytes());
-                out.flush();
+                // compare lexigraphically since bytes will be different
+                if(sb.toString().compareTo("First item on mat") == 0) {
+                    // send response
+                    Log.i(TAG, "outputting response to socket...");
+                    OutputStream out = hostThreadSocket.getOutputStream();
+                    out.write(("Bucket of bolts~").getBytes());
+                    out.flush();
+                }
 
             } catch (IOException e) {
                 // TODO Auto-generated catch block

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MatClient</string>
+    <string name="server_ip_address">Server ip address</string>
+    <string name="server_port_number">Server port number</string>
+    <string name="connect">Request the first item on the mat</string>
+    <string name="clear">Clear</string>
+    <string name="data_received">Data Received:</string>
+    <string name="data_requested">Data Requested:</string>
 </resources>

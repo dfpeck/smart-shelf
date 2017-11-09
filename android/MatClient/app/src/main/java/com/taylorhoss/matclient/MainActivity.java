@@ -7,8 +7,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import static android.R.attr.button;
-
 public class MainActivity extends AppCompatActivity {
 
     TextView request, response;
@@ -33,10 +31,12 @@ public class MainActivity extends AppCompatActivity {
                 buttonConnect.setEnabled(false);
                 Client myClient = new Client(MainActivity.this, response, buttonConnect);
 
+                request.setText("First item on mat");
+
                 myClient.execute(
                         address.getText().toString(),
                         port.getText().toString(),
-                        request.getText().toString());
+                        "First item on mat~");
             }
         });
 
