@@ -1,7 +1,9 @@
 package com.taylorhoss.matclient;
 
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,18 +27,20 @@ public class MainActivity extends AppCompatActivity {
         response = (TextView) findViewById(R.id.responseTextView);
         request = (TextView) findViewById(R.id.requestTextView);
 
+        Log.i("MainActivity", Environment.getExternalStorageDirectory().getAbsolutePath());
+
         buttonConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 buttonConnect.setEnabled(false);
                 Client myClient = new Client(MainActivity.this, response, buttonConnect);
 
-                request.setText("First item on mat");
+                request.setText("Database");
 
                 myClient.execute(
                         address.getText().toString(),
                         port.getText().toString(),
-                        "First item on mat~");
+                        "Database~");
             }
         });
 

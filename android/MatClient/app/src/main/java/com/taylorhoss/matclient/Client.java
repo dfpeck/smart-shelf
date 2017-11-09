@@ -3,11 +3,15 @@ package com.taylorhoss.matclient;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -58,6 +62,7 @@ public class Client extends AsyncTask<String, String, String> {
             out.write(params[2].getBytes());
             out.flush();
 
+            /*
             // Create byte stream to dump read bytes into
             InputStream in = socket.getInputStream();
 
@@ -74,6 +79,16 @@ public class Client extends AsyncTask<String, String, String> {
                     sb.append((char) byteRead);
                 }
             }
+            */
+            File file = new File(Environment.getExternalStorageDirectory(), "database.txt");
+            byte[] bytes = new byte[1024];
+            InputStream in = socket.getInputStream();
+            FileOutputStream fOut = new FileOutputStream(file);
+            BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+
+            int bytesRead = in.read(bytes, 0, bytes.length);
+            bOut.write(bytes, 0, bytesRead);
+            bOut.close();
 
         } catch (UnknownHostException e) {
             this.unknownHostException = e;

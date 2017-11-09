@@ -1,7 +1,11 @@
 package com.taylorhoss.matserver;
 
+import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -128,6 +132,26 @@ public class Server {
                     Log.i(TAG, "outputting response to socket...");
                     OutputStream out = hostThreadSocket.getOutputStream();
                     out.write(("Bucket of bolts~").getBytes());
+                    out.flush();
+                }
+
+                if(sb.toString().compareTo("Database") == 0){
+                    // send response
+                    Log.i(TAG, "outputting response to socket...");
+
+                    //get file from external storage
+                    File file = new File(Environment.getExternalStorageDirectory(), "database.txt");
+
+                    byte[] bytes = new byte[(int) file.length()];
+                    BufferedInputStream bIn;
+
+                    bIn = new BufferedInputStream(new FileInputStream(file));
+                    bIn.read(bytes, 0, bytes.length);
+
+                    OutputStream out = hostThreadSocket.getOutputStream();
+                    out.write(bytes, 0, bytes.length);
+                    out.flush();
+                    out.write("~".getBytes());
                     out.flush();
                 }
 
