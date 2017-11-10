@@ -1,5 +1,9 @@
 #include <iostream>
+#include <cassert>
 #include <string>
+#include <sstream>
+#include <array>
+#include <vector>
 #include "sqlite3.h"
 #include "common.h"
 
@@ -9,8 +13,8 @@ using namespace std;
 namespace SQL{
   const string CREATE_ITEMTYPES =
     "CREATE TABLE ItemTypes ("
-    "typeid INTEGER NOT NULL, "
-    "typename STRING, "
+    "itypeid INTEGER NOT NULL, "
+    "itypename STRING, "
     "iscontainer INTEGER, "
     "PRIMARY KEY (typeid)"
     ");";
@@ -36,8 +40,8 @@ namespace SQL{
     "sensor2 REAL NOT NULL, "
     "sensor3 REAL NOT NULL, "
     "sensor4 REAL NOT NULL, "
-    "x REAL NOT NULL, "
-    "y REAL NOT NULL, "
+    // "x REAL NOT NULL, "
+    // "y REAL NOT NULL, "
     "CONSTRAINT eventinfo PRIMARY KEY (item, time), "
     "FOREIGN KEY (item) REFERENCES Items(itemid), "
     "FOREIGN KEY (event) REFERENCES EventTypes(eventid)"
@@ -52,13 +56,14 @@ const short EVENT_COUNT = 6;
 const string EVENT_TYPES[EVENT_COUNT] = {"ADDED", "REMOVED", "REPLACED",
                                          "REDUCED", "REFILLED", "SLID"};
 
+const char SERIALSEP = '\t';
+
 /* HELPER/UTILITY FUNCTIONS */
-bool fcheck (const string &fname) {
-  FILE *file;
+bool fcheck (const string& fname) {
+  FILE* file;
   bool return_value = false;
 
-  file = fopen(fname.c_str(), "r");
-  cout << "File: " << file << endl;
+  file = fopen(fname.c_str(), "r"); // !-- slow, consider other methods
   if (file) {
     fclose(file);
     return_value = true;
@@ -67,35 +72,86 @@ bool fcheck (const string &fname) {
   return return_value;
 }
 
-/* DATABASE FUNCTIONS */
-sqlite3* open_db (const string &fname) {
-  sqlite3 *db; //database
-  int rc;
-
-  cout << "TEST open_db" << endl;
-  if (!fcheck(fname)) {
-    db = create_db(fname);
-  }
-  else {
-    rc = sqlite3_open(fname.c_str(), &db);
-    if (rc)
-      cerr << "Can't access" << fname << ": " << sqlite3_errmsg(db) << endl;
-  }
-
-  return db;
+vector<string> split_str (const string &str, char delim) {
+  stringstream str_ss(str);
+  string item;
+  vector<string> tokens;
+  while (getline(str_ss, item, delim))
+    tokens.push_back(item);
+  return tokens;
 }
 
-sqlite3* create_db (const string &fname) {
-  sqlite3 *db; // database connection
-  string stmt;
-  char *errmsg;
+/* ITEMTYPE CLASS */
+ItemType::ItemType (int itypeid_init,
+                    const string& itypename_init,
+                    bool iscontainer_init) {
+  itypeid = itypeid_init;
+  itypename = itypename_init;
+  iscontainer = iscontainer_init;
+}
+
+ItemType::ItemType (const string& serialized) {
+  vector<string> tokens = split_str(serialized, SERIALSEP);
+  assert(tokens.size() == 3); // !-- replace with exception
+  assert(tokens[2] == "0" || tokens[2] == "1");
+  itypeid = stoi(tokens[0]);
+  itypename = tokens[1];
+  iscontainer = (tokens[2] == "1");
+ }
+
+int ItemType::get_id () {
+  return this->itypeid;
+}
+
+string ItemType::get_name () {
+  return this->itypename;
+}
+
+bool ItemType::is_container () {
+  return this->iscontainer;
+}
+
+string ItemType::serialize () {
+  stringstream ret_str;
+  ret_str << itypeid << SERIALSEP
+          << itypename << SERIALSEP
+          << iscontainer << SERIALSEP;
+  return ret_str.str();
+}
+
+/* DATABASE CLASS METHODS */
+DbCommon::DbCommon (const string& db_file_init) {
+  db_file = db_file_init;
+  open();
+}
+
+bool DbCommon::open () {
   int rc; // return code
 
+  if (!fcheck(db_file)) {
+    create();
+  }
+  else {
+    rc = sqlite3_open(db_file.c_str(), &db);
+    if (rc) {
+      cerr << "Can't access" << db_file << ": " << sqlite3_errmsg(db) << endl;
+      return false;
+    }
+  }
+  return true;
+}
+
+bool DbCommon::create () {
+  string stmt;
+  char* errmsg;
+  int rc; // return code
+  bool success = true;
+
   /* Create Database File */
-  rc = sqlite3_open(fname.c_str(), &db);
+  rc = sqlite3_open(db_file.c_str(), &db);
   if (rc) {
-    cerr << "Can't access " << fname << ": " << sqlite3_errmsg(db) << endl;
-    return db;
+    cerr << "Can't access " << db_file << ": " << sqlite3_errmsg(db) << endl;
+    success = false;
   }
 
   /* Create Tables */
@@ -104,6 +160,7 @@ sqlite3* create_db (const string &fname) {
     if (rc != SQLITE_OK) {
       cerr << "SQL error: " << errmsg << endl;
       sqlite3_free(errmsg);
+      success = false;
     }
   }
 
@@ -115,8 +172,9 @@ sqlite3* create_db (const string &fname) {
     if (rc != SQLITE_OK) {
       cerr << "SQL error: " << errmsg << endl;
       sqlite3_free(errmsg);
+      success = false;
     }
   }
 
-  return db;
+  return success;
 }

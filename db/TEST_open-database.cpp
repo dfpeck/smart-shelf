@@ -6,8 +6,7 @@
 using namespace std;
 
 int main () {
-  sqlite3 *db = create_db("TEST_inventory.db");
-  sqlite3_close(db);
+  
 
   return 0;
 }
