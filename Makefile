@@ -3,6 +3,11 @@ CC = gcc
 DOX = doxygen
 
 LIB = -lpthread -ldl
+BIN = TEST_open-database TEST_serialization
+
+.PHONY: all check clean
+
+all: db/common.o db/sqlite3.o TEST_open-database TEST_serialization
 
 check: db/common.o db/sqlite3.o
 
@@ -24,4 +29,4 @@ docs:
 
 # Operations #
 clean:
-	rm */*.o
+	rm -f $(BIN) */*.o
