@@ -81,6 +81,7 @@ public class Client extends AsyncTask<String, String, String> {
             }
             */
             File file = new File(Environment.getExternalStorageDirectory(), "database.txt");
+            //will need to increase size of byte array if information exceeds 1024 bytes
             byte[] bytes = new byte[1024];
             InputStream in = socket.getInputStream();
             FileOutputStream fOut = new FileOutputStream(file);
