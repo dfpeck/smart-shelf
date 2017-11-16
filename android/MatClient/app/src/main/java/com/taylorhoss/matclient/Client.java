@@ -21,9 +21,14 @@ import java.net.UnknownHostException;
 import static android.R.attr.port;
 
 /**
- * Created by Hoss on 10/26/2017.
- * Base code courtesy of:
+ * @author Taylor Hoss
+ * Date: 10/26/2017
+ *
+ * Base client code courtesy of:
  * http://androidsrc.net/android-client-server-using-sockets-client-implementation/
+ *
+ * Base file transfer code courtesy of:
+ * http://android-er.blogspot.com/2015/01/file-transfer-via-socket-between.html
  */
 
 public class Client extends AsyncTask<String, String, String> {
@@ -34,6 +39,7 @@ public class Client extends AsyncTask<String, String, String> {
     IOException ioException;
     UnknownHostException unknownHostException;
     private static final String TAG = "MatClient";
+    String port = "8080";
 
     Client(Activity activity, TextView textView, Button button) {
         super();
@@ -49,47 +55,63 @@ public class Client extends AsyncTask<String, String, String> {
 
         Socket socket = null;
         StringBuilder sb = new StringBuilder();
+        String request = "";
 
         try {
             Log.i(TAG, "creating socket...");
-            socket = new Socket(params[0], Integer.parseInt(params[1]));
+            socket = new Socket(params[0], Integer.parseInt(port));
 
-            // send request through socket
-            Log.i(TAG, "sending request through socket...");
-            Log.i(TAG, "string sent: " + params[2]);
-            Log.i(TAG, "bytes sent: " + params[2].getBytes());
-            OutputStream out = socket.getOutputStream();
-            out.write(params[2].getBytes());
-            out.flush();
+            if(params[2].compareTo("Item~") == 0 || params[2].compareTo("Weight~") == 0) {
+                request = params[1] + " " + params[2];
 
-            /*
-            // Create byte stream to dump read bytes into
-            InputStream in = socket.getInputStream();
+                // send request through socket
+                Log.i(TAG, "sending request through socket...");
+                Log.i(TAG, "string sent: " + request);
+                OutputStream out = socket.getOutputStream();
+                out.write(request.getBytes());
+                out.flush();
 
-            int byteRead = 0;
+                // Create byte stream to dump read bytes into
+                InputStream in = socket.getInputStream();
 
-            // Read from input stream. Note: inputStream.read() will block
-            // if no data return
-            Log.i(TAG, "Reading in response from socket...");
-            while (byteRead != -1) {
-                byteRead = in.read();
-                if (byteRead == 126){
-                    byteRead = -1;
-                }else {
-                    sb.append((char) byteRead);
+                int byteRead = 0;
+
+                // Read from input stream. Note: inputStream.read() will block
+                // if no data return
+                Log.i(TAG, "Reading in response from socket...");
+                while (byteRead != -1) {
+                    byteRead = in.read();
+                    if (byteRead == 126) {
+                        byteRead = -1;
+                    } else {
+                        sb.append((char) byteRead);
+                    }
                 }
-            }
-            */
-            File file = new File(Environment.getExternalStorageDirectory(), "database.txt");
-            //will need to increase size of byte array if information exceeds 1024 bytes
-            byte[] bytes = new byte[1024];
-            InputStream in = socket.getInputStream();
-            FileOutputStream fOut = new FileOutputStream(file);
-            BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+            }else if(params[2].compareTo("Database~") == 0) {
+                request = "0 " + params[2];
 
-            int bytesRead = in.read(bytes, 0, bytes.length);
-            bOut.write(bytes, 0, bytesRead);
-            bOut.close();
+                // send request through socket
+                Log.i(TAG, "sending request through socket...");
+                Log.i(TAG, "string sent: " + request);
+                OutputStream out = socket.getOutputStream();
+                out.write(request.getBytes());
+                out.flush();
+
+                //open file
+                File file = new File(Environment.getExternalStorageDirectory(), "database.txt");
+                //will need to increase size of byte array if information exceeds 1024 bytes
+                byte[] bytes = new byte[1024];
+                InputStream in = socket.getInputStream();
+                FileOutputStream fOut = new FileOutputStream(file);
+                BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+
+                //read in from the socket input stream and write to file output stream
+                int bytesRead = in.read(bytes, 0, bytes.length);
+                bOut.write(bytes, 0, bytesRead);
+                bOut.close();
+
+                sb.append("Database received in /storage/sdcard");
+            }
 
         } catch (UnknownHostException e) {
             this.unknownHostException = e;
@@ -131,7 +153,6 @@ public class Client extends AsyncTask<String, String, String> {
             Log.i(TAG, "Setting response text...");
             this.textResponse.setText(result);
         }
-        this.button.setEnabled(true);
         super.onPostExecute(result);
     }
 

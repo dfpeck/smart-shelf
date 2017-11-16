@@ -1,5 +1,7 @@
 package com.taylorhoss.matclient;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,11 +11,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * @author Taylor Hoss
+ * Date: 10/26/2017
+ **/
+
 public class MainActivity extends AppCompatActivity {
 
-    TextView request, response;
-    EditText address, port;
-    Button buttonConnect, buttonClear;
+    EditText address;
+    Button buttonConnect;
+    short port;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,33 +28,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         address = (EditText) findViewById(R.id.addressEditText);
-        port = (EditText) findViewById(R.id.portEditText);
         buttonConnect = (Button) findViewById(R.id.connectButton);
-        buttonClear = (Button) findViewById(R.id.clearButton);
-        response = (TextView) findViewById(R.id.responseTextView);
-        request = (TextView) findViewById(R.id.requestTextView);
+        port = 8080;
 
         Log.i("MainActivity", Environment.getExternalStorageDirectory().getAbsolutePath());
 
         buttonConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                buttonConnect.setEnabled(false);
-                Client myClient = new Client(MainActivity.this, response, buttonConnect);
-
-                request.setText("Database");
-
-                myClient.execute(
-                        address.getText().toString(),
-                        port.getText().toString(),
-                        "Database~");
-            }
-        });
-
-        buttonClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                response.setText("");
+                Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+                intent.putExtra("ip", address.getText().toString());
+                Log.i("MainActivity", "Starting MenuActivity");
+                startActivity(intent);
             }
         });
     }

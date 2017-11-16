@@ -18,9 +18,14 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 /**
- * Created by Hoss on 10/26/2017.
+ * @author Taylor Hoss
+ * Date: 10/26/2017
+ *
  * Base server code courtesty of:
  * http://androidsrc.net/android-client-server-using-sockets-server-implementation/
+ *
+ * Base file transfer code courtesy of:
+ * http://android-er.blogspot.com/2015/01/file-transfer-via-socket-between.html
  */
 
 public class Server {
@@ -107,7 +112,6 @@ public class Server {
 
         @Override
         public void run() {
-
             try {
                 // Create byte stream to dump read bytes into
                 InputStream in = hostThreadSocket.getInputStream();
@@ -126,16 +130,73 @@ public class Server {
                     }
                 }
 
-                // compare lexigraphically since bytes will be different
-                if(sb.toString().compareTo("First item on mat") == 0) {
+                String[][] fakeDatabase = new String[][]{
+                                          {"Bucket of bolts", "10lb"},
+                                          {"Box of Nails", "5lb"},
+                                          {"Cup of Screws", "2lb"}
+                };
+
+                //split the front and back of the string into item ID and purpose
+                String[] request = sb.toString().split(" ");
+                Log.i(TAG, "request[0] = " + request[0]);
+                Log.i(TAG, "request[1] = " + request[1]);
+
+                //check for errors in user input
+                if(Integer.parseInt(request[0]) > fakeDatabase.length){
+                    request[0] = "";
+                    request[1] = "";
+
                     // send response
                     Log.i(TAG, "outputting response to socket...");
                     OutputStream out = hostThreadSocket.getOutputStream();
-                    out.write(("Bucket of bolts~").getBytes());
+                    out.write(("Number exceeds entries in database(" + fakeDatabase.length + ").~").getBytes());
                     out.flush();
+
+                    message += "User entered number too large for database.\n";
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            activity.msg.setText(message);
+                        }
+                    });
+
                 }
 
-                if(sb.toString().compareTo("Database") == 0){
+                // compare lexigraphically since bytes will be different
+                if(request[1].compareTo("Item") == 0) {
+                    // send response
+                    Log.i(TAG, "outputting response to socket...");
+                    OutputStream out = hostThreadSocket.getOutputStream();
+                    out.write((fakeDatabase[Integer.parseInt(request[0]) - 1][0] + "~").getBytes());
+                    out.flush();
+
+                    message += "Requested Item " + request[0] + "\n";
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            activity.msg.setText(message);
+                        }
+                    });
+
+                }else if(request[1].compareTo("Weight") == 0) {
+                    // send response
+                    Log.i(TAG, "outputting response to socket...");
+                    OutputStream out = hostThreadSocket.getOutputStream();
+                    out.write((fakeDatabase[Integer.parseInt(request[0]) - 1][1] + "~").getBytes());
+                    out.flush();
+
+                    message += "Requested Weight for Item " + request[0] + "\n";
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            activity.msg.setText(message);
+                        }
+                    });
+
+                }else if(request[1].compareTo("Database") == 0){
                     // send response
                     Log.i(TAG, "outputting response to socket...");
 
@@ -145,14 +206,25 @@ public class Server {
                     byte[] bytes = new byte[(int) file.length()];
                     BufferedInputStream bIn;
 
+                    //read in from the file
                     bIn = new BufferedInputStream(new FileInputStream(file));
                     bIn.read(bytes, 0, bytes.length);
 
+                    //output on socket
                     OutputStream out = hostThreadSocket.getOutputStream();
                     out.write(bytes, 0, bytes.length);
                     out.flush();
                     out.write("~".getBytes());
                     out.flush();
+
+                    message += "Requested Database\n";
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            activity.msg.setText(message);
+                        }
+                    });
                 }
 
             } catch (IOException e) {

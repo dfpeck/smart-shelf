@@ -18,7 +18,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.291"/>
+        app:layout_constraintVertical_bias="0.743"/>
 
     <Button
         android:id="@+id/button"
@@ -45,7 +45,9 @@
             android:id="@+id/msg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            android:maxLines = "15"
+            android:scrollbars = "vertical"/>
     </ScrollView>
 
 </android.support.constraint.ConstraintLayout>
