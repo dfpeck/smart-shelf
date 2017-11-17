@@ -16,7 +16,7 @@ namespace SQL{
     "itypeid INTEGER NOT NULL, "
     "itypename STRING, "
     "iscontainer INTEGER, "
-    "PRIMARY KEY (typeid)"
+    "PRIMARY KEY (itypeid)"
     ");";
   const string CREATE_EVENTTYPES =
     "CREATE TABLE EventTypes ("
@@ -29,29 +29,37 @@ namespace SQL{
     "itemid INTEGER NOT NULL, "
     "itemtype INTEGER NOT NULL, "
     "PRIMARY KEY (itemid), "
-    "FOREIGN KEY (type) REFERENCES ItemTypes(typeid)"
+    "FOREIGN KEY (itemtype) REFERENCES ItemTypes(itypeid)"
+    ");";
+  const string CREATE_MATS =
+    "CREATE TABLE Mats ("
+    "matid INTEGER NOT NULL, "
+    "PRIMARY KEY (matid)"
     ");";
   const string CREATE_HISTORY =
     "CREATE TABLE History ("
     "item INTEGER NOT NULL, "
     "time DATETIME NOT NULL, "
+    "mat INTEGER NOT NULL, "
     "event INTEGER NOT NULL, "
-    "sensor1 REAL NOT NULL, "
-    "sensor2 REAL NOT NULL, "
-    "sensor3 REAL NOT NULL, "
-    "sensor4 REAL NOT NULL, "
+    "sensor1 REAL, "
+    "sensor2 REAL, "
+    "sensor3 REAL, "
+    "sensor4 REAL, "
     // "x REAL NOT NULL, "
     // "y REAL NOT NULL, "
     "CONSTRAINT eventinfo PRIMARY KEY (item, time), "
     "FOREIGN KEY (item) REFERENCES Items(itemid), "
     "FOREIGN KEY (event) REFERENCES EventTypes(eventid)"
     ");";
+
+  const short TABLE_COUNT = 5;
+  const string CREATE_TABLES[TABLE_COUNT] = {SQL::CREATE_ITEMTYPES,
+                                         SQL::CREATE_EVENTTYPES,
+                                         SQL::CREATE_ITEMS,
+                                         SQL::CREATE_MATS,
+                                         SQL::CREATE_HISTORY};
 }
-const short TABLE_COUNT = 4;
-const string TABLE_SQL[TABLE_COUNT] = {SQL::CREATE_ITEMTYPES,
-                                       SQL::CREATE_EVENTTYPES,
-                                       SQL::CREATE_ITEMS,
-                                       SQL::CREATE_HISTORY};
 const short EVENT_COUNT = 6;
 const string EVENT_TYPES[EVENT_COUNT] = {"ADDED", "REMOVED", "REPLACED",
                                          "REDUCED", "REFILLED", "SLID"};
@@ -81,48 +89,14 @@ vector<string> split_str (const string &str, char delim) {
   return tokens;
 }
 
-/* ITEMTYPE CLASS */
-ItemType::ItemType (int itypeid_init,
-                    const string& itypename_init,
-                    bool iscontainer_init) {
-  itypeid = itypeid_init;
-  itypename = itypename_init;
-  iscontainer = iscontainer_init;
-}
-
-ItemType::ItemType (const string& serialized) {
-  vector<string> tokens = split_str(serialized, SERIALSEP);
-  assert(tokens.size() == 3); // !-- replace with exception
-  assert(tokens[2] == "0" || tokens[2] == "1");
-  itypeid = stoi(tokens[0]);
-  itypename = tokens[1];
-  iscontainer = (tokens[2] == "1");
- }
-
-int ItemType::get_id () {
-  return this->itypeid;
-}
-
-string ItemType::get_name () {
-  return this->itypename;
-}
-
-bool ItemType::is_container () {
-  return this->iscontainer;
-}
-
-string ItemType::serialize () {
-  stringstream ret_str;
-  ret_str << itypeid << SERIALSEP
-          << itypename << SERIALSEP
-          << iscontainer << SERIALSEP;
-  return ret_str.str();
-}
-
 /* DATABASE CLASS METHODS */
 DbCommon::DbCommon (const string& db_file_init) {
   db_file = db_file_init;
   open();
+}
+
+DbCommon::~DbCommon () {
+  sqlite3_close(db);
 }
 
 bool DbCommon::open () {
@@ -150,15 +124,16 @@ bool DbCommon::create () {
   /* Create Database File */
   rc = sqlite3_open(db_file.c_str(), &db);
   if (rc) {
-    cerr << "Can't access " << db_file << ": " << sqlite3_errmsg(db) << endl;
+    cerr << "SQLite: Can't access " << db_file << ": "
+         << sqlite3_errmsg(db) << endl;
     success = false;
   }
 
   /* Create Tables */
-  for (int i=0; i<TABLE_COUNT; i++) {
-    rc = sqlite3_exec(db, TABLE_SQL[i].c_str(), NULL, NULL, &errmsg);
+  for (int i=0; i<SQL::TABLE_COUNT; i++) {
+    rc = sqlite3_exec(db, SQL::CREATE_TABLES[i].c_str(), NULL, NULL, &errmsg);
     if (rc != SQLITE_OK) {
-      cerr << "SQL error: " << errmsg << endl;
+      cerr << "SQLite: " << errmsg << endl;
       sqlite3_free(errmsg);
       success = false;
     }
@@ -170,11 +145,81 @@ bool DbCommon::create () {
       + EVENT_TYPES[i] + "');";
     rc = sqlite3_exec(db, stmt.c_str(), NULL, NULL, &errmsg);
     if (rc != SQLITE_OK) {
-      cerr << "SQL error: " << errmsg << endl;
+      cerr << "SQLite: " << errmsg << endl;
       sqlite3_free(errmsg);
       success = false;
     }
   }
 
   return success;
+}
+
+string DbCommon::serialize_records (const string& table,
+                                    const string& condition) {
+  sqlite3_stmt* stmt;
+  int rc1, rc2;
+  int column_count;
+  stringstream return_str;
+  stringstream qry;
+
+  return_str << table << '\n';
+
+  /* Sanitize SQL and Build Query */
+
+  qry << "SELECT * FROM " << table << " WHERE " << condition << ";";
+
+  /* Sanitize SQL */
+
+  /* Prepare the Statement and Bind Parameters */
+  rc1 = sqlite3_prepare_v2(db, qry.str().c_str(), -1, &stmt, NULL);
+  if (rc1) {
+    cerr << "[SQLite] Could not prepare statement, "
+         << sqlite3_errmsg(db) << endl;
+    return "";
+  }
+
+  column_count = sqlite3_column_count(stmt);
+
+  /* Label Columns in Serialization */
+  return_str << sqlite3_column_name(stmt, 0);
+  for (unsigned int i=1; i<column_count; i++)
+    return_str << '\t' << sqlite3_column_name(stmt, i);
+  return_str << '\n';
+
+  /* Execute Statement and Serialize Output */
+  do {
+    rc1 = sqlite3_step(stmt);
+    if (rc1 == SQLITE_ROW) {
+      for (unsigned int i=0; i<column_count; i++) {
+        rc2 = sqlite3_column_type(stmt, i);
+        switch (rc2) { // need particular column function based on data type
+        case SQLITE_INTEGER:
+          return_str << sqlite3_column_int(stmt, i);
+          break;
+        case SQLITE_FLOAT:
+          return_str << sqlite3_column_double(stmt, i);
+          break;
+        case SQLITE_TEXT:
+          return_str << sqlite3_column_text(stmt, i);
+          break;
+        case SQLITE_NULL:
+          break;
+        case SQLITE_BLOB:
+          break;
+        }
+        if (i != column_count-1) // if not last column
+          return_str << '\t';
+      }
+      return_str << '\n';
+    }
+  } while (rc1 != SQLITE_DONE);
+
+  /* Clean Up */
+  sqlite3_finalize(stmt);
+
+  return return_str.str();
+}
+
+string DbCommon::serialize_records (const string& table) {
+  return serialize_records(table, "1=1");
 }

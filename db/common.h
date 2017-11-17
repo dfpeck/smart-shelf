@@ -18,10 +18,11 @@ namespace SQL {
   extern const string CREATE_ITEMTYPES;
   extern const string CREATE_EVENTTYPES;
   extern const string CREATE_ITEMS;
+  extern const string CREATE_MATS;
   extern const string CREATE_HISTORY;
+  extern const short TABLE_COUNT;
+  extern const string CREATE_TABLES[];
 }
-extern const short TABLE_COUNT;
-extern const string TABLE_SQL[];
 
 /* DB Contents */
 extern const short EVENT_COUNT;
@@ -29,6 +30,7 @@ extern const string EVENT_TYPES[];
 
 /* Serialization */
 extern const char SERIALSEP;
+
 
 /* HELPER FUNCTIONS */
 /** Check whether a file is read-write accessible.
@@ -38,128 +40,13 @@ extern const char SERIALSEP;
  */
 bool fcheck (const string &fname);
 
-/**
+/** Split a string into substrings deliminated by a character.
+ *
+ * @param str The string to split.
+ * @param delim The deliminator dividing the substrings.
  */
-vector<string> split_str (const string &str, char delim); // !-- IP
+vector<string> split_str (const string &str, char delim);
 
-/* RECORD CLASS */
-class TableRecord {
-  /* Properties */
-
-  /* Accessors */
-
-  /* Serialization */
-  /** Convert the record to a string serialization.
-   *
-   * @return String representing the object data.
-   */
-  virtual string serialize () =0;
-};
-
-class Item; // forward declarations
-
-/** Class for `ItemType` records.
- */
-class ItemType : public TableRecord {
-  /* Constructors */
-public:
-  ItemType (int itypeid_init,
-            const string& itypename_init,
-            bool iscontainer_init);
-  /** Constructor
-   * Initialize from a serialized object.
-   * @param serialized A string returned by `ItemType::serialize`
-   */
-  ItemType (const string& serialized); // !-- in progress
-
-  /* Properties */
-protected:
-  int itypeid;
-  string itypename;
-  bool iscontainer;
-
-  /* Accessors */
-public:
-  int get_id ();
-  string get_name ();
-  bool is_container ();
-
-public:
-  string serialize () override; // !-- implement
-};
-
-/** Class for `EventType` records.
- */
-class EventType : public TableRecord { // !-- implement
-  /* Properties */
-protected:
-  int id;
-  string name;
-public:
-  int get_id ();
-  string get_name ();
-
-public:
-  string serialize () override;
-};
-
-/** Class for `History` records.
- */
-class Event : public TableRecord { // !-- implement
-  /* Properties */
-protected:
-  Item& item;
-  string time;
-  EventType& event;
-  double sensor1, sensor2, sensor3, sensor4;
-  double x, y;
-public:
-  Item& get_item ();
-  string get_time();
-  EventType& get_event ();
-
-  /** Return the sensor readings associated with the event.
-
-   * @return Array such that element 0 is the sum of the sensor readings, while
-   * elements 1--4 correspond to the sensor of that number.
-   */
-  array<double, 5> get_sensors();
-
-  /** Return the coordinate position associated with the event.
-   *
-   * @return (x, y) coordinate pair.
-   */
-  array<double, 2> get_pos();
-
-public:
-  string serialize () override;
-};
-
-/** Class for `Items` records.
- */
-class Item : public TableRecord { // !-- implement
-  /* Properties */
-protected:
-  int itemid;
-  ItemType& itemtype;
-  Event& last_history;
-public:
-  int get_id ();
-  ItemType& get_type ();
-
-  /** Return sensor readings produced by the item. Refer to Event::get_sensors.
-   */
-  array<double, 5> get_sensors ();
-
-  /** Return the coordinate position of the item. Refer to Event::get_pos.
-   */
-  array<double, 2> get_pos ();
-
-public:
-  string serialize () override;
-};
-
-/* 
 
 /* COMMON DATABASE CLASS */
 class DbCommon {
@@ -175,14 +62,17 @@ protected:
    */
   string db_file;
   
-  /* Constructors */
+  /* Constructors and Destructor */
 public:
   DbCommon (const string&);
+
+  ~DbCommon ();
 
   /* Accessors */
 public:
   string get_db_file();
 
+  /* Database Initialization */
 protected:
   /**
    * Create a new database file and initialize data.
@@ -199,6 +89,23 @@ protected:
    * @return Success or failure.
    */
   bool open ();
+
+  /* Record Serialization */
+  /** Retrive one or more records from the database and serialize as a string.
+   *
+   * @param table The table to query.
+   * @param condition Conditions restricting which records are retrieved. Must
+   * be valid as the conditional component of an SQL `WHERE` clause. This
+   * parameter is optional.
+   * @return A string representing the records retrieved; NULL if any step of
+   * the process has failed.
+   */
+public:
+  string serialize_records (const string& table, const string& condition);
+  string serialize_records (const string& table);
+  // !-- IP
+
+  string insert_from_serialization (const string& serialized); // !-- todo
 };
 
 #endif
