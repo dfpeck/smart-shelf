@@ -1,9 +1,10 @@
 CXX = g++ -g -std=c++11
 CC = gcc
-JAVA = javac
-DOX = doxygen
 
-BIN = 
+JC = javac
+JFLAGS = -classpath ".:/usr/share/java/h2.jar"
+
+DOX = doxygen
 
 .PHONY: all check clean
 
@@ -12,6 +13,11 @@ all:
 check: 
 
 # Binaries #
+db/TEST_Db: db/TEST_Db.java db/Db.class
+	$(JC) $(JFLAGS) db/TEST_Db.java
+
+db/Db.class: db/Db.java
+	$(JC) $(JFLAGS) db/Db.java
 
 # Docmentation #
 docs:

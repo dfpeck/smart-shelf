@@ -15,6 +15,9 @@
 # C/C++ unlinked object code
 *.o
 
+# Java Class Files
+*.class
+
 # Database Files
 *.db
 
