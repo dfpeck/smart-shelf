@@ -15,10 +15,10 @@ public class Db {
     /* PROPERTIES */
     /** The name of the database. Do not include ".mv.db" extension.
      */
-    protected String name;
-    protected File file;
-    protected Connection conn;
-    protected boolean isOpen;
+    private String name;
+    private File file;
+    private Connection conn;
+    private boolean isOpen;
 
     /* CONSTRUCTORS */
     public Db (String name_init) {
@@ -29,7 +29,7 @@ public class Db {
     }
 
     /* DESCTRUCTOR */
-    protected void finalize () {
+    private void finalize () {
         try {close();}
         catch (SQLException e) {}
     }
@@ -99,18 +99,30 @@ public class Db {
     /* QUERY METHODS */
     /**
      * @brief Get all items on a particular collection of mats.
-     */
+     *
+     * @return ResultSet object containing all records for the items on a given
+     * Mat.
+     */ // !-- IP
     public ResultSet getItemsOnMat (Iterable<Integer> matIds) {
         
     }
     /**
+     * @brief Get all items on a particular collection of mats.
+     * @see #getItemsOnMat(Iterable<Integer> matIds)
+     */
+    public ResultSet getItemsOnMat (int matIds...) {
+        return getItemsOnMat(matIds);
+    }
+    /**
      * @brief Get all items on a particular mat.
+     * @see #getItemsOnMat(Iterable<Integer> matIds)
      */
     public ResultSet getItemsOnMat (int matId) {
-        return getItemsOnMat(new Vector<Integer>(madId));
+        return getItemsOnMat(new Vector<Integer>(matId));
     }
     /**
      * @brief Get all items that are on any mat.
+     * @see #getItemsOnMat(Iterable<Integer> matIds)
      */
     public ResultSet getItemsOnMat () {
         return getItemsOnMat(new Vector<Integer>());
