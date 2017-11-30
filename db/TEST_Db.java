@@ -78,7 +78,7 @@ public class TEST_Db {
 
     public static boolean openDatabase () {
         Db db = new Db(testDbName);
-        boolean success = db.isOpen;
+        boolean success = db.isOpen();
         try {db.close();} catch (SQLException e) {}
         return success;
     }
