@@ -8,7 +8,7 @@ DOX = doxygen
 
 .PHONY: all check clean
 
-all: 
+test: db/TEST_Db
 
 check: 
 
