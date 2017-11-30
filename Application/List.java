@@ -37,8 +37,7 @@ public class List extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        setContentView(R.layout.activity_main);
+        
         b_read = (Button) findViewById(R.id.ShowText);
 
         tv_text = (TextView) findViewById(R.id.tv_text);
