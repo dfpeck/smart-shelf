@@ -1,9 +1,11 @@
 # Please use this file to avoid staging/committing files that are NOT useful for
 # development. Refer to git-scm.com/docs/gitignore for more information.
 
-# Files w/o '.' (except "Makefile") in base directory (i.e. UNIX binaries)
+# Files w/o '.' (except "Makefile" and "Doxyfile") in base directory
+# (i.e. UNIX binaries)
 *
 !Makefile
+!Doxyfile
 !*.*
 !*/
 
@@ -13,8 +15,14 @@
 # C/C++ unlinked object code
 *.o
 
+# Java Class Files
+*.class
+
 # Database Files
 *.db
+
+# Documentation (generate with "make docs" instead of cluttering up GitHub)
+html/*
 
 # Zip archives (so as not to track the SQLite amalgam archive)
 *.zip
