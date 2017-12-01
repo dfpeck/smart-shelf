@@ -1,7 +1,7 @@
 CREATE TABLE ItemTypes (
     itypeid INTEGER NOT NULL AUTO_INCREMENT, 
     itypename VARCHAR, 
-    iscontainer INTEGER, 
+    iscontainer BOOLEAN, 
     PRIMARY KEY (itypeid)
     );
 CREATE TABLE EventTypes (

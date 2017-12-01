@@ -103,28 +103,30 @@ public class Db {
      * @return ResultSet object containing all records for the items on a given
      * Mat.
      */ // !-- IP
-    public ResultSet getItemsOnMat (Iterable<Integer> matIds) {
+    public ResultSet getItemsOnMat (Iterable<Integer> matIds) { // !-- may
+                                                                // !-- change
+                                                                // !-- type
         
     }
     /**
      * @brief Get all items on a particular collection of mats.
      * @see #getItemsOnMat(Iterable<Integer> matIds)
      */
-    public ResultSet getItemsOnMat (int matIds...) {
+    public ResultSet getItemsOnMat (int matIds...) { // !-- may change type
         return getItemsOnMat(matIds);
     }
     /**
      * @brief Get all items on a particular mat.
      * @see #getItemsOnMat(Iterable<Integer> matIds)
      */
-    public ResultSet getItemsOnMat (int matId) {
+    public ResultSet getItemsOnMat (int matId) { // !-- may change type
         return getItemsOnMat(new Vector<Integer>(matId));
     }
     /**
      * @brief Get all items that are on any mat.
      * @see #getItemsOnMat(Iterable<Integer> matIds)
      */
-    public ResultSet getItemsOnMat () {
+    public ResultSet getItemsOnMat () { // !-- may change type
         return getItemsOnMat(new Vector<Integer>());
     }
 
