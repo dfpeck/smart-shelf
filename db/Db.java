@@ -112,7 +112,7 @@ public class Db {
      * @brief Get all items on a particular collection of mats.
      * @see #getItemsOnMat(Iterable<Integer> matIds)
      */
-    public ResultSet getItemsOnMat (int matIds...) { // !-- may change type
+    public ResultSet getItemsOnMat (int... matIds) { // !-- may change type
         return getItemsOnMat(matIds);
     }
     /**
