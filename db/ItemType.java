@@ -1,11 +1,14 @@
 package db;
 
-import db.Db;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class ItemType { // !-- IP
+import db.Db;
+import db.TableRecord;
+
+public class ItemType extends TableRecord { // !-- IP
     /* PROPERTIES */
-    private int;
+    private int id;
     public int getId () {
         return id;
     }
@@ -20,7 +23,7 @@ public class ItemType { // !-- IP
         return isContainer;
     }
 
-    /* CONSTRUCTORS */
+    /* CONSTRUCTORS */ // !-- more constructors?
     public ItemType (Db db_init,
                      int id_init, String name_init, boolean isContainer_init) {
         db = db_init;
@@ -28,10 +31,15 @@ public class ItemType { // !-- IP
         name = name_init;
         isContainer = isContainer_init;
     }
-    public ItemType (Db db_init, ResultSet rs) {
+    public ItemType (Db db_init, ResultSet rs) { // !-- IP
         db = db_init;
-        id = rs.getInt("itypeid");
-        name = rs.getString("itypename");
-        isContainer = rs.getBoolean("iscontainer");
+        try {
+            id = rs.getInt("itypeid");
+            name = rs.getString("itypename");
+            isContainer = rs.getBoolean("iscontainer");
+        }
+        catch (SQLException e) {
+
+        }
     }
 }

@@ -1,5 +1,6 @@
 package db;
 
+import db.Db;
 import db.TableRecord;
 import db.ItemType;
 // import db.History;
@@ -18,6 +19,6 @@ public class Item extends TableRecord {
 
     // private History latestHistory;
     // public History getLatestHistory () {
-        
+    //     return latestHistory;
     // }
 }

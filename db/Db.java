@@ -15,9 +15,9 @@ public class Db {
     /* PROPERTIES */
     /** The name of the database. Do not include ".mv.db" extension.
      */
+    Connection conn;
     private String name;
     private File file;
-    private Connection conn;
     private boolean isOpen;
 
     /* CONSTRUCTORS */
@@ -26,12 +26,6 @@ public class Db {
         file = new File(name + "mv.db");
         conn = null;
         open();
-    }
-
-    /* DESCTRUCTOR */
-    private void finalize () {
-        try {close();}
-        catch (SQLException e) {}
     }
 
     /* GETTERS */
@@ -96,63 +90,16 @@ public class Db {
         isOpen = false;
     }
 
+    /* DIRECT DATABASE INTERACTION METHODS */
+    ResultSet executeQuery (String sql) throws SQLException {
+        return conn.prepareStatement(sql).executeQuery();
+    }
+
+    int executeUpdate (String sql) throws SQLException {
+        return conn.prepareStatement(sql).executeUpdate();
+    }
+
     /* QUERY METHODS */
-    /**
-     * @brief Get all items on a particular collection of mats.
-     *
-     * @return ResultSet object containing all records for the items on a given
-     * Mat.
-     */ // !-- IP
-    public ResultSet getItemsOnMat (Iterable<Integer> matIds) { // !-- may
-                                                                // !-- change
-                                                                // !-- type
-        
-    }
-    /**
-     * @brief Get all items on a particular collection of mats.
-     * @see #getItemsOnMat(Iterable<Integer> matIds)
-     */
-    public ResultSet getItemsOnMat (int... matIds) { // !-- may change type
-        return getItemsOnMat(matIds);
-    }
-    /**
-     * @brief Get all items on a particular mat.
-     * @see #getItemsOnMat(Iterable<Integer> matIds)
-     */
-    public ResultSet getItemsOnMat (int matId) { // !-- may change type
-        return getItemsOnMat(new Vector<Integer>(matId));
-    }
-    /**
-     * @brief Get all items that are on any mat.
-     * @see #getItemsOnMat(Iterable<Integer> matIds)
-     */
-    public ResultSet getItemsOnMat () { // !-- may change type
-        return getItemsOnMat(new Vector<Integer>());
-    }
-
-    // /**
-    //  *
-    //  */
-    // public ResultSet getItemHistory (int itemId) {
-
-    // }
-
-    // /**
-    //  *
-    //  */
-    // public ResultSet getItemTypeHistory (int iTypeId) {
-
-    // }
-    // public ResultSet getItemTypeHistory (String iTypeName) {
-
-    // }
-
-    // public float getItemTypeMeanStartWeight (int iTypeId) {
-
-    // }
-    // public float getItemTypeMeanStartWeight (String iTypeName) {
-
-    // }
 
     /* HELPER FUNCTIONS */
     public static Vector<String> readSqlFromFile (String sqlFileName) {
