@@ -1,25 +1,23 @@
 CXX = g++ -g -std=c++11
 CC = gcc
-DOX = doxygen
 
-LIB = -lpthread -ldl
-BIN = TEST_open-database TEST_serialization
+JC = javac
+JFLAGS = -classpath ".:/usr/share/java/h2.jar"
+
+DOX = doxygen
 
 .PHONY: all check clean
 
-all: db/common.o db/sqlite3.o TEST_open-database TEST_serialization
+test: db/TEST_Db
+
+check: 
 
 # Binaries #
-TEST_open-database: db/TEST_open-database.cpp db/common.o db/sqlite3.o
-	$(CXX) -o $@ $^ $(LIB)
-TEST_serialization: db/TEST_serialization.cpp db/common.o db/sqlite3.o
-	$(CXX) -o $@ $^ $(LIB)
+db/TEST_Db: db/TEST_Db.java db/Db.class
+	$(JC) $(JFLAGS) db/TEST_Db.java
 
-# Object Code #
-db/common.o: db/common.cpp db/sqlite3.o
-	$(CXX) -o $@ -c $^ $(LIB)
-db/sqlite3.o: db/sqlite3.c
-	$(CC) -o $@ -c $^
+db/Db.class: db/Db.java
+	$(JC) $(JFLAGS) db/Db.java
 
 # Docmentation #
 docs:
