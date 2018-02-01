@@ -1,4 +1,4 @@
-package com.taylorhoss.matclient;
+package com.taylorhoss.androidClient;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

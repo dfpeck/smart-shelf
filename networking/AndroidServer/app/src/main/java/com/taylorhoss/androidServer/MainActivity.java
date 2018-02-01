@@ -1,4 +1,4 @@
-package com.taylorhoss.matserver;
+package com.taylorhoss.androidServer;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

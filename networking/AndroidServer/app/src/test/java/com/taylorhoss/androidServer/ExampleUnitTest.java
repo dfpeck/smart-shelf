@@ -1,4 +1,4 @@
-package com.taylorhoss.matserver;
+package com.taylorhoss.androidServer;
 
 import org.junit.Test;
 

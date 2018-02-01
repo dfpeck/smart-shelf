@@ -1,4 +1,4 @@
-package com.taylorhoss.matclient;
+package com.taylorhoss.androidClient;
 
 import android.app.Activity;
 import android.app.AlertDialog;

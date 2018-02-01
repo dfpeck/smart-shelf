@@ -1,4 +1,4 @@
-package com.taylorhoss.matclient;
+package com.taylorhoss.androidClient;
 
 import android.content.Intent;
 import android.os.Environment;

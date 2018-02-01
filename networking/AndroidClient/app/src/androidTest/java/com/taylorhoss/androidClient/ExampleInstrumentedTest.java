@@ -1,4 +1,4 @@
-package com.taylorhoss.matserver;
+package com.taylorhoss.androidClient;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.taylorhoss.matserver", appContext.getPackageName());
+        assertEquals("com.taylorhoss.matclient", appContext.getPackageName());
     }
 }
