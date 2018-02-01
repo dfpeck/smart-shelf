@@ -90,15 +90,6 @@ public class Db {
         isOpen = false;
     }
 
-    /* DIRECT DATABASE INTERACTION METHODS */
-    ResultSet executeQuery (String sql) throws SQLException {
-        return conn.prepareStatement(sql).executeQuery();
-    }
-
-    int executeUpdate (String sql) throws SQLException {
-        return conn.prepareStatement(sql).executeUpdate();
-    }
-
     /* QUERY METHODS */
 
     /* HELPER FUNCTIONS */

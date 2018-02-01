@@ -59,9 +59,9 @@ public class TEST_Db {
             case 1:
                 success = openDatabase();
                 break;
-            case 2:
-                success = readSql();
-                break;
+            // case 2:
+            //     success = readSql();
+            //     break;
             case 3:
                 success = createDatabase();
             }
@@ -94,19 +94,5 @@ public class TEST_Db {
                                + " not found; no need for removal.");
         }
         return openDatabase();
-    }
-
-    public static boolean readSql () {
-        Vector<String> sqlStatements
-            = Db.readSqlFromFile("db/create_tables.sql");
-
-        if (sqlStatements.size() == 0)
-            return false;
-
-        for (String sql : sqlStatements) {
-            System.out.println(sql);
-            System.out.println("---");
-        }
-        return true;
     }
 }
