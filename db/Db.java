@@ -23,7 +23,7 @@ public class Db {
     /* CONSTRUCTORS */
     public Db (String name_init) {
         name = name_init;
-        file = new File(name + "mv.db");
+        file = new File(name + ".mv.db");
         conn = null;
         open();
     }
