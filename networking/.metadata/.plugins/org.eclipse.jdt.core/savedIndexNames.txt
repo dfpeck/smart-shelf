@@ -1,3 +1,0 @@
-INDEX VERSION 1.130+C:\smart-shelf\networking\.metadata\.plugins\org.eclipse.jdt.core
-3984032519.index
-1885229732.index
