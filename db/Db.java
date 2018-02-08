@@ -25,7 +25,6 @@ public class Db {
         name = name_init;
         file = new File(name + ".mv.db");
         conn = null;
-        open();
     }
 
     /* GETTERS */
@@ -52,9 +51,9 @@ public class Db {
 
     /** @brief Open the database connection.
      *
-     * Called automatically upon object creation.
+     * Must be called before database is usable.
      */
-    public void open () {
+    public boolean open () {
         boolean needsPopulation = !(file.exists() && !file.isDirectory());
 
         try {
@@ -62,7 +61,7 @@ public class Db {
         }
         catch (ClassNotFoundException e) {
             System.out.println(e);
-            return;
+            return false;
         }
 
         try {
@@ -70,20 +69,18 @@ public class Db {
         }
         catch (SQLException e) {
             System.out.println(e);
-            return;
+            return false;
         }
 
         if (needsPopulation) // if the database needs tables
             if (!create()) // populate it, and on failure…
-                return;
+                return false;
 
         isOpen = true;
+        return true;
     }
 
     /** @brief Close the database connection.
-     *
-     * This is called when the object is sent to garbage collection (in @ref
-     * finalize), but may be useful for managing connections.
      */
     public void close () throws SQLException {
         conn.close();
