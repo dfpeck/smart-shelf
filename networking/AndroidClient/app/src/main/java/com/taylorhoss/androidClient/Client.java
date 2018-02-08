@@ -1,9 +1,13 @@
 package com.taylorhoss.androidClient;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -95,6 +99,7 @@ public class Client extends AsyncTask<String, String, String> {
                 out.flush();
 
                 //open file
+                writeFileWrapper();
                 File file = new File(Environment.getExternalStorageDirectory(), "database.txt");
                 //will need to increase size of byte array if information exceeds 1024 bytes
                 byte[] bytes = new byte[1024];
@@ -152,5 +157,18 @@ public class Client extends AsyncTask<String, String, String> {
         }
         super.onPostExecute(result);
     }
+
+    final private int REQUEST_CODE_ASK_PERMISSIONS = 1;
+
+    private void writeFileWrapper() {
+        int hasStoragePermission = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (hasStoragePermission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_CODE_ASK_PERMISSIONS);
+            return;
+        }
+    }
+
+
 
 }
