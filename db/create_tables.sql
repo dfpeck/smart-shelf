@@ -9,7 +9,7 @@ CREATE TABLE MatTypes (
     PRIMARY KEY (mattypeid)
     );
 CREATE TABLE EventTypes (
-    eventtypeid BIGINT NOT NULL,   -- eventtypeid is not set automatically to
+    eventtypeid BIGINT NOT NULL,    -- eventtypeid is not set automatically to
     eventtypename VARCHAR NOT NULL, --   ensure that IDs are consistent across
     PRIMARY KEY (eventtypeid)       --   platforms/implementations
     );
