@@ -2,6 +2,7 @@ CREATE TABLE ItemTypes (
     itemtypeid IDENTITY,
     itemtypename VARCHAR,
     iscontainer BOOLEAN,
+    itemtypecomment VARCHAR,
     PRIMARY KEY (itemtypeid)
     );
 CREATE TABLE MatTypes (
