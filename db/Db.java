@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.Scanner;
 import java.util.regex.*;
 import java.util.Vector;
+import java.util.HashMap;
 
 import java.io.FileNotFoundException;
 
@@ -90,6 +91,12 @@ public class Db {
     /* QUERY METHODS */
 
     /* HELPER FUNCTIONS */
+    /** Read SQL statements from a file.
+     *
+     * @param sqlFileName Name of the file containing the SQL code to read
+     *
+     * @return A vector of SQL statements (as strings)
+     */
     public static Vector<String> readSqlFromFile (String sqlFileName) {
         Scanner sqlScanner;
         Pattern p = Pattern.compile(".*\\S.*", Pattern.DOTALL);
@@ -112,5 +119,23 @@ public class Db {
         }
 
         return sqlStatements;
+    }
+
+    /** Read labeled SQL statements from a file.
+     *
+     * @param sqlFileName Name of the file containing the SQL code to read
+     *
+     * @return A map (label → SQL)
+     */
+    public static HashMap<String, String> readLabeledSqlFromFile (String sqlFileName) {
+        HashMap<String, String> labelledStatements = new HashMap<String, String>();
+
+        for (String statement : readSqlFromFile(sqlFileName)) {
+            String[] pair = statement.split("::");
+            labelledStatements.put(pair[0].replaceAll("^'|'$", ""),
+                                   pair[1]);
+        }
+
+        return labelledStatements;
     }
 }
