@@ -5,27 +5,27 @@ CREATE TABLE ItemTypes (
     itemtypecomment VARCHAR,
     PRIMARY KEY (itemtypeid)
     );
-CREATE TABLE MatTypes (
-    mattypeid VARCHAR NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (mattypeid)
-    );
-CREATE TABLE EventTypes (
-    eventtypeid BIGINT NOT NULL,    -- eventtypeid is not set automatically to
-    eventtypename VARCHAR NOT NULL, --   ensure that IDs are consistent across
-    PRIMARY KEY (eventtypeid)       --   platforms/implementations
-    );
 CREATE TABLE Items (
     itemid IDENTITY,
     itemtype INTEGER NOT NULL,
     PRIMARY KEY (itemid),
     FOREIGN KEY (itemtype) REFERENCES ItemTypes(itemtypeid)
     );
+CREATE TABLE MatTypes (
+    mattypeid VARCHAR NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (mattypeid)
+    );
 CREATE TABLE Mats (
     matid IDENTITY,
-    mattype INTEGER NOT NULL,
+    mattype VARCHAR NOT NULL,
     matcomment VARCHAR,
     PRIMARY KEY (matid),
     FOREIGN KEY (mattype) REFERENCES MatTypes(mattypeid)
+    );
+CREATE TABLE EventTypes (
+    eventtypeid BIGINT NOT NULL,    -- eventtypeid is not set automatically to
+    eventtypename VARCHAR NOT NULL, --   ensure that IDs are consistent across
+    PRIMARY KEY (eventtypeid)       --   platforms/implementations
     );
 CREATE TABLE History (
     item INTEGER NOT NULL,
