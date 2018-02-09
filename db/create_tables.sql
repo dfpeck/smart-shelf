@@ -22,7 +22,7 @@ CREATE TABLE Items (
     );
 CREATE TABLE Mats (
     matid IDENTITY,
-    mattype INTEGER NOT NULL,
+    mattype VARCHAR NOT NULL,
     matcomment VARCHAR,
     PRIMARY KEY (matid),
     FOREIGN KEY (mattype) REFERENCES MatTypes(mattypeid)
