@@ -8,6 +8,8 @@ import java.util.Vector;
 import java.util.HashMap;
 
 public class TEST_Db {
+    static final String HRULE = "---";
+
     static String prompt = "> ";
     static String testDbName = "./TEST_inventory";
     static File testDbFile = new File(testDbName + ".mv.db");
@@ -20,9 +22,10 @@ public class TEST_Db {
 
         System.out.println("Testing " + testDbFile.getAbsolutePath());
 
-        tests.put(1, "Open Database");
-        tests.put(2, "Read SQL from File");
-        tests.put(3, "Create Database");
+        tests.put(1, "Create Database");
+        tests.put(2, "Open Database");
+        tests.put(3, "Read SQL from File");
+        tests.put(4, "Read labeled SQL from File");
         
         while (loop) {
             System.out.println("==SELECT A TEST==");
@@ -56,14 +59,17 @@ public class TEST_Db {
             System.out.println("=" + tests.get(test) + "=");
 
             switch (test) {
-            case 1:
+            case 2:
                 success = openDatabase();
                 break;
-            case 2:
+            case 3:
                 success = readSql();
                 break;
-            case 3:
+            case 1:
                 success = createDatabase();
+                break;
+            case 4:
+                success = readLabeledSql();
             }
         }
         else {
@@ -105,7 +111,21 @@ public class TEST_Db {
 
         for (String sql : sqlStatements) {
             System.out.println(sql);
-            System.out.println("---");
+            System.out.println(HRULE);
+        }
+        return true;
+    }
+
+    public static boolean readLabeledSql () {
+        HashMap<String, String> labeledSql
+            = Db.readLabeledSqlFromFile("db/TEST_labeledSql.sql");
+        if (labeledSql.size() == 0)
+            return false;
+
+        for (HashMap.Entry<String, String> entry : labeledSql.entrySet()) {
+            System.out.println(entry.getKey() + " :: ");
+            System.out.println(entry.getValue());
+            System.out.println(HRULE);
         }
         return true;
     }

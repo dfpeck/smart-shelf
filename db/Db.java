@@ -128,14 +128,14 @@ public class Db {
      * @return A map (label → SQL)
      */
     public static HashMap<String, String> readLabeledSqlFromFile (String sqlFileName) {
-        HashMap<String, String> labelledStatements = new HashMap<String, String>();
+        HashMap<String, String> labeledStatements = new HashMap<String, String>();
 
         for (String statement : readSqlFromFile(sqlFileName)) {
             String[] pair = statement.split("::");
-            labelledStatements.put(pair[0].replaceAll("^'|'$", ""),
+            labeledStatements.put(pair[0].trim().replaceAll("^'|'$", ""),
                                    pair[1]);
         }
 
-        return labelledStatements;
+        return labeledStatements;
     }
 }
