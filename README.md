@@ -4,6 +4,11 @@ syntax may be found at daringfireball.net/projects/markdown/syntax -->
 # smart-shelf #
 Code for The Green's automatic inventory system.
 
+# Software Requirements #
+## H2  ##
+Most classes in the `db` directory require the [H2 database
+engine](http://h2database.com) to be installed and in your Java classpath.
+
 # Style Guidelines #
 ## Code ##
 - Restrict line length to 80 characters (as best as possible).

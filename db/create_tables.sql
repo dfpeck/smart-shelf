@@ -1,7 +1,7 @@
 CREATE TABLE ItemTypes (
     itypeid INTEGER NOT NULL AUTO_INCREMENT, 
     itypename VARCHAR, 
-    iscontainer INTEGER, 
+    iscontainer BOOLEAN, 
     PRIMARY KEY (itypeid)
     );
 CREATE TABLE EventTypes (
@@ -28,8 +28,8 @@ CREATE TABLE History (
     sensor2 REAL, 
     sensor3 REAL, 
     sensor4 REAL, 
-    x REAL NOT null, 
-    y REAL NOT null, 
+    -- x REAL NOT null, 
+    -- y REAL NOT null, 
     CONSTRAINT eventinfo PRIMARY KEY (item, datetime), 
     FOREIGN KEY (item) REFERENCES Items(itemid), 
     FOREIGN KEY (event) REFERENCES EventTypes(eventid),
