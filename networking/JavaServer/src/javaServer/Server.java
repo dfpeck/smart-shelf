@@ -152,7 +152,7 @@ public class Server {
                 	System.out.println("outputting response to socket...");
 
                     //get file from external storage
-                    File file = new File("C:\\smart-shelf\\networking\\testing12", "database.txt");
+                    File file = new File("C:\\smart-shelf\\networking\\javaServer", "database.txt");
 
                     byte[] bytes = new byte[(int) file.length()];
                     BufferedInputStream bIn;
