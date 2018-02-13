@@ -1,9 +1,10 @@
 CREATE TABLE ItemTypes (
     itemtypeid IDENTITY,
-    itemtypename VARCHAR,
+    itemtypename VARCHAR UNIQUE,
     iscontainer BOOLEAN,
     itemtypecomment VARCHAR,
-    PRIMARY KEY (itemtypeid)
+    PRIMARY KEY (itemtypeid),
+    
     );
 CREATE TABLE Items (
     itemid IDENTITY,
