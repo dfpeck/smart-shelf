@@ -1,7 +1,7 @@
 CREATE TABLE ItemTypes (
     itemtypeid IDENTITY,
-    itemtypename VARCHAR UNIQUE,
-    iscontainer BOOLEAN,
+    itemtypename VARCHAR UNIQUE NOT NULL,
+    iscontainer BOOLEAN NOT NULL DEFAULT FALSE,
     itemtypecomment VARCHAR,
     PRIMARY KEY (itemtypeid),
     
