@@ -120,7 +120,7 @@ public class TEST_Db {
         Db db = new Db(testDbName);
         db.open();
         try {
-            long id = ItemTypesRecord.insert(db, "Testing ItemType", false);
+            long id = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
             System.out.println("Inserted ItemTypes record " + Long.toString(id));
             db.close();
         }
