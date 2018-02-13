@@ -23,6 +23,7 @@ public class TEST_Db {
         tests.put(2, "Open Database");
         tests.put(3, "Read SQL from File");
         tests.put(4, "Insert Records into Database");
+        tests.put(5, "Insert Record with Manual ID");
         
         while (loop) {
             System.out.println("==SELECT A TEST==");
@@ -117,10 +118,11 @@ public class TEST_Db {
     }
 
     public static boolean insertRecords () {
+        long id;
         Db db = new Db(testDbName);
         db.open();
         try {
-            long id = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
+            id = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
             System.out.println("Inserted ItemTypes record " + Long.toString(id));
             db.close();
         }
@@ -129,5 +131,20 @@ public class TEST_Db {
             return false;
         }
         return true;
+    }
+
+    public static boolean insertRecordsManualId () {
+        Db db = new Db(testDbName);
+        long inserted_id, target_id = 200;
+        db.open();
+        try {
+            inserted_id = ItemTypesRecord.insert(db, target_id, "Manual ID Test", "" false);
+            System.out.println("Target ID: " + Long.toString(target_id));
+            System.out.println("Inserted ID: " + Long.toString(inserted_id));
+            db.close();
+        }
+        catch (SQLException e) {
+            // !-- handle exception
+        }
     }
 }
