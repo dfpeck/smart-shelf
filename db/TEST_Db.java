@@ -1,6 +1,5 @@
 package db;
 
-import db.Db;
 import java.sql.*;
 import java.io.Console;
 import java.io.File;
@@ -20,9 +19,10 @@ public class TEST_Db {
 
         System.out.println("Testing " + testDbFile.getAbsolutePath());
 
-        tests.put(1, "Open Database");
-        tests.put(2, "Read SQL from File");
-        tests.put(3, "Create Database");
+        tests.put(1, "Create Database");
+        tests.put(2, "Open Database");
+        tests.put(3, "Read SQL from File");
+        tests.put(4, "Insert Records into Database");
         
         while (loop) {
             System.out.println("==SELECT A TEST==");
@@ -56,14 +56,17 @@ public class TEST_Db {
             System.out.println("=" + tests.get(test) + "=");
 
             switch (test) {
-            case 1:
+            case 2:
                 success = openDatabase();
                 break;
-            case 2:
+            case 3:
                 success = readSql();
                 break;
-            case 3:
+            case 1:
                 success = createDatabase();
+                break;
+            case 4:
+                success = insertRecords();
             }
         }
         else {
@@ -86,7 +89,10 @@ public class TEST_Db {
     public static boolean createDatabase () {
         if (testDbFile.exists() && !testDbFile.isDirectory()) {
             System.out.print("Removing DB file...");
-            testDbFile.delete();
+            if (!testDbFile.delete()) {
+                System.out.println("ERROR: Failed to delete " + testDbFile.getName());
+                return false;
+            }
             System.out.println(" Done!");
         }
         else {
@@ -106,6 +112,21 @@ public class TEST_Db {
         for (String sql : sqlStatements) {
             System.out.println(sql);
             System.out.println("---");
+        }
+        return true;
+    }
+
+    public static boolean insertRecords () {
+        Db db = new Db(testDbName);
+        db.open();
+        try {
+            long id = ItemTypesRecord.insert(db, "Testing ItemType", false);
+            System.out.println("Inserted ItemTypes record " + Long.toString(id));
+            db.close();
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return false;
         }
         return true;
     }
