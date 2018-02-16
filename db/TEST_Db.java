@@ -138,7 +138,7 @@ public class TEST_Db {
         long inserted_id, target_id = 200;
         db.open();
         try {
-            inserted_id = ItemTypesRecord.insert(db, target_id, "Manual ID Test", "" false);
+            inserted_id = ItemTypesRecord.insert(db, target_id, "Manual ID Test", "", false);
             System.out.println("Target ID: " + Long.toString(target_id));
             System.out.println("Inserted ID: " + Long.toString(inserted_id));
             db.close();
@@ -147,5 +147,6 @@ public class TEST_Db {
             System.out.println(e);
             return false;
         }
+        return true;
     }
 }

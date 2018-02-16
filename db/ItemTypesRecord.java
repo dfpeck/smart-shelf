@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class ItemTypesRecord {
     /* INSERTION METHODS */
-    public static int insert (Db db,
+    public static long insert (Db db,
                               long itemTypeId_,
                               String itemTypeName_,
                               String itemTypeComment_,
@@ -21,7 +21,7 @@ public class ItemTypesRecord {
         statement.setLong(1, itemTypeId_);
         statement.setString(2, itemTypeName_);
         statement.setString(3, itemTypeComment_);
-        statement.setString(4, isContainer_);
+        statement.setBoolean(4, isContainer_);
         ResultSet key = statement.getGeneratedKeys();
         key.next();
         return key.getLong(1);
