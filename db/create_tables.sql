@@ -4,11 +4,10 @@ CREATE TABLE ItemTypes (
     iscontainer BOOLEAN NOT NULL DEFAULT FALSE,
     itemtypecomment VARCHAR,
     PRIMARY KEY (itemtypeid),
-    
     );
 CREATE TABLE Items (
     itemid IDENTITY,
-    itemtype INTEGER NOT NULL,
+    itemtype BIGINT NOT NULL,
     PRIMARY KEY (itemid),
     FOREIGN KEY (itemtype) REFERENCES ItemTypes(itemtypeid)
     );
@@ -29,10 +28,10 @@ CREATE TABLE EventTypes (
     PRIMARY KEY (eventtypeid)       --   platforms/implementations
     );
 CREATE TABLE History (
-    item INTEGER NOT NULL,
+    item BIGINT NOT NULL,
     datetime TIMESTAMP NOT NULL,
-    mat INTEGER NOT NULL,
-    eventtype INTEGER NOT NULL,
+    mat BIGINT NOT NULL,
+    eventtype BIGINT NOT NULL,
     sensors ARRAY,
     x REAL,
     y REAL,
