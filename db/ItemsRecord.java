@@ -1,11 +1,10 @@
 package db;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 import java.sql.SQLException;
 
-public class ItemsRecord {
+public class ItemsRecord extends TableRecord {
     /* INSERTION METHODS */
     public static long insert (Db db,
                               long itemId_,
@@ -17,11 +16,7 @@ public class ItemsRecord {
                                      PreparedStatement.RETURN_GENERATED_KEYS);
         statement.setLong(1, itemId_);
         statement.setLong(2, itemType_);
-        if (statement.executeUpdate() == 0)
-            return 0;
-        ResultSet key = statement.getGeneratedKeys();
-        key.next();
-        return key.getLong(1);
+        return insertAndRetrieveLongKey(db, statement);
     }
 
     public static long insert (Db db,
@@ -32,11 +27,7 @@ public class ItemsRecord {
                                      + " VALUES (?);",
                                      PreparedStatement.RETURN_GENERATED_KEYS);
         statement.setLong(1, itemType_);
-        if (statement.executeUpdate() == 0)
-            return 0;
-        ResultSet key = statement.getGeneratedKeys();
-        key.next();
-        return key.getLong(1);
+        return insertAndRetrieveLongKey(db, statement);
 
         /* !-- TODO methods that accept ItemTypesRecord object for itemType */
     }
