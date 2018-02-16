@@ -37,5 +37,7 @@ public class ItemsRecord {
         ResultSet key = statement.getGeneratedKeys();
         key.next();
         return key.getLong(1);
+
+        /* !-- TODO methods that accept ItemTypesRecord object for itemType */
     }
 }
