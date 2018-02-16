@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class ItemTypesRecord {
     /* INSERTION METHODS */
     public static int insert (Db db,
-                              int itemTypeId_,
+                              long itemTypeId_,
                               String itemTypeName_,
                               String itemTypeComment_,
                               boolean isContainer_) throws SQLException {
