@@ -144,7 +144,8 @@ public class TEST_Db {
             db.close();
         }
         catch (SQLException e) {
-            // !-- handle exception
+            System.out.println(e);
+            return false;
         }
     }
 }
