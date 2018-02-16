@@ -118,12 +118,20 @@ public class TEST_Db {
     }
 
     public static boolean insertRecords () {
-        long id;
+        long itemTypeId, itemId;
         Db db = new Db(testDbName);
         db.open();
         try {
-            id = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
-            System.out.println("Inserted ItemTypes record " + Long.toString(id));
+            System.out.print("Inserting to ItemTypes...");
+            itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
+            if (itemTypeId == 0) return false;
+            System.out.println("Inserted ItemTypes record " + Long.toString(itemTypeId));
+
+            System.out.print("Inserting to Items...");
+            itemId = ItemsRecord.insert(db, itemTypeId);
+            if (itemId == 0) return false;
+            System.out.println("Inserted Items record "+ Long.toString(itemId));
+
             db.close();
         }
         catch (SQLException e) {
@@ -135,12 +143,12 @@ public class TEST_Db {
 
     public static boolean insertRecordsManualId () {
         Db db = new Db(testDbName);
-        long inserted_id, target_id = 200;
+        long insertedId, targetId = 200;
         db.open();
         try {
-            inserted_id = ItemTypesRecord.insert(db, target_id, "Manual ID Test", "", false);
-            System.out.println("Target ID: " + Long.toString(target_id));
-            System.out.println("Inserted ID: " + Long.toString(inserted_id));
+            insertedId = ItemTypesRecord.insert(db, targetId, "Manual ID Test", "", false);
+            System.out.println("Target ID: " + Long.toString(targetId));
+            System.out.println("Inserted ID: " + Long.toString(insertedId));
             db.close();
         }
         catch (SQLException e) {

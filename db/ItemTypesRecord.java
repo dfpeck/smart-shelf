@@ -22,6 +22,7 @@ public class ItemTypesRecord {
         statement.setString(2, itemTypeName_);
         statement.setString(3, itemTypeComment_);
         statement.setBoolean(4, isContainer_);
+        statement.executeUpdate();
         ResultSet key = statement.getGeneratedKeys();
         key.next();
         return key.getLong(1);
