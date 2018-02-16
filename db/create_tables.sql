@@ -15,6 +15,7 @@ CREATE TABLE Items (
     );
 CREATE TABLE MatTypes (
     mattypeid VARCHAR NOT NULL AUTO_INCREMENT,
+    mattypecomment VARCHAR;
     PRIMARY KEY (mattypeid),
     CHECK (mattypeid != '')
     );
