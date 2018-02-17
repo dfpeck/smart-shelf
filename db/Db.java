@@ -53,7 +53,7 @@ public class Db {
      *
      * Must be called before database is usable.
      */
-    public boolean open () {
+    public boolean open () throws SQLException {
         boolean needsPopulation = !(file.exists() && !file.isDirectory());
 
         try {
@@ -64,13 +64,7 @@ public class Db {
             return false;
         }
 
-        try {
-            conn = DriverManager.getConnection("jdbc:h2:" + name);
-        }
-        catch (SQLException e) {
-            System.out.println(e);
-            return false;
-        }
+        conn = DriverManager.getConnection("jdbc:h2:" + name);
 
         if (needsPopulation) // if the database needs tables
             if (!create()) // populate it, and on failure…

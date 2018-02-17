@@ -82,8 +82,14 @@ public class TEST_Db {
 
     public static boolean openDatabase () {
         Db db = new Db(testDbName);
-        boolean success = db.open();
-        try {db.close();} catch (SQLException e) {}
+        try {
+            boolean success = db.open();
+            db.close();
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
         return success;
     }
 
@@ -119,8 +125,9 @@ public class TEST_Db {
 
     public static boolean insertRecords () {
         Db db = new Db(testDbName);
-        db.open();
         try {
+            db.open();
+
             System.out.print("Inserting to ItemTypes...");
             long itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
             if (itemTypeId == 0) return false;
