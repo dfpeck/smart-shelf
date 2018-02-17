@@ -6,8 +6,8 @@ HX711 load_cell[4]; //Load cell array
 
 const int mat_length = 48;
 const int mat_height = 20;
-const float weight_threshold = .05;
-const float calibration_weight = 5;
+const float weight_threshold = .5;
+const float calibration_weight = 50;
 
 //Struct for each item on the mat containing an array for coordinate locations (0 is x, 1 is y), and a variable for weight
 struct mat_item { 
@@ -38,8 +38,8 @@ void setup() {
   
   //Load cell tare
   for (int i = 0; i <4; i++)  { //Initialize scale factor and zero scale
-      scale_factor[i] = 10000;
-      load_cell[i].set_scale(10000);
+      scale_factor[i] = 1001;
+      load_cell[i].set_scale(1001);
       load_cell[i].tare(20);
     }
   Serial.println("Startup + tare is complete");
@@ -104,6 +104,7 @@ void loop() {
 
       Serial.print("Total Weight: ");
       Serial.println(current_weight);
+      delay(500);
 
       
 
