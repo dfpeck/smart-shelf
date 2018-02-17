@@ -15,10 +15,11 @@ public class MatTypesRecord extends TableRecord {
      *
      * @param db The database into which to insert the record.
      * @param matTypeId_ The primary key for the MatType, typically a product
-     * code.
+     * code. May not be the empty string ("").
      * @param matTypeComment_ Optional additional information about the MatType.
      *
-     * @return The primary key of the newly inserted record.
+     * @return The primary key of the newly inserted record. If the insert
+     * fails, returns the empty string ("").
      */
     public static String insert (Db db,
                                  String matTypeId_,

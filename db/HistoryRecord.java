@@ -27,7 +27,8 @@ public class HistoryRecord extends TableRecord {
      * @param x_ x-coordinate on the mat at which the event took place.
      * @param y_ y-coordinate of the mat at which the event took place.
      *
-     * @return The primary key of the newly inserted record.
+     * @return The primary key of the newly inserted record. If the insert
+     * fails, returns `null`.
      */ 
     public static HistoryKey insert (Db db,
                                      long item_,
@@ -70,7 +71,8 @@ public class HistoryRecord extends TableRecord {
      * @param x_ x-coordinate on the mat at which the event took place.
      * @param y_ y-coordinate of the mat at which the event took place.
      *
-     * @return The primary key of the newly inserted record.
+     * @return The primary key of the newly inserted record. If the insert
+     * fails, returns `null`.
      */ 
     public static HistoryKey insert (Db db,
                                      HistoryKey key,

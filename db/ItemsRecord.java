@@ -18,7 +18,8 @@ public class ItemsRecord extends TableRecord {
      * @param db The database into which to insert the record.
      * @param itemType_ `itemTypeId` of the associated ItemTypes record.
      *
-     * @return The primary key of the newly inserted record.
+     * @return The primary key of the newly inserted record. If the insert
+     * fails, returns 0.
      */
     public static long insert (Db db,
                               long itemType_) throws SQLException {
@@ -39,10 +40,11 @@ public class ItemsRecord extends TableRecord {
      * instances. Do not use this method for creating brand new Items records.
      *
      * @param db The database into which to insert the record.
-     * @param itemId_ The primary key for the record.
+     * @param itemId_ The primary key for the record. May not be 0.
      * @param itemType_ `itemTypeId` of the associated ItemTypes record.
      * 
-     * @return The primary key of the newly inserted record.
+     * @return The primary key of the newly inserted record. If the insert
+     * fails, returns 0.
      */
     public static long insert (Db db,
                               long itemId_,

@@ -19,7 +19,8 @@ public class MatsRecord extends TableRecord {
      * @param matType_ `matTypeId` of the associated MatTypes record.
      * @param matComment_ Optinal additional information about the Mat.
      *
-     * @return The primary key of the newly inserted record.
+     * @return The primary key of the newly inserted record. If the insert
+     * fails, returns 0.
      */
     public static long insert (Db db,
                                String matType_,
@@ -42,11 +43,12 @@ public class MatsRecord extends TableRecord {
      * instances. Do not use this method for creating brand new Mats records.
      *
      * @param db The database into which to insert the record.
-     * @param matId_ The primary key for the record.
+     * @param matId_ The primary key for the record. May not be 0.
      * @param matType_ `matTypeId` of the associated MatTypes record.
      * @param matComment_ Optinal additional information about the Mat.
      *
-     * @return The primary key of the newly inserted record.
+     * @return The primary key of the newly inserted record. If the insert
+     * fails, returns 0.
      */
     public static long insert (Db db,
                                long matId_,

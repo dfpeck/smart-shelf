@@ -20,7 +20,8 @@ public class ItemTypesRecord extends TableRecord {
      * ItemType.
      * @param isContainer_ Whether this type of item serves as a container.
      *
-     * @return The primary key of the newly inserted record.
+     * @return The primary key of the newly inserted record. If the insert
+     * fails, returns 0.
      */
     public static long insert (Db db,
                                String itemTypeName_,
@@ -45,13 +46,14 @@ public class ItemTypesRecord extends TableRecord {
      * records.
      *
      * @param db The database into which to insert the record.
-     * @param itemTypeId_ The primary key for the record.
+     * @param itemTypeId_ The primary key for the record. May not be 0.
      * @param itemTypeName_ User-friendly name for the ItemType.
      * @param itemTypeComment_ Optional additional information about the
      * ItemType.
      * @param isContainer_ Whether this type of item serves as a container.
      *
-     * @return The primary key of the newly inserted record.
+     * @return The primary key of the newly inserted record. If the insert
+     * fails, returns 0.
      */
     public static long insert (Db db,
                               long itemTypeId_,
