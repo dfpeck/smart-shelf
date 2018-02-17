@@ -137,6 +137,12 @@ public class TEST_Db {
             if (matTypeId == "") return false;
             System.out.println("inserted MatTypes record " + matTypeId);
 
+            System.out.print("Inserting to Mats...");
+            long matId = MatsRecord.insert(db, matTypeId,
+                                           "Dummy record for testing");
+            if (matId == 0) return false;
+            System.out.println("inserted Mats record " + matId);
+
             db.close();
         }
         catch (SQLException e) {
