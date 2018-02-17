@@ -13,7 +13,7 @@ public class HistoryRecord extends TableRecord {
     /** @brief Insert a new record into the History table without creating an
      * object.
      *
-     * This version of the memthod accepts the components of the History table's
+     * This version of the method accepts the components of the History table's
      * compound primary key as separate arguments. It is generally more useful
      * for specifying newly generated History records.
      *
