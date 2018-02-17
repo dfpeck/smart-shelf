@@ -143,6 +143,15 @@ public class TEST_Db {
             if (matId == 0) return false;
             System.out.println("inserted Mats record " + matId);
 
+            System.out.print("Inserting to History...");
+            HistoryKey historyId = HistoryRecord.insert(db, itemId,
+                                                        new Timestamp(System .currentTimeMillis()),
+                                                        matId, 1,
+                                                        new Double[] {1.0, 2.0},
+                                                        0.0, 0.0);
+            if (historyId == null) return false;
+            System.out.println("inserted History record " + historyId);
+
             db.close();
         }
         catch (SQLException e) {
