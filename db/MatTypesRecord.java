@@ -12,8 +12,7 @@ public class MatTypesRecord extends TableRecord {
         PreparedStatement statement =
             db.conn.prepareStatement("INSERT INTO MatTypes"
                                      + " (matTypeId, matTypeComment)"
-                                     + " VALUES (?, ?);",
-                                     PreparedStatement.RETURN_GENERATED_KEYS);
+                                     + " VALUES (?, ?);";
         statement.setString(1, matTypeId_);
         statement.setString(2, matTypeComment_);
         if (statement.executeUpdate() == 0)
