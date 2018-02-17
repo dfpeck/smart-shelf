@@ -2,6 +2,8 @@ package db;
 
 import java.sql.Timestamp;
 
+/** @brief Class to represent compound keys from the History table
+ */
 public class HistoryKey {
     private final long item;
     private final Timestamp datetime;
@@ -13,10 +15,14 @@ public class HistoryKey {
     }
 
     /* GETTERS */
+    /** @return The `itemId` of the Item record associated with this key
+     */
     public long getItem () {
         return item;
     }
 
+    /** @return The datetime associated with this record
+     */
     public Timestamp getDatetime () {
         return (Timestamp) datetime.clone();
     }

@@ -9,7 +9,7 @@ import java.util.Vector;
 import java.io.FileNotFoundException;
 
 /**
- * Main driver for the database.
+ * @brief Main driver for the database.
  */
 public class Db {
     /* PROPERTIES */
@@ -80,7 +80,7 @@ public class Db {
         return true;
     }
 
-    /** @brief Close the database connection.
+    /** Close the database connection.
      */
     public void close () throws SQLException {
         conn.close();

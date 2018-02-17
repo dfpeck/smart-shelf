@@ -6,8 +6,29 @@ import java.sql.Timestamp;
 
 import java.sql.SQLException;
 
+/** @brief Class to represent History table entries
+ */
 public class HistoryRecord extends TableRecord {
     /* INSERTION METHODS */
+    /** @brief Insert a new record into the History table without creating an
+     * object.
+     *
+     * This version of the memthod accepts the components of the History table's
+     * compound primary key as separate arguments. It is generally more useful
+     * for specifying newly generated History records.
+     *
+     * @param db The database into which to insert the record.
+     * @param item_ `itemId` of the associated Item. Used in the primary key.
+     * @param datetime_ The time associated with the record. Used in the primary
+     * key.
+     * @param mat_ `matId` of the mat on which the event took place.
+     * @param eventType_ `eventTypeId` of the associated EventType.
+     * @param sensors_ The change in sensor readings caused by the event.
+     * @param x_ x-coordinate on the mat at which the event took place.
+     * @param y_ y-coordinate of the mat at which the event took place.
+     *
+     * @return The primary key of the newly inserted record.
+     */ 
     public static HistoryKey insert (Db db,
                                      long item_,
                                      Timestamp datetime_,
@@ -34,6 +55,23 @@ public class HistoryRecord extends TableRecord {
         return new HistoryKey(item_, datetime_);
     }
 
+    /** @brief Insert a new record into the History table without creating an
+     * object.
+     *
+     * This version of the method accepts the History table's compound primary
+     * key as a single HistoryKey object. It is generally more useful for
+     * copying existing history records between database instances.
+     *
+     * @param db The database into which to insert the record.
+     * @param key Primary key of the History record.
+     * @param mat_ `matId` of the mat on which the event took place.
+     * @param eventType_ `eventTypeId` of the associated EventType.
+     * @param sensors_ The change in sensor readings caused by the event.
+     * @param x_ x-coordinate on the mat at which the event took place.
+     * @param y_ y-coordinate of the mat at which the event took place.
+     *
+     * @return The primary key of the newly inserted record.
+     */ 
     public static HistoryKey insert (Db db,
                                      HistoryKey key,
                                      long mat_,
