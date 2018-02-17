@@ -118,19 +118,24 @@ public class TEST_Db {
     }
 
     public static boolean insertRecords () {
-        long itemTypeId, itemId;
         Db db = new Db(testDbName);
         db.open();
         try {
             System.out.print("Inserting to ItemTypes...");
-            itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
+            long itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
             if (itemTypeId == 0) return false;
             System.out.println("Inserted ItemTypes record " + Long.toString(itemTypeId));
 
             System.out.print("Inserting to Items...");
-            itemId = ItemsRecord.insert(db, itemTypeId);
+            long itemId = ItemsRecord.insert(db, itemTypeId);
             if (itemId == 0) return false;
             System.out.println("Inserted Items record "+ Long.toString(itemId));
+
+            System.out.print("Inserting to MatTypes...");
+            String matTypeId = MatTypesRecord.insert(db, "DUMMYTEST",
+                                                     "Dummy record for testing");
+            if (matTypeId == "") return false;
+            System.out.println("inserted MatTypes record " + matTypeId);
 
             db.close();
         }

@@ -14,13 +14,4 @@ abstract class TableRecord {
         key.next();
         return key.getLong(1);
     }
-
-    protected static String insertAndRetrieveStringKey
-        (Db db, PreparedStatement statement) throws SQLException {
-        if (statement.executeUpdate() == 0)
-            return "";
-        ResultSet key = statement.getGeneratedKeys();
-        key.next();
-        return key.getString(1);
-    }
 }
