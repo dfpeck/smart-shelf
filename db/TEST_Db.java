@@ -23,7 +23,7 @@ public class TEST_Db {
         tests.put(2, "Open Database");
         tests.put(3, "Read SQL from File");
         tests.put(4, "Insert Records into Database");
-        tests.put(5, "Insert Record with Manual ID");
+        // tests.put(5, "Insert Record with Manual ID");
         
         while (loop) {
             System.out.println("==SELECT A TEST==");
@@ -57,14 +57,14 @@ public class TEST_Db {
             System.out.println("=" + tests.get(test) + "=");
 
             switch (test) {
+            case 1:
+                success = createDatabase();
+                break;
             case 2:
                 success = openDatabase();
                 break;
             case 3:
                 success = readSql();
-                break;
-            case 1:
-                success = createDatabase();
                 break;
             case 4:
                 success = insertRecords();
@@ -161,20 +161,20 @@ public class TEST_Db {
         return true;
     }
 
-    public static boolean insertRecordsManualId () {
-        Db db = new Db(testDbName);
-        long insertedId, targetId = 200;
-        db.open();
-        try {
-            insertedId = ItemTypesRecord.insert(db, targetId, "Manual ID Test", "", false);
-            System.out.println("Target ID: " + Long.toString(targetId));
-            System.out.println("Inserted ID: " + Long.toString(insertedId));
-            db.close();
-        }
-        catch (SQLException e) {
-            System.out.println(e);
-            return false;
-        }
-        return true;
-    }
+    // public static boolean insertRecordsManualId () {
+    //     Db db = new Db(testDbName);
+    //     long insertedId, targetId = 200;
+    //     try {
+    //         db.open();
+    //         insertedId = ItemTypesRecord.insert(db, targetId, "Manual ID Test", "", false);
+    //         System.out.println("Target ID: " + Long.toString(targetId));
+    //         System.out.println("Inserted ID: " + Long.toString(insertedId));
+    //         db.close();
+    //     }
+    //     catch (SQLException e) {
+    //         System.out.println(e);
+    //         return false;
+    //     }
+    //     return true;
+    // }
 }
