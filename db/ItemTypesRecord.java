@@ -7,6 +7,11 @@ import java.sql.SQLException;
 /** @brief Class to represent ItemTypes table entries.
  */
 public class ItemTypesRecord extends TableRecord {
+    protected Db db;
+    protected long itemTypeId;
+    protected String itemTypeName, itemTypeComment;
+    protected boolean isContainer;
+
     /* INSERTION METHODS */
     /** @brief Insert a new record into the ItemTypes table without creating an object.
      *
@@ -14,7 +19,7 @@ public class ItemTypesRecord extends TableRecord {
      * new record. Use this method when adding brand new ItemTypes records to
      * the system.
      *
-     * @param db The database into which to insert the record.
+     * @param db_ The database into which to insert the record.
      * @param itemTypeName_ User-friendly name for the ItemType.
      * @param itemTypeComment_ Optional additional information about the
      * ItemType.
@@ -23,19 +28,19 @@ public class ItemTypesRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns 0.
      */
-    public static long insert (Db db,
+    public static long insert (Db_ db_,
                                String itemTypeName_,
                                String itemTypeComment_,
                                boolean isContainer_) throws SQLException {
         PreparedStatement statement =
-            db.conn.prepareStatement("INSERT INTO ItemTypes"
+            db_.conn.prepareStatement("INSERT INTO ItemTypes"
                                      + " (itemTypeName, itemTypeComment, isContainer)"
                                      + " VALUES (?, ?, ?);",
                                      PreparedStatement.RETURN_GENERATED_KEYS);
         statement.setString(1, itemTypeName_);
         statement.setString(2, itemTypeComment_);
         statement.setBoolean(3, isContainer_);
-        return insertAndRetrieveLongKey(db, statement);
+        return insertAndRetrieveLongKey(db_, statement);
     }
 
     /** @brief Insert a new record into the ItemTypes table without creating an object.
@@ -45,7 +50,7 @@ public class ItemTypesRecord extends TableRecord {
      * instances. Do not use this method for creating brand new ItemTypes
      * records.
      *
-     * @param db The database into which to insert the record.
+     * @param db_ The database into which to insert the record.
      * @param itemTypeId_ The primary key for the record. May not be 0.
      * @param itemTypeName_ User-friendly name for the ItemType.
      * @param itemTypeComment_ Optional additional information about the
@@ -55,13 +60,13 @@ public class ItemTypesRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns 0.
      */
-    public static long insert (Db db,
+    public static long insert (Db_ db_,
                               long itemTypeId_,
                               String itemTypeName_,
                               String itemTypeComment_,
                               boolean isContainer_) throws SQLException {
         PreparedStatement statement =
-            db.conn.prepareStatement("INSERT INTO ItemTypes"
+            db_.conn.prepareStatement("INSERT INTO ItemTypes"
                                      + " (itemTypeId, itemTypeName,"
                                      + " itemTypeComment, isContainer)"
                                      + " VALUES (?, ?, ?, ?);",
@@ -70,6 +75,6 @@ public class ItemTypesRecord extends TableRecord {
         statement.setString(2, itemTypeName_);
         statement.setString(3, itemTypeComment_);
         statement.setBoolean(4, isContainer_);
-        return insertAndRetrieveLongKey(db, statement);
+        return insertAndRetrieveLongKey(db_, statement);
     }
 }
