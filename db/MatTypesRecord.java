@@ -30,8 +30,7 @@ public class MatTypesRecord extends TableRecord {
                                      + " VALUES (?, ?);");
         statement.setString(1, matTypeId_);
         statement.setString(2, matTypeComment_);
-        if (statement.executeUpdate() == 0)
-            return "";
+        statement.executeUpdate();
         return matTypeId_;
     }
 }

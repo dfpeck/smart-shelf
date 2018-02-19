@@ -61,7 +61,7 @@ public class MatsRecord extends TableRecord {
         statement.setLong(1, matId_);
         statement.setString(2, matType_);
         statement.setString(3, matComment_);
-        if (statement.executeUpdate() == 0) return 0;
+        statement.executeUpdate();
         return matId_;
     }
 }

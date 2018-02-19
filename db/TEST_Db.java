@@ -130,29 +130,25 @@ public class TEST_Db {
 
             System.out.print("Inserting to ItemTypes...");
             long itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
-            if (itemTypeId == 0) return false;
             System.out.println("Inserted ItemTypes record " + Long.toString(itemTypeId));
 
             System.out.print("Inserting to Items...");
             long itemId = ItemsRecord.insert(db, itemTypeId);
-            if (itemId == 0) return false;
             System.out.println("Inserted Items record "+ Long.toString(itemId));
 
             System.out.print("Inserting to MatTypes...");
             String matTypeId = MatTypesRecord.insert(db, "DUMMYTEST",
                                                      "Dummy record for testing");
-            if (matTypeId == "") return false;
             System.out.println("inserted MatTypes record " + matTypeId);
 
             System.out.print("Inserting to Mats...");
             long matId = MatsRecord.insert(db, matTypeId,
                                            "Dummy record for testing");
-            if (matId == 0) return false;
             System.out.println("inserted Mats record " + matId);
 
             System.out.print("Inserting to History...");
             HistoryKey historyId = HistoryRecord.insert(db, itemId,
-                                                        new Timestamp(System .currentTimeMillis()),
+                                                        new Timestamp(System.currentTimeMillis()),
                                                         matId, 1,
                                                         new Double[] {1.0, 2.0},
                                                         0.0, 0.0);

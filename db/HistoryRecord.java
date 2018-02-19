@@ -50,9 +50,6 @@ public class HistoryRecord extends TableRecord {
         statement.setArray(5, db.conn.createArrayOf("DOUBLE", sensors_));
         statement.setDouble(6, x_);
         statement.setDouble(7, y_);
-
-        if (statement.executeUpdate() == 0) return null;
-
         return new HistoryKey(item_, datetime_);
     }
 
@@ -81,8 +78,9 @@ public class HistoryRecord extends TableRecord {
                                      Double[] sensors_,
                                      Double x_,
                                      Double y_) throws SQLException {
-        return insert(db, key.getItem(), key.getDatetime(), mat_, eventType_,
-                      sensors_, x_, y_);
+        insert(db, key.getItem(), key.getDatetime(), mat_, eventType_,
+               sensors_, x_, y_);
+        return key;
     }
 }
                                      
