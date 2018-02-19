@@ -81,7 +81,7 @@ public class Db {
         isOpen = false;
     }
 
-    /* QUERY METHODS */
+    /* UPDATE METHODS */
 
     /* HELPER FUNCTIONS */
     public static Vector<String> readSqlFromFile (String sqlFileName) {
