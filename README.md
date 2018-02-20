@@ -12,17 +12,8 @@ engine](http://h2database.com) to be installed and in your Java classpath.
 # Style Guidelines #
 ## Code ##
 - Restrict line length to 80 characters (as best as possible).
-
-### C/C++ ###
-- In names, use underscores as separators when a name...
-    - begins with a lowercase character
-    - consists entirely of uppercase characters<br>
-    Examples:
-        - o `this_is_correct`
-        - o `THIS_IS_ALSO_CORRECT`
-        - o `DittoForThis`
-        - x `thisIsIncorrect`
-        - x `This_Too_Is_Incorrect`
+- Generally pattern code style after Java conventions, as the majority of our code
+  is in Java.
 
 ## Makefile ##
 - Include binaries/executables in the BIN variable.
