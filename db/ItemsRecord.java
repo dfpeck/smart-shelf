@@ -9,6 +9,7 @@ import java.sql.SQLException;
 public class ItemsRecord extends TableRecord {
     protected long itemId;
     protected ItemTypesRecord itemType;
+    protected HistoryRecord lastHistory;
 
     /* INSERTION METHODS */
     /** @brief Insert a new record into the Items table without creating an
