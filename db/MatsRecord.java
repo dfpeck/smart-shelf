@@ -26,7 +26,7 @@ public class MatsRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns 0.
      */
-    public static long insert (Db_ db_,
+    public static long insert (Db db_,
                                String matType_,
                                String matComment_) throws SQLException {
         PreparedStatement statement =
@@ -54,7 +54,7 @@ public class MatsRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns 0.
      */
-    public static long insert (Db_ db_,
+    public static long insert (Db db_,
                                long matId_,
                                String matType_,
                                String matComment_) throws SQLException {

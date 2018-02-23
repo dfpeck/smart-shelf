@@ -25,7 +25,7 @@ public class ItemsRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns 0.
      */
-    public static long insert (Db_ db_,
+    public static long insert (Db db_,
                               long itemType_) throws SQLException {
         PreparedStatement statement =
             db_.conn.prepareStatement("INSERT INTO Items"
@@ -50,7 +50,7 @@ public class ItemsRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns 0.
      */
-    public static long insert (Db_ db_,
+    public static long insert (Db db_,
                               long itemId_,
                               long itemType_) throws SQLException {
         PreparedStatement statement =

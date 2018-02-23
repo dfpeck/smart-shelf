@@ -23,7 +23,7 @@ public class MatTypesRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns the empty string ("").
      */
-    public static String insert (Db_ db_,
+    public static String insert (Db db_,
                                  String matTypeId_,
                                  String matTypeComment_) throws SQLException {
         PreparedStatement statement =

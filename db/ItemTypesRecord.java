@@ -28,7 +28,7 @@ public class ItemTypesRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns 0.
      */
-    public static long insert (Db_ db_,
+    public static long insert (Db db_,
                                String itemTypeName_,
                                String itemTypeComment_,
                                boolean isContainer_) throws SQLException {
@@ -60,7 +60,7 @@ public class ItemTypesRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns 0.
      */
-    public static long insert (Db_ db_,
+    public static long insert (Db db_,
                               long itemTypeId_,
                               String itemTypeName_,
                               String itemTypeComment_,

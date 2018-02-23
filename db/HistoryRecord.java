@@ -38,7 +38,7 @@ public class HistoryRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns `null`.
      */ 
-    public static HistoryKey insert (Db_ db_,
+    public static HistoryKey insert (Db db_,
                                      long item_,
                                      Timestamp datetime_,
                                      long mat_,
@@ -79,7 +79,7 @@ public class HistoryRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns `null`.
      */ 
-    public static HistoryKey insert (Db_ db_,
+    public static HistoryKey insert (Db db_,
                                      HistoryKey key,
                                      long mat_,
                                      long eventType_,
