@@ -68,6 +68,7 @@ public class TEST_Db {
                 break;
             case 4:
                 success = insertRecords();
+                break;
             }
         }
         else {
