@@ -21,6 +21,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import com.chilkatsoft.*;
+
 /**
  * @author Taylor Hoss
  * Date: 10/26/2017
