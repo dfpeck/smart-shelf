@@ -5,6 +5,9 @@ syntax may be found at daringfireball.net/projects/markdown/syntax -->
 Code for The Green's automatic inventory system.
 
 # Software Requirements #
+## H2  ##
+Most classes in the `db` directory require the [H2 database
+engine](http://h2database.com) to be installed and in your Java classpath.
 ## AndroidStudio ##
 The android files are projects for android studio. You'll need android studio to run them,
 which you can do on an emulator or through connecting your phone to the pc.
@@ -14,17 +17,8 @@ The server and client code written in pure java should be able to be compiled ma
 # Style Guidelines #
 ## Code ##
 - Restrict line length to 80 characters (as best as possible).
-
-### C/C++ ###
-- In names, use underscores as separators when a name...
-    - begins with a lowercase character
-    - consists entirely of uppercase characters<br>
-    Examples:
-        - o `this_is_correct`
-        - o `THIS_IS_ALSO_CORRECT`
-        - o `DittoForThis`
-        - x `thisIsIncorrect`
-        - x `This_Too_Is_Incorrect`
+- Generally pattern code style after Java conventions, as the majority of our code
+  is in Java.
 
 ## Makefile ##
 - Include binaries/executables in the BIN variable.

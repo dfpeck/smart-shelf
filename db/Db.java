@@ -9,30 +9,27 @@ import java.util.Vector;
 import java.io.FileNotFoundException;
 
 /**
+ * Main driver for the database.
  */
 public class Db {
     /* PROPERTIES */
     /** The name of the database. Do not include ".mv.db" extension.
      */
-    protected String name;
-    protected File file;
-    protected Connection conn;
-    /** Whether the database connection is open or closed.
-     */
-    public boolean isOpen;
+    Connection conn;
+    private String name;
+    private File file;
+    private boolean isOpen;
 
     /* CONSTRUCTORS */
     public Db (String name_init) {
         name = name_init;
-        file = new File(name + "mv.db");
+        file = new File(name + ".mv.db");
         conn = null;
-        open();
     }
 
-    /* DESCTRUCTOR */
-    protected void finalize () {
-        try {close();}
-        catch (SQLException e) {}
+    /* GETTERS */
+    public boolean isOpen () {
+        return isOpen;
     }
 
     /* INITIALIZATION METHODS */
@@ -41,53 +38,9 @@ public class Db {
      * @return Success or failure.
      */
     protected boolean create () {
-        return executeSql(readSqlFromFile("db/create_tables.sql"));
-    }
-
-    /** @brief Open the database connection.
-     *
-     * Called automatically upon object creation.
-     */
-    public void open () {
-        boolean needsPopulation = !(file.exists() && !file.isDirectory());
-
         try {
-            Class.forName("org.h2.Driver");
-        }
-        catch (ClassNotFoundException e) {
-            System.out.println(e);
-            return;
-        }
-
-        try {
-            conn = DriverManager.getConnection("jdbc:h2:" + name);
-        }
-        catch (SQLException e) {
-            System.out.println(e);
-            return;
-        }
-
-        if (needsPopulation) // if the database needs tables
-            if (!create()) // populate it, and on failure…
-                return;
-
-        isOpen = true;
-    }
-
-    /** @brief Close the database connection.
-     *
-     * This is called when the object is sent to garbage collection, but may be
-     * useful for managing connections.
-     */
-    public void close () throws SQLException {
-        conn.close();
-        isOpen = false;
-    }
-
-    /* SQL EXECUTION */
-    public boolean executeSql (String sqlStatement) {
-        try {
-            conn.prepareStatement(sqlStatement).execute();
+        for (String sql : readSqlFromFile("db/create_tables.sql"))
+            conn.prepareStatement(sql).execute();
         }
         catch (SQLException e) {
             System.err.println(e);
@@ -95,15 +48,46 @@ public class Db {
         }
         return true;
     }
-    public boolean executeSql (Iterable<String> sqlStatements) {
-        for (String sql : sqlStatements)
-            if (!executeSql(sql))
+
+    /** @brief Open the database connection.
+     *
+     * Must be called before database is usable.
+     */
+    public boolean open () {
+        boolean needsPopulation = !(file.exists() && !file.isDirectory());
+
+        try {
+            Class.forName("org.h2.Driver");
+        }
+        catch (ClassNotFoundException e) {
+            System.out.println(e);
+            return false;
+        }
+
+        try {
+            conn = DriverManager.getConnection("jdbc:h2:" + name);
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
+
+        if (needsPopulation) // if the database needs tables
+            if (!create()) // populate it, and on failure…
                 return false;
+
+        isOpen = true;
         return true;
     }
-    public boolean executeSql (String... sqlStatements) {
-        return executeSql(sqlStatements);
+
+    /** @brief Close the database connection.
+     */
+    public void close () throws SQLException {
+        conn.close();
+        isOpen = false;
     }
+
+    /* QUERY METHODS */
 
     /* HELPER FUNCTIONS */
     public static Vector<String> readSqlFromFile (String sqlFileName) {
