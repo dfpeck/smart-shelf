@@ -12,6 +12,21 @@ public class ItemTypesRecord extends TableRecord {
     protected String itemTypeName, itemTypeComment;
     protected boolean isContainer;
 
+
+    /* CONSTRUCTORS */
+    public TableTypesRecord (Db db_,
+                             long itemTypeId_,
+                             String itemTypeName_,
+                             String itemTypeComment_,
+                             boolean isContainer) {
+        db = db_;
+        itemTypeId = itemTypeId_;
+        itemTypename = itemTypeName_;
+        itemTypeComment = itemTypeComment_;
+        isContainer = isContainer_;
+    }
+
+
     /* INSERTION METHODS */
     /** @brief Insert a new record into the ItemTypes table without creating an object.
      *

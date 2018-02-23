@@ -9,13 +9,33 @@ import java.sql.SQLException;
 /** @brief Class to represent History table entries
  */
 public class HistoryRecord extends TableRecord {
-    protected Db db;
     protected ItemsRecord item;
     protected Timestamp datetime;
     protected MatsRecord mat;
     protected EventTypesRecord eventType;
     protected Double[] sensors;
     protected Double x, y;
+
+
+    /* CONSTRUCTORS */
+    public HistoryRecord (Db db_,
+                          ItemsRecord item_,
+                          Timestame datetime_,
+                          MatsRecord mat_,
+                          EventTypesRecord eventType_,
+                          Double[] sensors_,
+                          Double x_,
+                          Double y_) {
+        db = db_;
+        item = item_;
+        datetime = datetime_;
+        mat = mat_;
+        eventType = eventType_;
+        sensors = sensors_;
+        x = x_;
+        y = y_;
+    }
+
 
     /* INSERTION METHODS */
     /** @brief Insert a new record into the History table without creating an

@@ -11,6 +11,19 @@ public class MatsRecord extends TableRecord {
     protected MatTypesRecord matType;
     protected String matComment;
 
+
+    /* CONSTRUCTORS */
+    public MatsRecord (Db db_,
+                       long matId_,
+                       MatTypesRecord matType_,
+                       String matComment_) {
+        db = db_;
+        matId = matId_;
+        matType = matType_;
+        matComment = matComment_;
+    }
+
+
     /* INESRTION METHODS */
     /** @brief Insert a new record into the Mats table without creating an
      * object.

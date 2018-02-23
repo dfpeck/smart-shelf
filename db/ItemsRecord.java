@@ -11,6 +11,19 @@ public class ItemsRecord extends TableRecord {
     protected ItemTypesRecord itemType;
     protected HistoryRecord lastHistory;
 
+
+    /* CONSTRUCTORS */
+    public ItemsRecord (Db db_,
+                        long itemId_,
+                        ItemTypesRecord itemType_//,
+                        /*HistoryRecord lastHistory_*/) {
+        db = db_;
+        itemId = itemId_;
+        itemType = itemType_;
+        // lastHistory = lastHistory_;
+    }
+
+
     /* INSERTION METHODS */
     /** @brief Insert a new record into the Items table without creating an
      * object.

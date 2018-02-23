@@ -9,6 +9,17 @@ import java.sql.SQLException;
 public class MatTypesRecord extends TableRecord {
     protected String matTypeId, matTypeComment;
 
+
+    /* CONSTRUCTORS */
+    public MatTypesRecord (Db db_,
+                           String matTypeId_,
+                           String matTypeComment_) {
+        db = db_;
+        matTypeId = matTypeId_;
+        matTypeComment = matTypeComment_;
+    }
+
+
     /* INSERTION METHODS */
     /** @brief Insert a new record into the MatTypes table without creating a
      * new object.
