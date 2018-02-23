@@ -14,11 +14,11 @@ public class ItemTypesRecord extends TableRecord {
 
 
     /* CONSTRUCTORS */
-    public TableTypesRecord (Db db_,
-                             long itemTypeId_,
-                             String itemTypeName_,
-                             String itemTypeComment_,
-                             boolean isContainer) {
+    public ItemTypesRecord (Db db_,
+                            long itemTypeId_,
+                            String itemTypeName_,
+                            String itemTypeComment_,
+                            boolean isContainer) {
         db = db_;
         itemTypeId = itemTypeId_;
         itemTypename = itemTypeName_;
