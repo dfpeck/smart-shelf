@@ -27,11 +27,5 @@ public class MainActivity {
 		       }
 	       }
 	       scanner.close();
-	   }
-	   
-	   
-
-		
+	   }		
 }
-
-
