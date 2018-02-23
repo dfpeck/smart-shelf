@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import com.chilkatsoft.CkZip;
 
 
 public class Client extends Thread {
@@ -113,4 +114,19 @@ public class Client extends Thread {
         System.out.println(sb.toString());
         return;
     }
+    
+    static {
+        try {
+        	System.load("C:/chilkatJava/chilkat.dll");
+        } catch (UnsatisfiedLinkError e) {
+          System.err.println("Native code library failed to load.\n" + e);
+          System.exit(1);
+        }
+      }
+
+      public static void main(String argv[]) 
+      {
+        CkZip zip = new CkZip();
+        System.out.println(zip.version());    
+      }
 }

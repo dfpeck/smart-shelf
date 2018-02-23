@@ -13,6 +13,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+import com.chilkatsoft.CkZip;
+
 
 public class Server {
     ServerSocket serverSocket;
@@ -234,4 +236,19 @@ public class Server {
         }
         return ip;
     }
+
+    static {
+        try {
+        	System.load("C:/chilkatJava/chilkat.dll");
+        } catch (UnsatisfiedLinkError e) {
+          System.err.println("Native code library failed to load.\n" + e);
+          System.exit(1);
+        }
+      }
+
+      public static void main(String argv[]) 
+      {
+        CkZip zip = new CkZip();
+        System.out.println(zip.version());    
+      }
 }
