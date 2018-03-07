@@ -21,19 +21,6 @@ public class List extends AppCompatActivity {
     private static final String TAG = "List";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.list);
-
-        Button a = (Button) findViewById(R.id.button);
-        a.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent (List.this, Settings.class));
-        }
-    }
-
-    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list);
@@ -48,6 +35,14 @@ public class List extends AppCompatActivity {
 
                 Intent intent = new Intent(List.this, MainActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        Button a = (Button) findViewById(R.id.button);
+        a.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent (List.this, Settings.class));
             }
         });
 
