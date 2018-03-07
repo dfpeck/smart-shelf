@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-
 public class Client extends Thread {
 
     IOException ioException;
@@ -18,7 +17,7 @@ public class Client extends Thread {
     String ip;
     int choice;
     int item;
-
+    
     Client(String ip, String port, int choice) {
         this.ip = ip;
         this.port = port;
@@ -34,13 +33,13 @@ public class Client extends Thread {
 	
     public void run() {
 
-        Socket socket = null;
+        CkSocket socket = null;
         StringBuilder sb = new StringBuilder();
         String request = "";
 
         try {
         	System.out.println("creating socket...");
-            socket = new Socket(ip, Integer.parseInt(port));
+            socket = new CkSocket(ip, Integer.parseInt(port));
 
             //create request strings
             if(choice == 1){
@@ -115,13 +114,4 @@ public class Client extends Thread {
         System.out.println(sb.toString());
         return;
     }
-    
-    static {
-        try {
-        	System.load("C:/chilkatJava/chilkat.dll");
-        } catch (UnsatisfiedLinkError e) {
-          System.err.println("Native code library failed to load.\n" + e);
-          System.exit(1);
-        }
-      }
 }

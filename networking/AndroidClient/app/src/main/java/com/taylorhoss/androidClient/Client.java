@@ -21,8 +21,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import com.chilkatsoft.*;
-
 /**
  * @author Taylor Hoss
  * Date: 10/26/2017
@@ -170,19 +168,4 @@ public class Client extends AsyncTask<String, String, String> {
             return;
         }
     }
-
-    static {
-        // Important: Make sure the name passed to loadLibrary matches the shared library
-        // found in your project's libs/armeabi directory.
-        //  for "libchilkat.so", pass "chilkat" to loadLibrary
-        //  for "libchilkatemail.so", pass "chilkatemail" to loadLibrary
-        //  etc.
-        //
-        System.loadLibrary("chilkat");
-
-        // Note: If the incorrect library name is passed to System.loadLibrary,
-        // then you will see the following error message at application startup:
-        //"The application <your-application-name> has stopped unexpectedly. Please try again."
-    }
-
 }
