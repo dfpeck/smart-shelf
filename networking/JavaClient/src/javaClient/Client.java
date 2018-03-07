@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import com.chilkatsoft.CkZip;
 
 
 public class Client extends Thread {
@@ -60,8 +59,10 @@ public class Client extends Thread {
             out.flush();
 
             if(choice == 1){
-            	//open file
-                File file = new File("C:\\smart-shelf\\networking\\javaClient", "database.txt");
+            	//open file (this needs to be changed depeding on the computer right now. Need better solution)
+                File file = new File("C:\\Android\\AndriodStudioProjects\\smart-shelf\\networking\\javaClient", "database.txt");
+            	//File file = new File("C:\\smart-shelf\\networking\\javaClient", "database.txt");
+                
                 //will need to increase size of byte array if information exceeds 1024 bytes
                 byte[] bytes = new byte[1024];
                 InputStream in = socket.getInputStream();
@@ -122,11 +123,5 @@ public class Client extends Thread {
           System.err.println("Native code library failed to load.\n" + e);
           System.exit(1);
         }
-      }
-
-      public static void main(String argv[]) 
-      {
-        CkZip zip = new CkZip();
-        System.out.println(zip.version());    
       }
 }

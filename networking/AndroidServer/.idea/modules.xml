@@ -3,10 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidServer.iml" filepath="$PROJECT_DIR$/AndroidServer.iml" />
-      <module fileurl="file://C:\Android\AndriodStudioProjects\smart-shelf\networking\AndroidServer\AndroidServer.iml" filepath="C:\Android\AndriodStudioProjects\smart-shelf\networking\AndroidServer\AndroidServer.iml" />
       <module fileurl="file://C:\smart-shelf\networking\AndroidServer\MatServer.iml" filepath="C:\smart-shelf\networking\AndroidServer\MatServer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Android\AndriodStudioProjects\smart-shelf\networking\AndroidServer\app\app.iml" filepath="C:\Android\AndriodStudioProjects\smart-shelf\networking\AndroidServer\app\app.iml" />
     </modules>
   </component>
 </project>

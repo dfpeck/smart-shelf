@@ -153,8 +153,9 @@ public class Server {
                     // send response
                 	System.out.println("outputting response to socket...");
 
-                    //get file from external storage
-                    File file = new File("C:\\smart-shelf\\networking\\javaServer", "database.txt");
+                    //get file from external storage (this needs to be changed depeding on the computer right now. Need better solution)
+                    File file = new File("C:\\Android\\AndriodStudioProjects\\smart-shelf\\networking\\javaServer", "database.txt");
+                    //File file = new File("C:\\smart-shelf\\networking\\javaServer", "database.txt");
 
                     byte[] bytes = new byte[(int) file.length()];
                     BufferedInputStream bIn;
