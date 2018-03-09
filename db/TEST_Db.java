@@ -1,6 +1,5 @@
 package db;
 
-import db.Db;
 import java.sql.*;
 import java.io.Console;
 import java.io.File;
@@ -20,9 +19,11 @@ public class TEST_Db {
 
         System.out.println("Testing " + testDbFile.getAbsolutePath());
 
-        tests.put(1, "Open Database");
-        tests.put(2, "Read SQL from File");
-        tests.put(3, "Create Database");
+        tests.put(1, "Create Database");
+        tests.put(2, "Open Database");
+        tests.put(3, "Read SQL from File");
+        tests.put(4, "Insert Records into Database");
+        // tests.put(5, "Insert Record with Manual ID");
         
         while (loop) {
             System.out.println("==SELECT A TEST==");
@@ -57,13 +58,17 @@ public class TEST_Db {
 
             switch (test) {
             case 1:
-                success = openDatabase();
+                success = createDatabase();
                 break;
             case 2:
-                success = readSql();
+                success = openDatabase();
                 break;
             case 3:
-                success = createDatabase();
+                success = readSql();
+                break;
+            case 4:
+                success = insertRecords();
+                break;
             }
         }
         else {
@@ -77,16 +82,26 @@ public class TEST_Db {
     }
 
     public static boolean openDatabase () {
+        boolean success;
         Db db = new Db(testDbName);
-        boolean success = db.open();
-        try {db.close();} catch (SQLException e) {}
+        try {
+            success = db.open();
+            db.close();
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
         return success;
     }
 
     public static boolean createDatabase () {
         if (testDbFile.exists() && !testDbFile.isDirectory()) {
             System.out.print("Removing DB file...");
-            testDbFile.delete();
+            if (!testDbFile.delete()) {
+                System.out.println("ERROR: Failed to delete " + testDbFile.getName());
+                return false;
+            }
             System.out.println(" Done!");
         }
         else {
@@ -109,4 +124,62 @@ public class TEST_Db {
         }
         return true;
     }
+
+    public static boolean insertRecords () {
+        Db db = new Db(testDbName);
+        try {
+            db.open();
+
+            System.out.print("Inserting to ItemTypes...");
+            long itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
+            System.out.println("Inserted ItemTypes record " + Long.toString(itemTypeId));
+
+            System.out.print("Inserting to Items...");
+            long itemId = ItemsRecord.insert(db, itemTypeId);
+            System.out.println("Inserted Items record "+ Long.toString(itemId));
+
+            System.out.print("Inserting to MatTypes...");
+            String matTypeId = MatTypesRecord.insert(db, "DUMMYTEST",
+                                                     "Dummy record for testing");
+            System.out.println("inserted MatTypes record " + matTypeId);
+
+            System.out.print("Inserting to Mats...");
+            long matId = MatsRecord.insert(db, matTypeId,
+                                           "Dummy record for testing");
+            System.out.println("inserted Mats record " + matId);
+
+            System.out.print("Inserting to History...");
+            HistoryKey historyId = HistoryRecord.insert(db, itemId,
+                                                        new Timestamp(System.currentTimeMillis()),
+                                                        matId, 1,
+                                                        new Double[] {1.0, 2.0},
+                                                        0.0, 0.0);
+            if (historyId == null) return false;
+            System.out.println("inserted History record " + historyId);
+
+            db.close();
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
+    // public static boolean insertRecordsManualId () {
+    //     Db db = new Db(testDbName);
+    //     long insertedId, targetId = 200;
+    //     try {
+    //         db.open();
+    //         insertedId = ItemTypesRecord.insert(db, targetId, "Manual ID Test", "", false);
+    //         System.out.println("Target ID: " + Long.toString(targetId));
+    //         System.out.println("Inserted ID: " + Long.toString(insertedId));
+    //         db.close();
+    //     }
+    //     catch (SQLException e) {
+    //         System.out.println(e);
+    //         return false;
+    //     }
+    //     return true;
+    // }
 }
