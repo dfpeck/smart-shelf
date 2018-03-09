@@ -37,16 +37,11 @@ public class Db {
      *
      * @return Success or failure.
      */
-    protected boolean create () {
-        try {
+    protected void create () throws SQLException {
         for (String sql : readSqlFromFile("db/create_tables.sql"))
             conn.prepareStatement(sql).execute();
-        }
-        catch (SQLException e) {
-            System.err.println(e);
-            return false;
-        }
-        return true;
+        for (EventType e : EventType.values())
+            e.insert(this);
     }
 
     /** @brief Open the database connection.
@@ -66,9 +61,8 @@ public class Db {
 
         conn = DriverManager.getConnection("jdbc:h2:" + name);
 
-        if (needsPopulation) // if the database needs tables
-            if (!create()) // populate it, and on failure…
-                return false;
+        if (needsPopulation) // if the database needs tables…
+            create();       // populate it
 
         isOpen = true;
         return true;
