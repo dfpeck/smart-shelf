@@ -1,5 +1,6 @@
 package db;
 
+import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 
 import java.sql.SQLException;
@@ -18,17 +19,39 @@ public class ItemTypesRecord extends TableRecord {
                             long itemTypeId_,
                             String itemTypeName_,
                             String itemTypeComment_,
-                            boolean isContainer) {
+                            boolean isContainer_) {
         db = db_;
         itemTypeId = itemTypeId_;
-        itemTypename = itemTypeName_;
+        itemTypeName = itemTypeName_;
         itemTypeComment = itemTypeComment_;
         isContainer = isContainer_;
     }
 
+    public ItemTypesRecord (Db db_, ResultSet rs) throws SQLException {
+        db = db_;
+        itemTypeId = rs.getLong("itemTypeId");
+        itemTypeName = rs.getString("itemTypeName");
+        itemTypeComment = rs.getString("itemTypeComment");
+        isContainer = rs.getBoolean("isContainer");
+    }
+
+
+    /* QUERY METHODS */
+    public static ItemTypesRecord
+        selectById (Db db_, long itemTypeId_) throws SQLException {
+        PreparedStatement statement =
+            db_.conn.prepareStatement("SELECT * FROM ITEMTYPES"
+                                      + " WHERE ITEMTYPEID = ?;");
+        statement.setLong(1, itemTypeId_);
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+        return new ItemTypesRecord(db_, rs);
+    }
+
 
     /* INSERTION METHODS */
-    /** @brief Insert a new record into the ItemTypes table without creating an object.
+    /** @brief Insert a new record into the ItemTypes table without creating an
+     * object.
      *
      * This version of the method automatically generates a primary key for the
      * new record. Use this method when adding brand new ItemTypes records to
@@ -91,5 +114,18 @@ public class ItemTypesRecord extends TableRecord {
         statement.setString(3, itemTypeComment_);
         statement.setBoolean(4, isContainer_);
         return insertAndRetrieveLongKey(db_, statement);
+    }
+
+    /* STANDARD METHODS */
+    public String toString () {
+        String containerYN;
+        if (isContainer)
+            containerYN = "yes";
+        else
+            containerYN = "no";
+        return "ItemTypes<"
+            + Long.toString(itemTypeId) + ", "
+            + "'" + itemTypeName + "', "
+            + "conatainer: " + containerYN + ">";
     }
 }

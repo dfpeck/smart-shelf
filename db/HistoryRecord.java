@@ -12,7 +12,7 @@ public class HistoryRecord extends TableRecord {
     protected ItemsRecord item;
     protected Timestamp datetime;
     protected MatsRecord mat;
-    protected EventTypesRecord eventType;
+    protected EventType eventType;
     protected Double[] sensors;
     protected Double x, y;
 
@@ -20,9 +20,9 @@ public class HistoryRecord extends TableRecord {
     /* CONSTRUCTORS */
     public HistoryRecord (Db db_,
                           ItemsRecord item_,
-                          Timestame datetime_,
+                          Timestamp datetime_,
                           MatsRecord mat_,
-                          EventTypesRecord eventType_,
+                          EventType eventType_,
                           Double[] sensors_,
                           Double x_,
                           Double y_) {

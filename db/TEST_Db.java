@@ -9,8 +9,11 @@ import java.util.HashMap;
 public class TEST_Db {
     static String prompt = "> ";
     static String testDbName = "./TEST_inventory";
-    static File testDbFile = new File(testDbName + ".mv.db");
+    static File testDbFile = new File(testDbName.substring(2) + ".mv.db");
     static HashMap<Integer, String> tests = new HashMap<Integer, String>();
+    static long itemTypeId=1, itemId, matId;
+    static String matTypeId;
+    static HistoryKey historyId;
 
     public static void main (String[] args) {
         int choice;
@@ -23,27 +26,32 @@ public class TEST_Db {
         tests.put(2, "Open Database");
         tests.put(3, "Read SQL from File");
         tests.put(4, "Insert Records into Database");
-        // tests.put(5, "Insert Record with Manual ID");
-        
+        tests.put(5, "Select Records from Database");
+
         while (loop) {
             System.out.println("==SELECT A TEST==");
             for (int test : tests.keySet())
                 System.out.format("%2d) %s%n", test, tests.get(test));
             System.out.format("%2d) Run all tests%n", 0);
             System.out.format("%2d) Exit\n", -1);
-            choice = Integer.parseInt(console.readLine(prompt));
+            try {
+                choice = Integer.parseInt(console.readLine(prompt));
 
-            switch (choice) {
-            case -1:
-                loop = false;
-                break;
-            case 0:
-                for (int i=1; i<=tests.size(); i++)
-                    runTest(i);
-                break;
-            default:
-                runTest(choice);
-                break;
+                switch (choice) {
+                case -1:
+                    loop = false;
+                    break;
+                case 0:
+                    for (int i=1; i<=tests.size(); i++)
+                        runTest(i);
+                    break;
+                default:
+                    runTest(choice);
+                    break;
+                }
+            }
+            catch (NumberFormatException e) {
+                System.out.println("Please enter a number");
             }
         }
 
@@ -68,6 +76,9 @@ public class TEST_Db {
                 break;
             case 4:
                 success = insertRecords();
+                break;
+            case 5:
+                success = selectRecords();
             }
         }
         else {
@@ -130,29 +141,26 @@ public class TEST_Db {
             db.open();
 
             System.out.print("Inserting to ItemTypes...");
-            long itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
+            itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
             System.out.println("Inserted ItemTypes record " + Long.toString(itemTypeId));
 
             System.out.print("Inserting to Items...");
-            long itemId = ItemsRecord.insert(db, itemTypeId);
+            itemId = ItemsRecord.insert(db, itemTypeId);
             System.out.println("Inserted Items record "+ Long.toString(itemId));
 
             System.out.print("Inserting to MatTypes...");
-            String matTypeId = MatTypesRecord.insert(db, "DUMMYTEST",
-                                                     "Dummy record for testing");
+            matTypeId = MatTypesRecord.insert(db, "DUMMYTEST", "Dummy record for testing");
             System.out.println("inserted MatTypes record " + matTypeId);
 
             System.out.print("Inserting to Mats...");
-            long matId = MatsRecord.insert(db, matTypeId,
-                                           "Dummy record for testing");
+            matId = MatsRecord.insert(db, matTypeId, "Dummy record for testing");
             System.out.println("inserted Mats record " + matId);
 
             System.out.print("Inserting to History...");
-            HistoryKey historyId = HistoryRecord.insert(db, itemId,
-                                                        new Timestamp(System.currentTimeMillis()),
-                                                        matId, 1,
-                                                        new Double[] {1.0, 2.0},
-                                                        0.0, 0.0);
+            historyId = HistoryRecord.insert(db, itemId,
+                                             new Timestamp(System.currentTimeMillis()),
+                                             matId, 1, new Double[] {1.0, 2.0},
+                                             0.0, 0.0);
             if (historyId == null) return false;
             System.out.println("inserted History record " + historyId);
 
@@ -165,6 +173,26 @@ public class TEST_Db {
         return true;
     }
 
+    public static boolean selectRecords () {
+        Db db = new Db(testDbName);
+        try {
+            db.open();
+
+            System.out.print("Selecting from ItemTypes...");
+            ItemTypesRecord itemType =
+                ItemTypesRecord.selectById(db, itemTypeId);
+            System.out.println("Selected: " + itemType.toString());
+
+            db.close();
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
+    // NOT USED IN CURRENT IMPLEMENTATION
     // public static boolean insertRecordsManualId () {
     //     Db db = new Db(testDbName);
     //     long insertedId, targetId = 200;
