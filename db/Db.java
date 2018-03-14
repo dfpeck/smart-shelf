@@ -49,7 +49,7 @@ public class Db {
      * Must be called before database is usable.
      */
     public boolean open () throws SQLException {
-        boolean needsPopulation = !(file.exists() && !file.isDirectory());
+        boolean needsPopulation = !file.exists() || file.isDirectory();
 
         try {
             Class.forName("org.h2.Driver");
@@ -59,10 +59,10 @@ public class Db {
             return false;
         }
 
-        conn = DriverManager.getConnection("jdbc:h2:" + name);
+        conn = DriverManager.getConnection("jdbc:h2:" + name + ";");
 
         if (needsPopulation) // if the database needs tables…
-            create();       // populate it
+            create();        // populate it
 
         isOpen = true;
         return true;
