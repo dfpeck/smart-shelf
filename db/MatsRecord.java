@@ -82,4 +82,11 @@ public class MatsRecord extends TableRecord {
         statement.executeUpdate();
         return matId_;
     }
+
+
+    /* STANDARD METHODS */
+    public String toString () {
+        return "Mats<" + Long.toString(matId) + ","
+            + " '" + matType + "'>";
+    }
 }
