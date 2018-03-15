@@ -25,7 +25,7 @@ public class MatTypesRecord extends TableRecord {
     }
 
     public MatTypesRecord (Db db_, ResultSet rs, int row) throws SQLException {
-        this(db_, adjustResultSet(rs, row));
+        this(db_, getAdjustedResultSet(rs, row));
     }
 
 

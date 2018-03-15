@@ -16,7 +16,7 @@ abstract class TableRecord {
         return key.getLong(1);
     }
 
-    protected static ResultSet adjustResultSet
+    protected static ResultSet getAdjustedResultSet
         (ResultSet rs, int row) throws SQLException {
         rs.absolute(row);
         return rs;
