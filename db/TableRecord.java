@@ -15,4 +15,10 @@ abstract class TableRecord {
         key.next();
         return key.getLong(1);
     }
+
+    protected static ResultSet adjustResultSet
+        (ResultSet rs, int row) throws SQLException {
+        rs.absolute(row);
+        return rs;
+    }
 }

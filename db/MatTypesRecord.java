@@ -1,6 +1,7 @@
 package db;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import java.sql.SQLException;
 
@@ -17,6 +18,27 @@ public class MatTypesRecord extends TableRecord {
         db = db_;
         matTypeId = matTypeId_;
         matTypeComment = matTypeComment_;
+    }
+
+    public MatTypesRecord (Db db_, ResultSet rs) throws SQLException {
+        this(db_, rs.getString("matTypeId"), rs.getString("matTypeComment"));
+    }
+
+    public MatTypesRecord (Db db_, ResultSet rs, int row) throws SQLException {
+        this(db_, adjustResultSet(rs, row));
+    }
+
+
+    /* SELECTION METHODS */
+    public static MatTypesRecord
+        selectById (Db db_, String matTypeId_) throws SQLException {
+        PreparedStatement statement =
+            db_.conn.prepareStatement("SELECT * FROM MATTYPES"
+                                      + " WHERE MATTYPEID = ?;");
+        statement.setString(1, matTypeId_);
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+        return new MatTypesRecord(db_, rs);
     }
 
 
@@ -45,5 +67,11 @@ public class MatTypesRecord extends TableRecord {
         statement.setString(2, matTypeComment_);
         statement.executeUpdate();
         return matTypeId_;
+    }
+
+
+    /* STANDARD METHODS */
+    public String toString () {
+        return "MatTypes<'" + matTypeId + "'>";
     }
 }

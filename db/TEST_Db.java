@@ -11,8 +11,8 @@ public class TEST_Db {
     static String testDbName = "./TEST_inventory";
     static File testDbFile = new File(testDbName.substring(2) + ".mv.db");
     static HashMap<Integer, String> tests = new HashMap<Integer, String>();
-    static long itemTypeId=1, itemId, matId;
-    static String matTypeId;
+    static long itemTypeId=1, itemId=1, matId=1;
+    static String matTypeId="DUMMYTEST";
     static HistoryKey historyId;
 
     public static void main (String[] args) {
@@ -83,6 +83,7 @@ public class TEST_Db {
         }
         else {
             System.out.println(test + " specifies no test");
+            return;
         }
 
         if (success)
@@ -149,7 +150,7 @@ public class TEST_Db {
             System.out.println("Inserted Items record "+ Long.toString(itemId));
 
             System.out.print("Inserting to MatTypes...");
-            matTypeId = MatTypesRecord.insert(db, "DUMMYTEST", "Dummy record for testing");
+            matTypeId = MatTypesRecord.insert(db, matTypeId, "Dummy record for testing");
             System.out.println("inserted MatTypes record " + matTypeId);
 
             System.out.print("Inserting to Mats...");
@@ -182,6 +183,11 @@ public class TEST_Db {
             ItemTypesRecord itemType =
                 ItemTypesRecord.selectById(db, itemTypeId);
             System.out.println("Selected: " + itemType.toString());
+
+            System.out.print("Selecting from MatTypes...");
+            MatTypesRecord matType =
+                MatTypesRecord.selectById(db, matTypeId);
+            System.out.println("Selected: " + matType.toString());
 
             db.close();
         }
