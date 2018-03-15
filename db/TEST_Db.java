@@ -189,6 +189,11 @@ public class TEST_Db {
                 MatTypesRecord.selectById(db, matTypeId);
             System.out.println("Selected: " + matType.toString());
 
+            System.out.print("Selecting from Mats...");
+            MatsRecord mat =
+                MatsRecord.selectById(db, matId);
+            System.out.println("Selected: " + mat.toString());
+
             db.close();
         }
         catch (SQLException e) {

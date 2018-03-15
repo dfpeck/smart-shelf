@@ -24,6 +24,30 @@ public class MatsRecord extends TableRecord {
         matComment = matComment_;
     }
 
+    public MatsRecord (Db db_, ResultSet rs) throws SQLException {
+        db = db_;
+        matId = rs.getLong("matId");
+        matType = MatTypesRecord.selectById(db_, rs.getString("matType"));
+        matComment = rs.getString("matComment");
+    }
+
+    public MatsRecord (Db db_, ResultSet rs, int row) throws SQLException {
+        this(db_, getAdjustedResultSet(rs, row));
+    }
+
+
+    /* SELECTION METHODS */
+    public static MatsRecord
+        selectById (Db db_, long matId_) throws SQLException {
+        PreparedStatement statement =
+            db_.conn.prepareStatement("SELECT * FROM Mats"
+                                      + " WHERE MatId = ?;");
+        statement.setLong(1, matId_);
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+        return new MatsRecord(db_, rs);
+    }
+
 
     /* INESRTION METHODS */
     /** @brief Insert a new record into the Mats table without creating an

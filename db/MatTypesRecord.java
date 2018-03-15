@@ -33,8 +33,8 @@ public class MatTypesRecord extends TableRecord {
     public static MatTypesRecord
         selectById (Db db_, String matTypeId_) throws SQLException {
         PreparedStatement statement =
-            db_.conn.prepareStatement("SELECT * FROM MATTYPES"
-                                      + " WHERE MATTYPEID = ?;");
+            db_.conn.prepareStatement("SELECT * FROM MatTypes"
+                                      + " WHERE matTypeId = ?;");
         statement.setString(1, matTypeId_);
         ResultSet rs = statement.executeQuery();
         rs.next();
