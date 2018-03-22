@@ -17,6 +17,9 @@
         android:id="@+id/ShowText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
         android:text="Show List"
         tools:layout_editor_absoluteX="148dp"
         tools:layout_editor_absoluteY="447dp" />
@@ -25,7 +28,30 @@
         android:id="@+id/tv_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/back"
+        android:layout_alignRight="@+id/back"
+        android:layout_below="@+id/back"
+        android:layout_marginEnd="13dp"
+        android:layout_marginRight="13dp"
+        android:layout_marginTop="38dp"
         android:text="Text here"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="88dp" />
+        tools:layout_editor_absoluteX="100dp"
+        tools:layout_editor_absoluteY="1000dp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:text="Update" />
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/back" />
 </RelativeLayout>
