@@ -1,6 +1,7 @@
 package db;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import java.sql.SQLException;
 
@@ -22,6 +23,20 @@ public class ItemsRecord extends TableRecord {
         itemType = itemType_;
         // lastHistory = lastHistory_;
     }
+
+    public ItemsRecord (Db db_, ResultSet rs) throws SQLException {
+        db = db_;
+        itemId = rs.getLong("itemId");
+        itemType = ItemTypesRecord.selectById(db_, rs.getLong("itemType"));
+        // lastHistory = History.selectLatestHistoryForItem(itemId);
+    }
+
+    public ItemsRecord (Db db_, ResultSet rs, int row) throws SQLException {
+        this(db_, getAdjustedResultSet(rs, row));
+    }
+
+
+    /* QUERY METHODS */
 
 
     /* INSERTION METHODS */
