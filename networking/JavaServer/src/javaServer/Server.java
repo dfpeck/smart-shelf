@@ -10,8 +10,16 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Enumeration;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
@@ -51,8 +59,44 @@ public class Server {
             try {
             	//create secure server socket using specified port
             	SSLServerSocketFactory factory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-            	SSLServerSocket sslServerSocket = (SSLServerSocket) factory.createServerSocket(socketServerPort);
             	
+            	final String[] enabledCipherSuites = factory.getSupportedCipherSuites();
+            	
+            	//Keystore for cert authentication
+            	//keystore generated via:
+            	//"C:\Program Files\Java\jre1.8.0_151\bin\keytool" -genkeypair -keystore server.jks -alias sskeystorepair -keyalg RSA -dname "CN=Web Server,OU=unit,O=Organization,L=City,S=State,C=US" -keypass password -storepass password
+            	//eclipse Window > Preferences >Keytool information set: Keystore to be loaded automatically: C:\Android\AndriodStudioProjects\smart-shelf\networking\JavaServer\server.jks         keystore password: password
+        	    KeyStore ks = KeyStore.getInstance("JKS");
+        	    InputStream ksIs = null;
+        	    //InputStream ksIs = new FileInputStream("server.jks")
+        	    try {
+        	        ks.load(ksIs, "password".toCharArray());
+        	    } catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					System.out.println("NoSuchAlgorithmException" + e.toString());
+				} catch (CertificateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					System.out.println("CertificateException" + e.toString());
+				} finally {
+        	        if (ksIs != null) {
+        	            ksIs.close();
+        	        }
+        	    }
+
+        	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory
+        	            .getDefaultAlgorithm());
+        	    kmf.init(ks, "keypassword".toCharArray());
+            	
+                SSLContext sc = SSLContext.getInstance("TLSv1.2");
+                sc.init(kmf.getKeyManagers(), null, null);
+            	
+            	
+            	
+            	
+            	SSLServerSocket sslServerSocket = (SSLServerSocket) factory.createServerSocket(socketServerPort);
+            	sslServerSocket.setEnabledCipherSuites(enabledCipherSuites);
             	
                 // create ServerSocket using specified port
                 //serverSocket = new ServerSocket(socketServerPort);
@@ -75,7 +119,24 @@ public class Server {
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
+                System.out.println("IOException" + e.toString());
+            } catch (KeyStoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				System.out.println("KeyStoreException" + e1.toString());
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println("NoSuchAlgorithmException" + e.toString());
+			} catch (UnrecoverableKeyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println("UnrecoverableKeyException" + e.toString());
+			} catch (KeyManagementException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println("KeyManagementException" +e.toString());
+			}
         }
     }
 
@@ -159,8 +220,8 @@ public class Server {
                 	System.out.println("outputting response to socket...");
 
                     //get file from external storage (this needs to be changed depeding on the computer right now. Need better solution)
-                    //File file = new File("C:\\Android\\AndriodStudioProjects\\smart-shelf\\networking\\javaServer", "database.txt");
-                    File file = new File("C:\\smart-shelf\\networking\\javaServer", "database.txt");
+                    File file = new File("C:\\Android\\AndriodStudioProjects\\smart-shelf\\networking\\javaServer", "database.txt");
+                    //File file = new File("C:\\smart-shelf\\networking\\javaServer", "database.txt");
 
                     byte[] bytes = new byte[(int) file.length()];
                     BufferedInputStream bIn;

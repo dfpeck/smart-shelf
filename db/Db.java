@@ -9,7 +9,7 @@ import java.util.Vector;
 import java.io.FileNotFoundException;
 
 /**
- * Main driver for the database.
+ * @brief Main driver for the database.
  */
 public class Db {
     /* PROPERTIES */
@@ -53,7 +53,7 @@ public class Db {
      *
      * Must be called before database is usable.
      */
-    public boolean open () {
+    public boolean open () throws SQLException {
         boolean needsPopulation = !(file.exists() && !file.isDirectory());
 
         try {
@@ -64,13 +64,7 @@ public class Db {
             return false;
         }
 
-        try {
-            conn = DriverManager.getConnection("jdbc:h2:" + name);
-        }
-        catch (SQLException e) {
-            System.out.println(e);
-            return false;
-        }
+        conn = DriverManager.getConnection("jdbc:h2:" + name);
 
         if (needsPopulation) // if the database needs tables
             if (!create()) // populate it, and on failure…
@@ -80,14 +74,14 @@ public class Db {
         return true;
     }
 
-    /** @brief Close the database connection.
+    /** Close the database connection.
      */
     public void close () throws SQLException {
         conn.close();
         isOpen = false;
     }
 
-    /* QUERY METHODS */
+    /* UPDATE METHODS */
 
     /* HELPER FUNCTIONS */
     public static Vector<String> readSqlFromFile (String sqlFileName) {
