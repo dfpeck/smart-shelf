@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MatClient</string>
+    <string name="server_ip_address">Server ip address</string>
+    <string name="connect">Connect</string>
+    <string name="data_received">Data Received:</string>
+    <string name="data_requested">Data Requested:</string>
+    <string name="get_database_file">Get Database File</string>
+    <string name="get_item_on_mat">Get Item:</string>
+    <string name="get_weight_of_item_on_mat">Get Weight of Item:</string>
+    <string name="number">#</string>
+</resources>
