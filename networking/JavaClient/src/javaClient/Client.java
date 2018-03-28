@@ -64,8 +64,8 @@ public class Client extends Thread {
             if(choice == 1){
             	//open file (this needs to be changed depeding on the computer right now. Need better solution)
                 //File file = new File("C:\\Android\\AndriodStudioProjects\\smart-shelf\\networking\\javaClient", "database.txt");
-            	//File file = new File("C:\\smart-shelf\\networking\\javaClient", "database.txt");
-                File file = new File("/home/pi/smart-shelf", "database.txt");
+            	File file = new File("C:\\smart-shelf\\networking\\javaClient", "database.txt");
+                //File file = new File("/home/pi/smart-shelf", "database.txt");
             	
                 //will need to increase size of byte array if information exceeds 1024 bytes
                 byte[] bytes = new byte[1024];
