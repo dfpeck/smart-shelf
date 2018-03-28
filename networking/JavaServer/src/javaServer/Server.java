@@ -9,15 +9,18 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
+
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
 
 public class Server {
     ServerSocket serverSocket;
     static final int socketServerPort = 8080;
 
-    public Server() {
+    public Server() {    	
         SocketServerThread socketServerThread = new SocketServerThread();
         socketServerThread.start();
     }
@@ -46,13 +49,18 @@ public class Server {
         @Override
         public void run() {
             try {
+            	//create secure server socket using specified port
+            	SSLServerSocketFactory factory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+            	SSLServerSocket sslServerSocket = (SSLServerSocket) factory.createServerSocket(socketServerPort);
+            	
+            	
                 // create ServerSocket using specified port
-                serverSocket = new ServerSocket(socketServerPort);
+                //serverSocket = new ServerSocket(socketServerPort);
 
                 while (true) {
                     // block the call until connection is created and return
                     // Socket object
-                    Socket socket = serverSocket.accept();
+                    SSLSocket socket = (SSLSocket) sslServerSocket.accept();
                     System.out.println("accepted socket...");
                     count++;
                     System.out.println("#" + count + " from "
@@ -73,11 +81,11 @@ public class Server {
 
     private class SocketServerRequestThread extends Thread {
 
-        private Socket hostThreadSocket;
+        private SSLSocket hostThreadSocket;
         //int cnt;
         StringBuilder sb = new StringBuilder();
 
-        SocketServerRequestThread(Socket socket, int c) {
+        SocketServerRequestThread(SSLSocket socket, int c) {
         	System.out.println("socket thread constructor...");
             hostThreadSocket = socket;
             //cnt = c;
@@ -151,8 +159,8 @@ public class Server {
                 	System.out.println("outputting response to socket...");
 
                     //get file from external storage (this needs to be changed depeding on the computer right now. Need better solution)
-                    File file = new File("C:\\Android\\AndriodStudioProjects\\smart-shelf\\networking\\javaServer", "database.txt");
-                    //File file = new File("C:\\smart-shelf\\networking\\javaServer", "database.txt");
+                    //File file = new File("C:\\Android\\AndriodStudioProjects\\smart-shelf\\networking\\javaServer", "database.txt");
+                    File file = new File("C:\\smart-shelf\\networking\\javaServer", "database.txt");
 
                     byte[] bytes = new byte[(int) file.length()];
                     BufferedInputStream bIn;
