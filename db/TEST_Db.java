@@ -179,20 +179,25 @@ public class TEST_Db {
         try {
             db.open();
 
-            System.out.print("Selecting from ItemTypes...");
-            ItemTypesRecord itemType =
-                ItemTypesRecord.selectById(db, itemTypeId);
-            System.out.println("Selected: " + itemType.toString());
+            // System.out.print("Selecting from ItemTypes...");
+            // ItemTypesRecord itemType =
+            //     ItemTypesRecord.selectById(db, itemTypeId);
+            // System.out.println("Selected: " + itemType.toString());
 
-            System.out.print("Selecting from MatTypes...");
-            MatTypesRecord matType =
-                MatTypesRecord.selectById(db, matTypeId);
-            System.out.println("Selected: " + matType.toString());
+            // System.out.print("Selecting from MatTypes...");
+            // MatTypesRecord matType =
+            //     MatTypesRecord.selectById(db, matTypeId);
+            // System.out.println("Selected: " + matType.toString());
 
-            System.out.print("Selecting from Mats...");
-            MatsRecord mat =
-                MatsRecord.selectById(db, matId);
-            System.out.println("Selected: " + mat.toString());
+            // System.out.print("Selecting from Mats...");
+            // MatsRecord mat =
+            //     MatsRecord.selectById(db, matId);
+            // System.out.println("Selected: " + mat.toString());
+
+            System.out.print("Selecting from Items...");
+            ItemsRecord item =
+                ItemsRecord.selectById(db, itemId);
+            System.out.println("Selected: " + item.toString());
 
             db.close();
         }

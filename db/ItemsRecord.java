@@ -8,26 +8,26 @@ import java.sql.SQLException;
 /** @brief Class to represent Items table entries
  */
 public class ItemsRecord extends TableRecord {
-    protected long itemId;
-    protected ItemTypesRecord itemType;
+    protected long id;
+    protected ItemTypesRecord type;
     protected HistoryRecord lastHistory;
 
 
     /* CONSTRUCTORS */
     public ItemsRecord (Db db_,
-                        long itemId_,
-                        ItemTypesRecord itemType_//,
+                        long id_,
+                        ItemTypesRecord type_//,
                         /*HistoryRecord lastHistory_*/) {
         db = db_;
-        itemId = itemId_;
-        itemType = itemType_;
+        id = id_;
+        type = type_;
         // lastHistory = lastHistory_;
     }
 
     public ItemsRecord (Db db_, ResultSet rs) throws SQLException {
         db = db_;
-        itemId = rs.getLong("itemId");
-        itemType = ItemTypesRecord.selectById(db_, rs.getLong("itemType"));
+        id = rs.getLong("itemId");
+        type = ItemTypesRecord.selectById(db_, rs.getLong("itemType"));
         // lastHistory = History.selectLatestHistoryForItem(itemId);
     }
 
@@ -37,6 +37,10 @@ public class ItemsRecord extends TableRecord {
 
 
     /* QUERY METHODS */
+    public static ItemsRecord selectById (Db db_, long id_)
+        throws SQLException {
+        return new ItemsRecord(db_, selectByIdLong(db_, id_, "Items", "itemId"));
+    }
 
 
     /* INSERTION METHODS */
@@ -89,5 +93,15 @@ public class ItemsRecord extends TableRecord {
         statement.setLong(1, itemId_);
         statement.setLong(2, itemType_);
         return insertAndRetrieveLongKey(db_, statement);
+    }
+
+
+    /* STANDARD METHODS */
+    public String toString () {
+        return "Items<"
+            + Long.toString(id) + ", "
+            + "type: " + "!--IMPLEMENT" + ", "
+            + "weight: " + "!--IMPLEMENT"
+            + ">";
     }
 }
