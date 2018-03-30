@@ -21,4 +21,28 @@ abstract class TableRecord {
         rs.absolute(row);
         return rs;
     }
+
+    protected static ResultSet selectByIdLong (Db db_, long id,
+                                               String table, String idColumn)
+        throws SQLException {
+        PreparedStatement statement =
+            db_.conn.prepareStatement("SELECT * FROM " + table
+                                      + " WHERE " + idColumn + " = ?;");
+        statement.setLong(1, id);
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+        return rs;
+    }
+
+    protected static ResultSet selectByIdString (Db db_, String id,
+                                                 String table, String idColumn)
+        throws SQLException {
+        PreparedStatement statement =
+            db_.conn.prepareStatement("SELECT * FROM " + table
+                                      + " WHERE " + idColumn + " = ?;");
+        statement.setString(1, id);
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+        return rs;
+    }
 }
