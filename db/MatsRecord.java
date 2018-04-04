@@ -39,13 +39,7 @@ public class MatsRecord extends TableRecord {
     /* SELECTION METHODS */
     public static MatsRecord
         selectById (Db db_, long matId_) throws SQLException {
-        PreparedStatement statement =
-            db_.conn.prepareStatement("SELECT * FROM Mats"
-                                      + " WHERE MatId = ?;");
-        statement.setLong(1, matId_);
-        ResultSet rs = statement.executeQuery();
-        rs.next();
-        return new MatsRecord(db_, rs);
+        return new MatsRecord(db_, selectByIdLong(db_, matId_, "Mats", "matId"));
     }
 
 

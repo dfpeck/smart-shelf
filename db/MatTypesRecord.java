@@ -32,13 +32,8 @@ public class MatTypesRecord extends TableRecord {
     /* SELECTION METHODS */
     public static MatTypesRecord
         selectById (Db db_, String matTypeId_) throws SQLException {
-        PreparedStatement statement =
-            db_.conn.prepareStatement("SELECT * FROM MatTypes"
-                                      + " WHERE matTypeId = ?;");
-        statement.setString(1, matTypeId_);
-        ResultSet rs = statement.executeQuery();
-        rs.next();
-        return new MatTypesRecord(db_, rs);
+        return new MatTypesRecord(db_,  selectByIdString(db_, matTypeId_,
+                                                         "MatTypes", "matTypeId"));
     }
 
 
