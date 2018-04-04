@@ -8,27 +8,27 @@ import java.sql.SQLException;
 /** @brief Class to represent Items table entries
  */
 public class ItemsRecord extends TableRecord {
-    protected long id;
-    protected ItemTypesRecord type;
+    protected long itemId;
+    protected ItemTypesRecord itemType;
     protected HistoryRecord lastHistory;
 
 
     /* CONSTRUCTORS */
     public ItemsRecord (Db db_,
-                        long id_,
-                        ItemTypesRecord type_//,
+                        long itemId_,
+                        ItemTypesRecord itemType_//,
                         /*HistoryRecord lastHistory_*/) {
         db = db_;
-        id = id_;
-        type = type_;
+        itemId = itemId_;
+        itemType = itemType_;
         // lastHistory = lastHistory_;
     }
 
     public ItemsRecord (Db db_, ResultSet rs) throws SQLException {
         db = db_;
-        id = rs.getLong("itemId");
-        type = ItemTypesRecord.selectById(db_, rs.getLong("itemType"));
-        // lastHistory = History.selectLatestHistoryForItem(itemId);
+        itemId = rs.getLong("itemId");
+        type = ItemTypesRecord.selectByItemId(db_, rs.getLong("itemType"));
+        // lastHistory = History.selectLatestHistoryForItem(itemItemId);
     }
 
     public ItemsRecord (Db db_, ResultSet rs, int row) throws SQLException {
@@ -37,9 +37,9 @@ public class ItemsRecord extends TableRecord {
 
 
     /* QUERY METHODS */
-    public static ItemsRecord selectById (Db db_, long id_)
+    public static ItemsRecord selectByItemId (Db db_, long itemId_)
         throws SQLException {
-        return new ItemsRecord(db_, selectByIdLong(db_, id_, "Items", "itemId"));
+        return new ItemsRecord(db_, selectByItemIdLong(db_, itemId_, "Items", "itemId"));
     }
 
 
