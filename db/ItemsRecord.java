@@ -27,7 +27,7 @@ public class ItemsRecord extends TableRecord {
     public ItemsRecord (Db db_, ResultSet rs) throws SQLException {
         db = db_;
         itemId = rs.getLong("itemId");
-        type = ItemTypesRecord.selectByItemId(db_, rs.getLong("itemType"));
+        itemType = ItemTypesRecord.selectById(db_, rs.getLong("itemType"));
         // lastHistory = History.selectLatestHistoryForItem(itemItemId);
     }
 
@@ -37,9 +37,9 @@ public class ItemsRecord extends TableRecord {
 
 
     /* QUERY METHODS */
-    public static ItemsRecord selectByItemId (Db db_, long itemId_)
+    public static ItemsRecord selectById (Db db_, long itemId_)
         throws SQLException {
-        return new ItemsRecord(db_, selectByItemIdLong(db_, itemId_, "Items", "itemId"));
+        return new ItemsRecord(db_, selectByIdLong(db_, itemId_, "Items", "itemId"));
     }
 
 
@@ -96,10 +96,30 @@ public class ItemsRecord extends TableRecord {
     }
 
 
+    /* ACCESSORS */
+    /** Unique ID for the item.
+     * @return itemId
+     */
+    public long id () {
+        return itemId;
+    }
+
+    /** The item type associated with this item.
+     * @return record IDed by itemType
+     */
+    public ItemTypesRecord type () {
+        return itemType;
+    }
+
+    // public HistoryRecord lastHistory () {
+    //     return lastHistory;
+    // }
+
+
     /* STANDARD METHODS */
     public String toString () {
         return "Items<"
-            + Long.toString(id) + ", "
+            + Long.toString(itemId) + ", "
             + "type: " + "!--IMPLEMENT" + ", "
             + "weight: " + "!--IMPLEMENT"
             + ">";
