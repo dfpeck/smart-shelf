@@ -112,6 +112,36 @@ public class ItemTypesRecord extends TableRecord {
     }
 
 
+    /* ACCESSORS */
+    /** Unique ID for the item type.
+     * @return itemTypeId
+     */
+    public long id () {
+        return itemTypeId;
+    }
+
+    /** User-friendly name for the item type.
+     * @return itemTypeName
+     */
+    public String name () {
+        return itemTypeName;
+    }
+
+    /** Comment describing the item type.
+     * @return itemTypeComment
+     */
+    public String comment () {
+        return itemTypeComment;
+    }
+
+    /** Whether this type of item acts as a container.
+     * @return isContainer
+     */
+    public boolean isContainer () {
+        return isContainer;
+    }
+
+
     /* STANDARD METHODS */
     public String toString () {
         String containerYN;

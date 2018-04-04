@@ -65,6 +65,22 @@ public class MatTypesRecord extends TableRecord {
     }
 
 
+    /* ACCESSORS */
+    /** Unique ID for the mat type.
+     * @return matTypeId
+     */
+    public String id () {
+        return matTypeId;
+    }
+
+    /** Comment describing the mat type.
+     * @return matTypeComment
+     */
+    public String comment () {
+        return matTypeComment;
+    }
+
+
     /* STANDARD METHODS */
     public String toString () {
         return "MatTypes<'" + matTypeId + "'>";
