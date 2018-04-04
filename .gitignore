@@ -31,3 +31,7 @@ html/*
 *.exe
 
 # Specific Files #
+**/.metadatadebug.log
+
+**/.metadata
+**/.recommenders
