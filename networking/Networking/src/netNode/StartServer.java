@@ -84,10 +84,21 @@ public class StartServer {
         //int cnt;
         StringBuilder sb = new StringBuilder();
         String[][] fakeDatabase;
+        InputStream in = null;
+        OutputStream out = null;
 
         SocketServerRequestThread(Socket socket, int c) {
         	System.out.println("socket thread constructor...");
             hostThreadSocket = socket;
+            try {
+            	// Create byte stream to dump read bytes into
+				in = hostThreadSocket.getInputStream();
+				// Create byte stream to read bytes from
+				out = hostThreadSocket.getOutputStream();
+            } catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("error getting input or output stream in SocketServerRequestThread.");
+			}
             //cnt = c;
             //fake database that i'll be pulling from. Will need to edit code to interface with real database API
             fakeDatabase = new String[][]{
@@ -100,53 +111,64 @@ public class StartServer {
         @Override
         public void run() {
             try {
-            	/**First we're getting input from the client to see what it wants. **/
-                // Create byte stream to dump read bytes into
-                InputStream in = hostThreadSocket.getInputStream();
-
-                int byteRead = 0;
-
-                // Read from input stream. Note: inputStream.read() will block
-                // if no data return
-                System.out.println("attempting to read in from socket...");
-                while (byteRead != -1) {
-                    byteRead = in.read();
-                    if (byteRead == 126){
-                        byteRead = -1;
-                    }else {
-                        sb.append((char) byteRead);
-                    }
-                }
-
-                //split the front and back of the string into item ID and purpose
-                String[] request = sb.toString().split(" ");
-
-                //check for errors in user input
-                if(Integer.parseInt(request[0]) > fakeDatabase.length){
-                    request[0] = "";
-                    request[1] = "";
-
-                    // send response
-                    System.out.println("outputting response to socket...");
-                    OutputStream out = hostThreadSocket.getOutputStream();
-                    out.write(("Number exceeds entries in database(" + fakeDatabase.length + ").~").getBytes());
-                    out.flush();
-
-                    System.out.println("User entered number too large for database.");
-
-                }
-
-                /** then checking and responding **/
-                // compare lexigraphically since bytes will be different
-                if(request[1].compareTo("ReqDatabase") == 0){
-                	
-                	reqDatabase(hostThreadSocket);
-                	
-                }else if(request[1].compareTo("DumpDatabase") == 0){
-                	
-                	dumpDatabase(hostThreadSocket);
-                	
-                }
+            	//while the socket is alive
+            	while(hostThreadSocket != null)
+            	{
+	            	/**First we're getting input from the client to see what it wants. **/
+	                int byteRead = 0;
+	
+	                // Read from input stream. Note: inputStream.read() will block
+	                // if no data return
+	                //reset stringbuilder buffer
+	                sb.setLength(0);
+	                
+	                System.out.println("attempting to read in from socket...");
+	                
+	                while (byteRead != -1) {
+	                    byteRead = in.read();
+	                    if (byteRead == 126){
+	                        byteRead = -1;
+	                    }else {
+	                        sb.append((char) byteRead);
+	                    }
+	                }
+	
+	                //split the front and back of the string into item ID and purpose
+	                String[] request = new String[2];
+	                request[0] = "";
+	                request[1] = "";
+	                request = sb.toString().split(" ");
+	
+	                //check for errors in user input
+	                if(Integer.parseInt(request[0]) > fakeDatabase.length){
+	                    request[0] = "";
+	                    request[1] = "";
+	
+	                    // send response
+	                    System.out.println("outputting response to socket...");
+	                    out.flush();
+	                    out.write(("Number exceeds entries in database(" + fakeDatabase.length + ").~").getBytes());
+	                    out.flush();
+	
+	                    System.out.println("User entered number too large for database.");
+	
+	                }
+	                
+	                System.out.println("request[0] is currently: " + request[0]);
+	                System.out.println("request[1] is currently: " + request[1]);
+	
+	                /** then checking and responding **/
+	                // compare lexigraphically since bytes will be different
+	                if(request[1].compareTo("ReqDatabase") == 0){
+	                	
+	                	reqDatabase(hostThreadSocket, out);
+	                	
+	                }else if(request[1].compareTo("DumpDatabase") == 0){
+	                	
+	                	dumpDatabase(hostThreadSocket, in);
+	                	
+	                }
+            	}
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -167,7 +189,7 @@ public class StartServer {
         }
     }
 
-    private void reqDatabase(Socket hostThreadSocket){
+    private void reqDatabase(Socket hostThreadSocket, OutputStream out){
     	try{
     		System.out.println("outputting response to socket...");
     
@@ -183,7 +205,7 @@ public class StartServer {
 	        bIn.read(bytes, 0, bytes.length);
 	
 	        //output on socket
-	        OutputStream out = hostThreadSocket.getOutputStream();
+	        out.flush();
 	        out.write(bytes, 0, bytes.length);
 	        out.flush();
 	        out.write("~".getBytes());
@@ -197,10 +219,9 @@ public class StartServer {
     	}
     }
     
-    private void dumpDatabase(Socket hostThreadSocket){
+    private void dumpDatabase(Socket hostThreadSocket, InputStream in){
     	try{
     		System.out.println("listening for file contents...");
-    		InputStream in = hostThreadSocket.getInputStream();
     		
         	//open file
     		URL url = getClass().getResource("databaseToReceive.txt");
@@ -215,6 +236,8 @@ public class StartServer {
             
             //closing stream objects
             bOut.close();
+            
+            System.out.println("wrote to file");
     	} catch (IOException e) {
             e.printStackTrace();
             System.out.println("IOException in dumpDatabase");
