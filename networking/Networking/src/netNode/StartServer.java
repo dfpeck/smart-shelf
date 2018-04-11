@@ -116,8 +116,6 @@ public class StartServer {
                         sb.append((char) byteRead);
                     }
                 }
-                
-                in.close();
 
                 //split the front and back of the string into item ID and purpose
                 String[] request = sb.toString().split(" ");
@@ -214,7 +212,6 @@ public class StartServer {
             
             //closing stream objects
             bOut.close();
-            in.close();
     	} catch (IOException e) {
             e.printStackTrace();
             System.out.println("IOException in dumpDatabase");
