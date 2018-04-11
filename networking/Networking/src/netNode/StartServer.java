@@ -13,6 +13,7 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.URL;
 import java.util.Enumeration;
 
 
@@ -201,7 +202,8 @@ public class StartServer {
     		InputStream in = hostThreadSocket.getInputStream();
     		
         	//open file
-            File file = new File("C:\\smart-shelf\\networking\\javaClient", "database.txt");
+    		URL url = getClass().getResource("database.txt");
+            File file = new File(url.getPath());
             //will need to increase size of byte array if information exceeds 1024 bytes
             byte[] bytes = new byte[1024];
             BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
