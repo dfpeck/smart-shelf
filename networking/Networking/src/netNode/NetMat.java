@@ -21,6 +21,8 @@ public class NetMat extends Thread {
     String port;
     String ip;
     Socket socket = null;
+    InputStream in = null;
+    OutputStream out = null;
 
     public NetMat(String ip) {
         this.ip = ip;
@@ -35,6 +37,8 @@ public class NetMat extends Thread {
         try {
         	System.out.println("creating socket...");
             socket = new Socket(ip, Integer.parseInt(port));
+            in = socket.getInputStream();
+            out = socket.getOutputStream();
 
         } catch (UnknownHostException e) {
             this.unknownHostException = e;
@@ -59,8 +63,7 @@ public class NetMat extends Thread {
         System.out.println("string sent: " + request);
         
 		try {
-			OutputStream out = socket.getOutputStream();
-		
+			out.flush();
 			out.write(request.getBytes());
 	        out.flush();
 	    	
@@ -80,12 +83,12 @@ public class NetMat extends Thread {
 	        	bIn.read(bytes, 0, bytes.length);
 	        	
 		        //output on socket
+	        	out.flush();
 		        out.write(bytes, 0, bytes.length);
 		        out.flush();
 		        out.write("~".getBytes());
 		        out.flush();
 		
-		        //close stream objects
 		        bIn.close();
 	        	
 	        } catch (FileNotFoundException e)
@@ -111,7 +114,7 @@ public class NetMat extends Thread {
         System.out.println("string sent: " + request);
         
         try {
-	        OutputStream out = socket.getOutputStream();
+        	out.flush();
 	        out.write(request.getBytes());
 	        out.flush();
 	        
@@ -120,14 +123,12 @@ public class NetMat extends Thread {
             File file = new File(url.getPath());
 	        //will need to increase size of byte array if information exceeds 1024 bytes
 	        byte[] bytes = new byte[1024];
-	        InputStream in = socket.getInputStream();
 	        BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
 	
 	        //read in from the socket input stream and write to file output stream
 	        int bytesRead = in.read(bytes, 0, bytes.length);
 	        bOut.write(bytes, 0, bytesRead);
 	        
-	        //closing stream objects
 	        bOut.close();
 	        
 	        System.out.println("Database received in databaseToReceive.txt");
