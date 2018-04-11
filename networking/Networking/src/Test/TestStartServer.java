@@ -1,7 +1,5 @@
 package Test;
 
-import java.util.Scanner;
-
 import netNode.StartServer;
 
 public class TestStartServer {
