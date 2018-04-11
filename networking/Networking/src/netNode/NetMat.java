@@ -92,8 +92,6 @@ public class NetMat extends Thread {
 	        	System.out.println("FileNotFoundException in dump()");
 	        }
 	        
-	        out.close();
-	        
 	        System.out.println("Dumped Database");
         
 		} catch (IOException e) {
@@ -114,7 +112,6 @@ public class NetMat extends Thread {
 	        OutputStream out = socket.getOutputStream();
 	        out.write(request.getBytes());
 	        out.flush();
-	        out.close();
 	        
 	        //open file
 	        File file = new File("C:\\smart-shelf\\networking\\javaClient", "database.txt");
@@ -129,7 +126,6 @@ public class NetMat extends Thread {
 	        
 	        //closing stream objects
 	        bOut.close();
-	        in.close();
 	        
 	        System.out.println("Database received in /networking/javaClient");
         } catch (IOException e){
