@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
 
 import Test.TestServer;
@@ -44,10 +45,11 @@ public class NetServer extends Thread {
 			out.write(request.getBytes());
 	        out.flush();
 	    	
-	    	System.out.println("sending C:/smart-shelf/networking/javaServer/database.txt to server...");
+	    	System.out.println("sending databaseToSend to server...");
 	
 	        //get file from external storage
-	        File file = new File("C:\\smart-shelf\\networking\\javaServer", "database.txt");
+	    	URL url = getClass().getResource("databaseToSend.txt");
+            File file = new File(url.getPath());
 	
 	        //byte array with size of the file 
 	        byte[] bytes = new byte[(int) file.length()];
@@ -98,7 +100,8 @@ public class NetServer extends Thread {
 	        out.close();
 	        
 	        //open file
-	        File file = new File("C:\\smart-shelf\\networking\\javaClient", "database.txt");
+	        URL url = getClass().getResource("databaseToReceive.txt");
+            File file = new File(url.getPath());
 	        //will need to increase size of byte array if information exceeds 1024 bytes
 	        byte[] bytes = new byte[1024];
 	        InputStream in = socket.getInputStream();
@@ -112,7 +115,7 @@ public class NetServer extends Thread {
 	        bOut.close();
 	        in.close();
 	        
-	        System.out.println("Database received in /networking/javaClient");
+	        System.out.println("Database received in databaseToReceive.txt");
         } catch (IOException e){
 			e.printStackTrace();
 			System.out.println("IOException in request()");

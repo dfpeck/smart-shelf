@@ -172,7 +172,8 @@ public class StartServer {
     		System.out.println("outputting response to socket...");
     
 	        //get file from external storage
-	        File file = new File("C:\\smart-shelf\\networking\\javaServer", "database.txt");
+    		URL url = getClass().getResource("databaseToSend.txt");
+            File file = new File(url.getPath());
 	
 	        byte[] bytes = new byte[(int) file.length()];
 	        BufferedInputStream bIn;
@@ -202,7 +203,7 @@ public class StartServer {
     		InputStream in = hostThreadSocket.getInputStream();
     		
         	//open file
-    		URL url = getClass().getResource("database.txt");
+    		URL url = getClass().getResource("databaseToReceive.txt");
             File file = new File(url.getPath());
             //will need to increase size of byte array if information exceeds 1024 bytes
             byte[] bytes = new byte[1024];
