@@ -77,13 +77,6 @@ public class Db {
 
     /* UPDATE METHODS */
 
-
-    /* ACCESSORS */
-    public File getFile () {
-        return file;
-    }
-
-
     /* HELPER FUNCTIONS */
     public static Vector<String> readSqlFromFile (String sqlFileName) {
         Scanner sqlScanner;
