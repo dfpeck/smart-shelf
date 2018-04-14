@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 import netNode.NetMat;
 
-public class TestMat extends Object{
+public class TestMat{
    public static void main(String[] args) {
 	   String ip = "";
 	   int choice = 0;
@@ -22,11 +22,14 @@ public class TestMat extends Object{
        
        /* choose network function */
        while(choice != 3){
-	       System.out.println("(1) Mat DB Dump, (2) Request new item, (3) Exit: ");
+	       System.out.println("(1) Dump DB, (2) Request Item Record, (3) Exit: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   //get file from external storage
+	    	   System.out.println("Working Directory = " + System.getProperty("user.dir"));
+	    	   System.out.println(TestMat.class.getResource("databaseToSend.txt") == null);
 	    	   URL url = TestMat.class.getResource("databaseToSend.txt");
+	    	   System.out.println(url.toString());
 	           File file = new File(url.getPath());
 	           
 	    	   netMat.dump(file);
