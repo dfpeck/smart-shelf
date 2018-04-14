@@ -1,11 +1,9 @@
 package netNode;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -63,7 +61,7 @@ public class NetMat extends Thread {
         } 
     }
 
-    public void dump(){
+    public void dump(File file){
     	//create request string
         String request = "0 " + "DumpDatabase~";
         
@@ -77,10 +75,6 @@ public class NetMat extends Thread {
 	        System.out.println("string sent: " + request);
 	    	
 	    	System.out.println("sending databaseToSend.txt to server...");
-	
-	        //get file from external storage
-	    	URL url = getClass().getResource("databaseToSend.txt");
-            File file = new File(url.getPath());
 	
 	        //byte array with size of the file 
 	        byte[] bytes = new byte[(int) file.length()];
@@ -114,33 +108,34 @@ public class NetMat extends Thread {
 		}
     }
     
-    public void request(){
+    public void request(String str){
     	//create request string
-        String request = "0 " + "ReqDatabase~";
+        String request = str;
+        StringBuilder sb = new StringBuilder();
         
         try {
+        	//send request
         	out.flush();
         	out.write(request.getBytes());
         	out.flush();
-	        
-	        // send request through socket
 	        System.out.println("sending request through socket...");
 	        System.out.println("string sent: " + request);
+
+            // Read from input stream. Note: inputStream.read() will block
+            // if no data return
+            System.out.println("Reading in response from socket...");
+            int byteRead = 0;
+            while (byteRead != -1) {
+                byteRead = in.read();
+                if (byteRead == 126) {
+                    byteRead = -1;
+                } else {
+                    sb.append((char) byteRead);
+                }
+            }
 	        
-	        //open file
-	        URL url = getClass().getResource("databaseToReceive.txt");
-            File file = new File(url.getPath());
-	        //will need to increase size of byte array if information exceeds 1024 bytes
-	        byte[] bytes = new byte[1024];
-	        BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
-	
-	        //read in from the socket input stream and write to file output stream
-	        int bytesRead = in.read(bytes, 0, bytes.length);
-	        bOut.write(bytes, 0, bytesRead);
+            System.out.println(sb.toString());
 	        
-	        bOut.close();
-	        
-	        System.out.println("Database received in databaseToReceive.txt");
         } catch (IOException e){
 			e.printStackTrace();
 			System.out.println("IOException in request()");

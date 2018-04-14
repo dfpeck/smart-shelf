@@ -1,9 +1,7 @@
 package netNode;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -138,14 +136,11 @@ public class StartServer {
 	                }
 	
 	                //split the front and back of the string into item ID and purpose
-	                System.out.println("sb is currently: " + sb.toString());
 	                request[0] = "";
 	                request[1] = "";
 	                request = sb.toString().split(" ");
 	
 	                //check for errors in user input
-	                System.out.println("request[0] is currently: " + request[0]);
-	                System.out.println("request[1] is currently: " + request[1]);
 	                if(Integer.parseInt(request[0]) > fakeDatabase.length){
 	                    request[0] = "";
 	                    request[1] = "";
@@ -159,15 +154,12 @@ public class StartServer {
 	                    System.out.println("User entered number too large for database.");
 	
 	                }
-	                
-	                System.out.println("request[0] is currently: " + request[0]);
-	                System.out.println("request[1] is currently: " + request[1]);
 	
 	                /** then checking and responding **/
 	                // compare lexigraphically since bytes will be different
-	                if(request[1].compareTo("ReqDatabase") == 0){
+	                if(request[1].compareTo("Record") == 0){
 	                	
-	                	reqDatabase(out);
+	                	recordRetrieve(out);
 	                	
 	                }else if(request[1].compareTo("DumpDatabase") == 0){
 	                	
@@ -194,30 +186,19 @@ public class StartServer {
             }
         }
     
-        private void reqDatabase(OutputStream out){
+        private void recordRetrieve(OutputStream out){
         	try{
-        		System.out.println("outputting response to socket...");
-        
-    	        //get file from external storage
-        		URL url = getClass().getResource("databaseToSend.txt");
-                File file = new File(url.getPath());
-    	
-    	        byte[] bytes = new byte[(int) file.length()];
-    	        BufferedInputStream bIn;
-    	
-    	        //read in from the file
-    	        bIn = new BufferedInputStream(new FileInputStream(file));
-    	        bIn.read(bytes, 0, bytes.length);
-    	
-    	        //output on socket
-    	        out.flush();
-    	        out.write(bytes, 0, bytes.length);
-    	        out.flush();
-    	        out.write("~".getBytes());
-    	        out.flush();
-    	
-    	        bIn.close();
-    	        System.out.println("Requested Database");
+        		// send response
+            	System.out.println("outputting response to socket...");
+            	
+            	//get string representation of the record requested
+            	String record = fakeDatabase[Integer.parseInt(request[0]) - 1][0] + "~";
+            	
+            	out.flush();
+                out.write((record).getBytes());
+                out.flush();
+
+                System.out.println("Requested Item " + request[0]);
         	} catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("IOException in reqDatabase");

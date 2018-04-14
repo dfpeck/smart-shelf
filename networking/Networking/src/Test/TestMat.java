@@ -1,10 +1,12 @@
 package Test;
 
+import java.io.File;
+import java.net.URL;
 import java.util.Scanner;
 
 import netNode.NetMat;
 
-public class TestMat {
+public class TestMat extends Object{
    public static void main(String[] args) {
 	   String ip = "";
 	   int choice = 0;
@@ -23,9 +25,16 @@ public class TestMat {
 	       System.out.println("(1) Mat DB Dump, (2) Request new item, (3) Exit: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
-	    	   netMat.dump();
+	    	   //get file from external storage
+	    	   URL url = TestMat.class.getResource("databaseToSend.txt");
+	           File file = new File(url.getPath());
+	           
+	    	   netMat.dump(file);
 	       }else if(choice == 2){
-	    	   netMat.request();
+	    	   //number on the left is the id of record requested
+	    	   String str = "1 Record~";
+	    	   
+	    	   netMat.request(str);
 	       }else if(choice == 3){
 	    	   netMat.close();
 	       }
