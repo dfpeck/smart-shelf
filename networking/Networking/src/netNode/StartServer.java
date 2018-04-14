@@ -19,7 +19,7 @@ import java.util.Enumeration;
 
 public class StartServer {
     ServerSocket serverSocket;
-    static final int socketServerPort = 8080;
+    static final int serverSocketPort = 8080;
 
     public StartServer() {
         SocketServerThread socketServerThread = new SocketServerThread();
@@ -27,7 +27,7 @@ public class StartServer {
     }
 
     public int getPort() {
-        return socketServerPort;
+        return serverSocketPort;
     }
 
     public void close() {
@@ -51,24 +51,29 @@ public class StartServer {
         public void run() {
             try {
                 // create ServerSocket using specified port
-                serverSocket = new ServerSocket(socketServerPort);
+                serverSocket = new ServerSocket(serverSocketPort);
 
                 while (true) {
                     // block the call until connection is created and return
-                    // Socket object
-                    Socket socket = serverSocket.accept();
+                    // Socket object for mat/ui -> server communication
+                    Socket listenSocket = serverSocket.accept();
                     System.out.println("accepted socket...");
                     count++;
                     System.out.println("#" + count + " from "
-                    		               + socket.getInetAddress() + ":"
-                    		               + socket.getPort());
+                    		               + listenSocket.getInetAddress() + ":"
+                    		               + listenSocket.getPort());
 
+                    //Now creating second socket for server -> mat/ui communication
+                    Socket sendSocket = new Socket(listenSocket.getInetAddress(), serverSocketPort);
+                    System.out.println("created socket for sending requests...");
+                    
+                    //listening for requests
                     System.out.println("attempting to run request thread...");
-                    SocketServerRequestThread request = new SocketServerRequestThread(socket, count);
-                    request.start();
+                    new StartServerRequestThread(listenSocket).start();
                     
                     //create NetServer object in new thread so you can query the mat or UI
-                    new NetServer(socket);
+                    System.out.println("creating NetServer object...");
+                    new NetServer(sendSocket).start();
 
                 }
             } catch (IOException e) {
@@ -78,28 +83,27 @@ public class StartServer {
         }
     }
 
-    private class SocketServerRequestThread extends Thread {
+    private class StartServerRequestThread extends Thread {
 
-        private Socket hostThreadSocket;
-        //int cnt;
+        private Socket socket;
         StringBuilder sb = new StringBuilder();
         String[][] fakeDatabase;
         InputStream in = null;
         OutputStream out = null;
+        String[] request = new String[2];
 
-        SocketServerRequestThread(Socket socket, int c) {
+        StartServerRequestThread(Socket socket) {
         	System.out.println("socket thread constructor...");
-            hostThreadSocket = socket;
+            this.socket = socket;
             try {
             	// Create byte stream to dump read bytes into
-				in = hostThreadSocket.getInputStream();
+				in = socket.getInputStream();
 				// Create byte stream to read bytes from
-				out = hostThreadSocket.getOutputStream();
+				out = socket.getOutputStream();
             } catch (IOException e) {
 				e.printStackTrace();
 				System.out.println("error getting input or output stream in SocketServerRequestThread.");
 			}
-            //cnt = c;
             //fake database that i'll be pulling from. Will need to edit code to interface with real database API
             fakeDatabase = new String[][]{
 	                {"Bucket of bolts", "10lb"},
@@ -112,7 +116,7 @@ public class StartServer {
         public void run() {
             try {
             	//while the socket is alive
-            	while(hostThreadSocket != null)
+            	while(socket != null)
             	{
 	            	/**First we're getting input from the client to see what it wants. **/
 	                int byteRead = 0;
@@ -134,12 +138,14 @@ public class StartServer {
 	                }
 	
 	                //split the front and back of the string into item ID and purpose
-	                String[] request = new String[2];
+	                System.out.println("sb is currently: " + sb.toString());
 	                request[0] = "";
 	                request[1] = "";
 	                request = sb.toString().split(" ");
 	
 	                //check for errors in user input
+	                System.out.println("request[0] is currently: " + request[0]);
+	                System.out.println("request[1] is currently: " + request[1]);
 	                if(Integer.parseInt(request[0]) > fakeDatabase.length){
 	                    request[0] = "";
 	                    request[1] = "";
@@ -161,11 +167,11 @@ public class StartServer {
 	                // compare lexigraphically since bytes will be different
 	                if(request[1].compareTo("ReqDatabase") == 0){
 	                	
-	                	reqDatabase(hostThreadSocket, out);
+	                	reqDatabase(out);
 	                	
 	                }else if(request[1].compareTo("DumpDatabase") == 0){
 	                	
-	                	dumpDatabase(hostThreadSocket, in);
+	                	dumpDatabase(in);
 	                	
 	                }
             	}
@@ -175,10 +181,10 @@ public class StartServer {
                 System.out.println("IOException in SocketServerRequestThread"
                         + e.toString());
             } finally {
-                if (hostThreadSocket != null) {
+                if (socket != null) {
                     try {
                     	System.out.println("closing socket...");
-                        hostThreadSocket.close();
+                    	socket.close();
                     } catch (IOException e){
                         e.printStackTrace();
                         System.out.println("IOException in SocketServerRequestThread"
@@ -187,62 +193,64 @@ public class StartServer {
                 }
             }
         }
+    
+        private void reqDatabase(OutputStream out){
+        	try{
+        		System.out.println("outputting response to socket...");
+        
+    	        //get file from external storage
+        		URL url = getClass().getResource("databaseToSend.txt");
+                File file = new File(url.getPath());
+    	
+    	        byte[] bytes = new byte[(int) file.length()];
+    	        BufferedInputStream bIn;
+    	
+    	        //read in from the file
+    	        bIn = new BufferedInputStream(new FileInputStream(file));
+    	        bIn.read(bytes, 0, bytes.length);
+    	
+    	        //output on socket
+    	        out.flush();
+    	        out.write(bytes, 0, bytes.length);
+    	        out.flush();
+    	        out.write("~".getBytes());
+    	        out.flush();
+    	
+    	        bIn.close();
+    	        System.out.println("Requested Database");
+        	} catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("IOException in reqDatabase");
+        	}
+        }
+        
+        private void dumpDatabase(InputStream in){
+        	try{
+        		System.out.println("listening for file contents...");
+        		
+            	//open file
+        		URL url = getClass().getResource("databaseToReceive.txt");
+                File file = new File(url.getPath());
+                //will need to increase size of byte array if information exceeds 1024 bytes
+                byte[] bytes = new byte[1024];
+                BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
+
+                //read in from the socket input stream and write to file output stream
+                int bytesRead = in.read(bytes, 0, bytes.length);
+                bOut.write(bytes, 0, bytesRead);
+                
+                //closing stream objects
+                bOut.close();
+                
+                System.out.println("wrote to file");
+        	} catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("IOException in dumpDatabase");
+        	}
+        }
     }
 
-    private void reqDatabase(Socket hostThreadSocket, OutputStream out){
-    	try{
-    		System.out.println("outputting response to socket...");
     
-	        //get file from external storage
-    		URL url = getClass().getResource("databaseToSend.txt");
-            File file = new File(url.getPath());
-	
-	        byte[] bytes = new byte[(int) file.length()];
-	        BufferedInputStream bIn;
-	
-	        //read in from the file
-	        bIn = new BufferedInputStream(new FileInputStream(file));
-	        bIn.read(bytes, 0, bytes.length);
-	
-	        //output on socket
-	        out.flush();
-	        out.write(bytes, 0, bytes.length);
-	        out.flush();
-	        out.write("~".getBytes());
-	        out.flush();
-	
-	        bIn.close();
-	        System.out.println("Requested Database");
-    	} catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("IOException in reqDatabase");
-    	}
-    }
-    
-    private void dumpDatabase(Socket hostThreadSocket, InputStream in){
-    	try{
-    		System.out.println("listening for file contents...");
-    		
-        	//open file
-    		URL url = getClass().getResource("databaseToReceive.txt");
-            File file = new File(url.getPath());
-            //will need to increase size of byte array if information exceeds 1024 bytes
-            byte[] bytes = new byte[1024];
-            BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
-
-            //read in from the socket input stream and write to file output stream
-            int bytesRead = in.read(bytes, 0, bytes.length);
-            bOut.write(bytes, 0, bytesRead);
-            
-            //closing stream objects
-            bOut.close();
-            
-            System.out.println("wrote to file");
-    	} catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("IOException in dumpDatabase");
-    	}
-    }
     
     // This finds the IP address that the socket is hosted on, so the server's IP/port
     // For all network interfaces and all IPs connected to said interfaces print
