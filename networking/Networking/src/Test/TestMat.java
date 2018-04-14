@@ -26,10 +26,7 @@ public class TestMat{
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   //get file from external storage
-	    	   System.out.println("Working Directory = " + System.getProperty("user.dir"));
-	    	   System.out.println(TestMat.class.getResource("databaseToSend.txt") == null);
 	    	   URL url = TestMat.class.getResource("databaseToSend.txt");
-	    	   System.out.println(url.toString());
 	           File file = new File(url.getPath());
 	           
 	    	   netMat.dump(file);
