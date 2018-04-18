@@ -1,21 +1,11 @@
 package com.example.shy16.smartshelf;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import java.io.IOException;
-import java.io.InputStream;
+import android.widget.ExpandableListView;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Created by shy16 on 11/29/2017.
@@ -23,76 +13,58 @@ import java.util.Arrays;
 
 public class List extends AppCompatActivity {
 
-    private static final String TAG = "List";
-
+    private ExpandableListView listView;
+    private ExpandableListAdapter listAdapter;
+    private List<String> listDataHeader;
+    private Hash<String, List<String>> listHash;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list);
-        Log.d(TAG, "onCreate: Starting.");
 
-        Button main = (Button) findViewById(R.id.back);
-
-        main.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: clicked main.");
-
-                Intent intent = new Intent(List.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        Button a = (Button) findViewById(R.id.button);
-        a.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent (List.this, Settings.class));
-            }
-        });
-
-        b_read = (Button) findViewById(R.id.ShowText);
-
-        tv_text = (TextView) findViewById(R.id.tv_text);
-
-        b_read.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String text = "";
-                try {
-                    InputStream ls = getAssets().open("file.txt");
-                    int size = ls.available();
-                    byte[] buffer = new byte[size];
-                    ls.read(buffer);
-                    ls.close();
-                    text = new String(buffer);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                tv_text.setText(text);
-            }
-        });
-
-        ListView ll=(ListView) findViewById(R.id.listView);
-        String[] array = { "Item1, Item2, Item3"};
-        ArrayList<String> lst = new ArrayList<String>(Arrays.asList(array));
-        lst.add("Item4");
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, lst);
-
-        ll.setAdapter(adapter);
-        ll.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                // TODO Auto-generated method stub
-                TextView txt = (TextView) arg1;
-                System.out.println(txt.getText().toString());
-            }
-        });
+        // New stuff
+        listView = (ExpandableListView)findViewById(R.id.lvExp);
+        initData();
+        listAdapter = new ExpandableListAdapter(this, listDataHeader, listHash);
+        listView.setAdapter(listAdapter);
 
     }
 
-    Button b_read;
+    private void initData() {
+        listDataHeader = new ArrayList<>();
+        listHash = new HashMap<>();
 
-    TextView tv_text;
+        listDataHeader.add("EDMTDev");
+        listDataHeader.add("Android");
+        listDataHeader.add("Xamarin");
+        listDataHeader.add("UWP");
+
+        List<String> edmtDev = new ArrayList<>();
+        edmtDev.add("This is Expandable ListView");
+
+        List<String> androidStudio = new ArrayList<>();
+        androidStudio.add("Expandable ListView");
+        androidStudio.add("Google Map");
+        androidStudio.add("Chat Application");
+        androidStudio.add("Firebase");
+
+        List<String> xamarin = new ArrayList<>();
+        xamarin.add("Xamarin Expandable ListView");
+        xamarin.add("Xamarin Google Map");
+        xamarin.add("Xamarin Chat Application");
+        xamarin.add("Xamarin Firebase");
+
+        List<String> uwp = new ArrayList<>();
+        uwp.add("UWP Expandable ListView");
+        uwp.add("UWP Google Map");
+        uwp.add("UWP Chat Application");
+        uwp.add("UWP Firebase");
+
+        listHash.put(listDataHeader.get(0), edmtDev);
+        listHash.put(listDataHeader.get(1), edmtDev);
+        listHash.put(listDataHeader.get(2), edmtDev);
+        listHash.put(listDataHeader.get(3), edmtDev);
+
+    }
+
 }
