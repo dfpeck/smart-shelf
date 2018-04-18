@@ -29,7 +29,7 @@ public class TestMat{
 	    	   URL url = TestMat.class.getResource("databaseToSend.txt");
 	           File file = new File(url.getPath());
 	           
-	    	   netMat.sendFile(file);
+	    	   netMat.sendDB(file);
 	       }else if(choice == 2){ 
 	    	   netMat.sendString("This is from TestMat");
 	       }else if(choice == 3){

@@ -61,7 +61,7 @@ public class NetMat extends Thread {
     }
 
     //send file through socket.
-    public void sendFile(File file){
+    public void sendDB(File file){
     	//create request string
         String intent = "SendDatabase~";
         
