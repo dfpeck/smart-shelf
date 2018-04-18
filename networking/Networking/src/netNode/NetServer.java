@@ -1,13 +1,9 @@
 package netNode;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 
 import Test.TestServer;
@@ -46,33 +42,24 @@ public class NetServer extends Thread {
     	System.out.println("NetServer ready for function calls...");
     }
     
-    public void request(){
+    public void sendString(String str){
     	//create request string
-        String request = "0 " + "ReqDatabase~";
+        String intent = "SendString~";
         
         try {
         	out.flush();
-	        out.write(request.getBytes());
+	        out.write(intent.getBytes());
 	        out.flush();
+	        System.out.println("sendString intent sent...");
 	        
-	        // send request through socket
-	        System.out.println("sending request through socket...");
-	        System.out.println("string sent: " + request);
-	        
-	        //open file
-	        URL url = getClass().getResource("databaseToReceive.txt");
-            File file = new File(url.getPath());
-	        //will need to increase size of byte array if information exceeds 1024 bytes
-	        byte[] bytes = new byte[1024];
-	        BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
-	
-	        //read in from the socket input stream and write to file output stream
-	        int bytesRead = in.read(bytes, 0, bytes.length);
-	        bOut.write(bytes, 0, bytesRead);
-	        
-	        bOut.close();
-	        
-	        System.out.println("Database received in databaseToReceive.txt");
+	        //send string
+	        out.flush();
+	        out.write(str.getBytes());
+	        out.flush();
+	        out.write("~".getBytes());
+	        out.flush();
+	        System.out.println("string sent: " + str);
+	       
         } catch (IOException e){
 			e.printStackTrace();
 			System.out.println("IOException in request()");

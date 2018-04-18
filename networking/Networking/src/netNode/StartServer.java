@@ -85,10 +85,9 @@ public class StartServer {
 
         private Socket socket;
         StringBuilder sb = new StringBuilder();
-        String[][] fakeDatabase;
         InputStream in = null;
         OutputStream out = null;
-        String[] request = new String[2];
+        String intent = "";
 
         StartServerRequestThread(Socket socket) {
         	System.out.println("socket thread constructor...");
@@ -102,12 +101,6 @@ public class StartServer {
 				e.printStackTrace();
 				System.out.println("error getting input or output stream in SocketServerRequestThread.");
 			}
-            //fake database that i'll be pulling from. Will need to edit code to interface with real database API
-            fakeDatabase = new String[][]{
-	                {"Bucket of bolts", "10lb"},
-	                {"Box of Nails", "5lb"},
-	                {"Cup of Screws", "2lb"}
-            };
         }
 
         @Override
@@ -124,8 +117,7 @@ public class StartServer {
 	                //reset stringbuilder buffer
 	                sb.setLength(0);
 	                
-	                System.out.println("attempting to read in from socket...");
-	                
+	                System.out.println("attempting to read intent...");
 	                while (byteRead != -1) {
 	                    byteRead = in.read();
 	                    if (byteRead == 126){
@@ -134,36 +126,17 @@ public class StartServer {
 	                        sb.append((char) byteRead);
 	                    }
 	                }
-	
-	                //split the front and back of the string into item ID and purpose
-	                request[0] = "";
-	                request[1] = "";
-	                request = sb.toString().split(" ");
-	
-	                //check for errors in user input
-	                if(Integer.parseInt(request[0]) > fakeDatabase.length){
-	                    request[0] = "";
-	                    request[1] = "";
-	
-	                    // send response
-	                    System.out.println("outputting response to socket...");
-	                    out.flush();
-	                    out.write(("Number exceeds entries in database(" + fakeDatabase.length + ").~").getBytes());
-	                    out.flush();
-	
-	                    System.out.println("User entered number too large for database.");
-	
-	                }
+	                intent = sb.toString();
 	
 	                /** then checking and responding **/
 	                // compare lexigraphically since bytes will be different
-	                if(request[1].compareTo("Record") == 0){
+	                if(intent.compareTo("SendString") == 0){
 	                	
-	                	recordRetrieve(out);
+	                	getString(out);
 	                	
-	                }else if(request[1].compareTo("DumpDatabase") == 0){
+	                }else if(intent.compareTo("SendDatabase") == 0){
 	                	
-	                	dumpDatabase(in);
+	                	getDatabase(in);
 	                	
 	                }
             	}
@@ -186,26 +159,37 @@ public class StartServer {
             }
         }
     
-        private void recordRetrieve(OutputStream out){
+        //retrieves string representation of record and sends it back through the socket outputstream.
+        private void getString(OutputStream out){
         	try{
-        		// send response
-            	System.out.println("outputting response to socket...");
+        		//reset stringbuilder buffer
+                sb.setLength(0);
+                
+            	System.out.println("listening for string...");
+            	// Read from input stream. Note: inputStream.read() will block
+                // if no data return
+                int byteRead = 0;
+                while (byteRead != -1) {
+                    byteRead = in.read();
+                    if (byteRead == 126) {
+                        byteRead = -1;
+                    } else {
+                        sb.append((char) byteRead);
+                    }
+                }
+    	        
+                //just print the string for now
+                //TODO put string in queue
+                System.out.println(sb.toString());
             	
-            	//get string representation of the record requested
-            	String record = fakeDatabase[Integer.parseInt(request[0]) - 1][0] + "~";
-            	
-            	out.flush();
-                out.write((record).getBytes());
-                out.flush();
-
-                System.out.println("Requested Item " + request[0]);
         	} catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("IOException in reqDatabase");
+                System.out.println("IOException in getString()");
         	}
         }
         
-        private void dumpDatabase(InputStream in){
+        //writes to the file from the inputstream
+        private void getDatabase(InputStream in){
         	try{
         		System.out.println("listening for file contents...");
         		
@@ -226,12 +210,10 @@ public class StartServer {
                 System.out.println("wrote to file");
         	} catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("IOException in dumpDatabase");
+                System.out.println("IOException in getDatabase()");
         	}
         }
     }
-
-    
     
     // This finds the IP address that the socket is hosted on, so the server's IP/port
     // For all network interfaces and all IPs connected to said interfaces print
@@ -267,7 +249,6 @@ public class StartServer {
             }
 
         } catch (SocketException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             ip += "IOException in getIpAddress" + e.toString() + "\n";
         }
