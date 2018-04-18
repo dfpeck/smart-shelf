@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 
 
@@ -61,21 +60,18 @@ public class NetMat extends Thread {
         } 
     }
 
-    public void dump(File file){
+    //send file through socket.
+    public void sendFile(File file){
     	//create request string
-        String request = "0 " + "DumpDatabase~";
+        String intent = "SendDatabase~";
         
 		try {
+			//send intent
 			out.flush();
-			out.write(request.getBytes());
+			out.write(intent.getBytes());
 			out.flush();
-	        
-	        // send request through socket
-	        System.out.println("sending request through socket...");
-	        System.out.println("string sent: " + request);
+	        System.out.println("sendDatabase intent sent");
 	    	
-	    	System.out.println("sending databaseToSend.txt to server...");
-	
 	        //byte array with size of the file 
 	        byte[] bytes = new byte[(int) file.length()];
 	
@@ -100,45 +96,37 @@ public class NetMat extends Thread {
 	        	System.out.println("FileNotFoundException in dump()");
 	        }
 	        
-	        System.out.println("Dumped Database");
+	        System.out.println("Sent Database");
         
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("IOException in dump()");
+			System.out.println("IOException in sendDatabase()");
 		}
     }
     
-    public void request(String str){
+    //send str through socket
+    public void sendString(String str){
     	//create request string
-        String request = str;
-        StringBuilder sb = new StringBuilder();
+        String intent = "SendString~";
         
         try {
-        	//send request
+        	//send intent
         	out.flush();
-        	out.write(request.getBytes());
+        	out.write(intent.getBytes());
         	out.flush();
-	        System.out.println("sending request through socket...");
-	        System.out.println("string sent: " + request);
-
-            // Read from input stream. Note: inputStream.read() will block
-            // if no data return
-            System.out.println("Reading in response from socket...");
-            int byteRead = 0;
-            while (byteRead != -1) {
-                byteRead = in.read();
-                if (byteRead == 126) {
-                    byteRead = -1;
-                } else {
-                    sb.append((char) byteRead);
-                }
-            }
+	        System.out.println("sendString intent sent...");
 	        
-            System.out.println(sb.toString());
+	        //send string
+	        out.flush();
+        	out.write(str.getBytes());
+        	out.flush();
+        	out.write("~".getBytes());
+        	out.flush();
+	        System.out.println("string sent: " + str);
 	        
         } catch (IOException e){
 			e.printStackTrace();
-			System.out.println("IOException in request()");
+			System.out.println("IOException in sendString()");
         }
     }
 
@@ -153,7 +141,8 @@ public class NetMat extends Thread {
                 System.out.println("IOException when closing socket...");
                 return;
             }
-        }else if (listenSocket != null){
+        }
+    	if (listenSocket != null){
         	try {
             	System.out.println("closing socket");
                 listenSocket.close();
@@ -163,7 +152,8 @@ public class NetMat extends Thread {
                 System.out.println("IOException when closing socket...");
                 return;
             }
-        }else if (serverSocket != null){
+        }
+    	if (serverSocket != null){
         	try {
             	System.out.println("closing socket");
                 listenSocket.close();
@@ -180,9 +170,9 @@ public class NetMat extends Thread {
 
         private Socket socket;
         StringBuilder sb = new StringBuilder();
-        String[][] fakeDatabase;
         InputStream in = null;
         OutputStream out = null;
+        String intent = "";
 
         NetMatRequestThread(Socket socket) {
         	System.out.println("NetMatRequestThread constructor...");
@@ -195,14 +185,6 @@ public class NetMat extends Thread {
 				System.out.println("IOException in NetMatRequestThread constructor...");
 				e.printStackTrace();
 			}
-            
-            
-            //fake database that i'll be pulling from. Will need to edit code to interface with real database API
-            fakeDatabase = new String[][]{
-	                {"Bucket of bolts", "10lb"},
-	                {"Box of Nails", "5lb"},
-	                {"Cup of Screws", "2lb"}
-            };
         }
 
         @Override
@@ -219,8 +201,7 @@ public class NetMat extends Thread {
 	                //reset stringbuilder buffer
 	                sb.setLength(0);
 	                
-	                System.out.println("attempting to read in from socket...");
-	                
+	                System.out.println("attempting to read intent...");
 	                while (byteRead != -1) {
 	                    byteRead = in.read();
 	                    if (byteRead == 126){
@@ -229,37 +210,12 @@ public class NetMat extends Thread {
 	                        sb.append((char) byteRead);
 	                    }
 	                }
-	
-	                //split the front and back of the string into item ID and purpose
-	                String[] request = new String[2];
-	                request[0] = "";
-	                request[1] = "";
-	                request = sb.toString().split(" ");
-	
-	                //check for errors in user input
-	                System.out.println("request[0] is currently: " + request[0]);
-	                System.out.println("request[1] is currently: " + request[1]);
-	                if(Integer.parseInt(request[0]) > fakeDatabase.length){
-	                    request[0] = "";
-	                    request[1] = "";
-	
-	                    // send response
-	                    System.out.println("outputting response to socket...");
-	                    out.flush();
-	                    out.write(("Number exceeds entries in database(" + fakeDatabase.length + ").~").getBytes());
-	                    out.flush();
-	
-	                    System.out.println("User entered number too large for database.");
-	
-	                }
-	                
-	                System.out.println("request[0] is currently: " + request[0]);
-	                System.out.println("request[1] is currently: " + request[1]);
+	                intent = sb.toString();
 	
 	                /** then checking and responding **/
 	                // compare lexigraphically since bytes will be different
-	                if(request[1].compareTo("ReqDatabase") == 0){
-	                	reqDatabase(out);
+	                if(intent.compareTo("SendString") == 0){
+	                	getString(out);
 	                }
             	}
 
@@ -281,30 +237,27 @@ public class NetMat extends Thread {
             }
         }
 
-        private void reqDatabase(OutputStream out){
+        private void getString(OutputStream out){
         	try{
-        		System.out.println("outputting response to socket...");
-        
-    	        //get file from external storage
-        		URL url = getClass().getResource("databaseToSend.txt");
-                File file = new File(url.getPath());
-    	
-    	        byte[] bytes = new byte[(int) file.length()];
-    	        BufferedInputStream bIn;
-    	
-    	        //read in from the file
-    	        bIn = new BufferedInputStream(new FileInputStream(file));
-    	        bIn.read(bytes, 0, bytes.length);
-    	
-    	        //output on socket
-    	        out.flush();
-    	        out.write(bytes, 0, bytes.length);
-    	        out.flush();
-    	        out.write("~".getBytes());
-    	        out.flush();
-    	
-    	        bIn.close();
-    	        System.out.println("Requested Database");
+        		sb.setLength(0);
+
+        		System.out.println("listening for string...");
+        		 // Read from input stream. Note: inputStream.read() will block
+                // if no data return
+        		int byteRead = 0;
+                while (byteRead != -1) {
+                    byteRead = in.read();
+                    if (byteRead == 126){
+                        byteRead = -1;
+                    }else {
+                        sb.append((char) byteRead);
+                    }
+                }
+        		
+    	        //just print the string for now
+                //TODO put string in queue
+                System.out.println(sb.toString());
+                
         	} catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("IOException in reqDatabase");

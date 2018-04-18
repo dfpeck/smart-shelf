@@ -22,19 +22,16 @@ public class TestMat{
        
        /* choose network function */
        while(choice != 3){
-	       System.out.println("(1) Dump DB, (2) Request Item Record, (3) Exit: ");
+	       System.out.println("(1) Send Database, (2) Send String, (3) Exit: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   //get file from external storage
 	    	   URL url = TestMat.class.getResource("databaseToSend.txt");
 	           File file = new File(url.getPath());
 	           
-	    	   netMat.dump(file);
-	       }else if(choice == 2){
-	    	   //number on the left is the id of record requested
-	    	   String str = "1 Record~";
-	    	   
-	    	   netMat.request(str);
+	    	   netMat.sendFile(file);
+	       }else if(choice == 2){ 
+	    	   netMat.sendString("This is from TestMat");
 	       }else if(choice == 3){
 	    	   netMat.close();
 	       }

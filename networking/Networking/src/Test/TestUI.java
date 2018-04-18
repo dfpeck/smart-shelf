@@ -20,13 +20,11 @@ public class TestUI {
        
        /* choose network function */
        while(choice != 3){
-	       System.out.println("(1) Mat DB Dump, (2) Request new item, (3) Exit: ");
+	       System.out.println("(1) Mat DB Dump, (2) End server communication: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
-	    	   netUI.dump();
+	    	   netUI.sendString("This is from TestUI");
 	       }else if(choice == 2){
-	    	   netUI.request();
-	       }else if(choice == 3){
 	    	   netUI.close();
 	       }
        }
