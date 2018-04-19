@@ -25,15 +25,17 @@ public class TestMat{
 	       System.out.println("(1) Send Database, (2) Send String, (3) Exit: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
-	    	   //get file from external storage
-	    	   URL url = TestMat.class.getResource("databaseToSend.txt");
-	           File file = new File(url.getPath());
-	           
-	    	   netMat.sendDB(file);
+		   //get file from external storage
+
+		   URL url = TestMat.class.getResource("databaseToSend.txt");
+		   File file = new File(url.getPath());
+		   
+
+		   netMat.sendDB(file);
 	       }else if(choice == 2){ 
-	    	   netMat.sendString("This is from TestMat");
+		   netMat.sendString("This is from TestMat");
 	       }else if(choice == 3){
-	    	   netMat.close();
+		   netMat.close();
 	       }
        }
        scanner.close();
