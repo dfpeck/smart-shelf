@@ -1,0 +1,5 @@
+-d bin/
+src/netNode/StartServer.java
+src/netNode/NetServer.java
+src/Test/TestStartServer.java
+src/Test/TestServer.java

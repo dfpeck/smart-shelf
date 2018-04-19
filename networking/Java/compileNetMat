@@ -1,0 +1,3 @@
+-d bin/
+src/netNode/NetMat.java
+src/Test/TestMat.java

@@ -1,0 +1,3 @@
+-d bin/
+src/netNode/NetUI.java
+src/Test/TestUI.java
