@@ -1,8 +1,10 @@
 package db;
 
+import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.Array;
 import java.sql.Timestamp;
+import java.sql.ResultSet;
 
 import java.sql.SQLException;
 
@@ -36,6 +38,68 @@ public class HistoryRecord extends TableRecord {
         y = y_;
     }
 
+    public HistoryRecord (Db db_, ResultSet rs) throws SQLException {
+        db = db_;
+        item = ItemsRecord.selectById(db_, rs.getLong("item"));
+        datetime = rs.getTimestamp("datetime");
+        mat = MatsRecord.selectById(db_, rs.getLong("mat"));
+        eventType = EventType.values()[rs.getInt("eventType")];
+        sensors = sqlArrayToDoubleArray(rs.getArray("sensors"));
+        x = rs.getDouble("x");
+        y = rs.getDouble("y");
+    }
+
+    public HistoryRecord (Db db_, ResultSet rs, int row) throws SQLException {
+        this(db_, getAdjustedResultSet(rs, row));
+    }
+
+
+    /* QUERY METHODS */
+    public static HistoryRecord
+        selectById (Db db_, HistoryKey key_) throws SQLException {
+        // HistoryRecord's unusual key structure requires a specialized function
+        PreparedStatement statement =
+            db_.conn.prepareStatement("SELECT * FROM History"
+                                      + " WHERE item = ? AND datetime = ?;");
+        statement.setLong(1, key_.itemId());
+        statement.setTimestamp(2, key_.datetime());
+        return new HistoryRecord (db_, statement.executeQuery(), 1);
+    }
+
+    public static HistoryRecord
+        selectById (Db db_, ItemsRecord item_, Timestamp datetime_) throws SQLException {
+        return selectById(db_, new HistoryKey(item_.id(), datetime_));
+    }
+
+    public static HistoryRecord[]
+        selectByItem (Db db_, ItemsRecord item_) throws SQLException {
+        PreparedStatement statement =
+            db_.conn.prepareStatement("SELECT * FROM History"
+                                      + " WHERE item = ?"
+                                      + " ORDER BY datetime DESC;",
+                                      ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                      ResultSet.CONCUR_READ_ONLY);
+        statement.setLong(1, item_.id());
+        ResultSet rs = statement.executeQuery();
+
+        HistoryRecord[] records;
+        if (rs.last()) {
+            records = new HistoryRecord[rs.getRow()];
+            rs.beforeFirst();
+        }
+        else {
+            records = new HistoryRecord[0];
+        }
+
+        int row = 0;
+        while (rs.next()) {
+            records[row] = new HistoryRecord (db_, rs);
+            row++;
+        }
+
+        return records;
+    }
+
 
     /* INSERTION METHODS */
     /** @brief Insert a new record into the History table without creating an
@@ -52,12 +116,12 @@ public class HistoryRecord extends TableRecord {
      * @param mat_ `matId` of the mat on which the event took place.
      * @param eventType_ `eventTypeId` of the associated EventType.
      * @param sensors_ The change in sensor readings caused by the event.
-     * @param x_ x-coordinate on the mat at which the event took place.
+     * @param x_ x-coordinate on the mat at which the//  event took place.
      * @param y_ y-coordinate of the mat at which the event took place.
      *
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns `null`.
-     */ 
+     */
     public static HistoryKey insert (Db db_,
                                      long item_,
                                      Timestamp datetime_,
@@ -70,7 +134,7 @@ public class HistoryRecord extends TableRecord {
             db_.conn.prepareStatement("INSERT INTO History"
                                      + "(item, datetime, mat, eventtype,"
                                      + " sensors, x, y)"
-                                     + " VALUES (?, ?, ?, ?, ?, ?, ?);");
+                                      + " VALUES (?, ?, ?, ?, ?, ?, ?);");
         statement.setLong(1, item_);
         statement.setTimestamp(2, datetime_);
         statement.setLong(3, mat_);
@@ -78,6 +142,7 @@ public class HistoryRecord extends TableRecord {
         statement.setArray(5, db_.conn.createArrayOf("DOUBLE", sensors_));
         statement.setDouble(6, x_);
         statement.setDouble(7, y_);
+        statement.executeUpdate();
         return new HistoryKey(item_, datetime_);
     }
 
@@ -98,7 +163,7 @@ public class HistoryRecord extends TableRecord {
      *
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns `null`.
-     */ 
+     */
     public static HistoryKey insert (Db db_,
                                      HistoryKey key,
                                      long mat_,
@@ -106,9 +171,18 @@ public class HistoryRecord extends TableRecord {
                                      Double[] sensors_,
                                      Double x_,
                                      Double y_) throws SQLException {
-        insert(db_, key.getItem(), key.getDatetime(), mat_, eventType_,
+        insert(db_, key.itemId(), key.datetime(), mat_, eventType_,
                sensors_, x_, y_);
         return key;
     }
+
+
+    /** STANDARD METHODS */
+    public String toString () {
+        return "History<"
+            + Long.toString(item.id()) + ", "
+            + datetime.toString() + ", "
+            + eventType.name()
+            + ">";
+    }
 }
-                                     

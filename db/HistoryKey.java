@@ -17,13 +17,13 @@ public class HistoryKey {
     /* GETTERS */
     /** @return The `itemId` of the Item record associated with this key
      */
-    public long getItemId () {
+    public long itemId () {
         return itemId;
     }
 
     /** @return The datetime associated with this record
      */
-    public Timestamp getDatetime () {
+    public Timestamp datetime () {
         return (Timestamp) datetime.clone();
     }
 

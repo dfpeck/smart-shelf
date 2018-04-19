@@ -2,6 +2,7 @@ package db;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Array;
 
 import java.sql.SQLException;
 
@@ -44,5 +45,15 @@ abstract class TableRecord {
         ResultSet rs = statement.executeQuery();
         rs.next();
         return rs;
+    }
+
+    protected static Double [] sqlArrayToDoubleArray (Array arr) throws SQLException {
+        Object[] objArr = (Object[]) arr.getArray();
+        Double[] dblArr = new Double[objArr.length];
+
+        for (int i=0; i < objArr.length; i++)
+            dblArr[i] = Double.parseDouble(objArr[i].toString());
+
+        return  dblArr;
     }
 }

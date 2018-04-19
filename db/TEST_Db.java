@@ -13,7 +13,7 @@ public class TEST_Db {
     static HashMap<Integer, String> tests = new HashMap<Integer, String>();
     static long itemTypeId=1, itemId=1, matId=1;
     static String matTypeId="DUMMYTEST";
-    static HistoryKey historyId;
+    static HistoryKey historyId = new HistoryKey(itemId, new Timestamp(System.currentTimeMillis()));
 
     public static void main (String[] args) {
         int choice;
@@ -160,7 +160,7 @@ public class TEST_Db {
             System.out.print("Inserting to History...");
             historyId = HistoryRecord.insert(db, itemId,
                                              new Timestamp(System.currentTimeMillis()),
-                                             matId, 1, new Double[] {1.0, 2.0},
+                                             matId, EventType.ADDED.ordinal(), new Double[] {1.0, 2.0},
                                              0.0, 0.0);
             if (historyId == null) return false;
             System.out.println("inserted History record " + historyId);
@@ -198,6 +198,13 @@ public class TEST_Db {
             ItemsRecord item =
                 ItemsRecord.selectById(db, itemId);
             System.out.println("Selected: " + item.toString());
+
+            System.out.print("Selecting from History...");
+            HistoryRecord[] history =
+                HistoryRecord.selectByItem(db, item);
+            for (HistoryRecord h : history)
+                System.out.print(h.toString() + "  ");
+            System.out.println();
 
             db.close();
         }
