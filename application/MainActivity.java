@@ -1,33 +1,48 @@
-package com.example.shy16.smartshelf;
+package com.example.shy16.expandablelistview;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.content.Intent;
-import android.widget.TextView;
+import android.widget.ExpandableListView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG ="MainActivity";
-
+    private ExpandableListView listView;
+    private ExpandableListAdapter listAdapter;
+    private List<String> listDataHeader;
+    private HashMap<String,List<String>> listHash;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d(TAG, "onCreate: Starting.");
 
-        Button list = (Button) findViewById(R.id.List);
+        listView = (ExpandableListView)findViewById(R.id.lvExp);
+        initData();
+        listAdapter = new ExpandableListAdapter(this,listDataHeader,listHash);
+        listView.setAdapter(listAdapter);
 
-        list.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: Clicked list.");
+    }
 
-                Intent intent = new Intent(MainActivity.this, List.class);
-                startActivity(intent);
-            }
-        });
+    private void initData() {
+        listDataHeader = new ArrayList<>();
+        listHash = new HashMap<>();
+
+        listDataHeader.add("First Item");
+        listDataHeader.add("Second item");
+
+        List<String> item1 = new ArrayList<>();
+        item1.add("This is Expandable ListView");
+
+        List<String> item2 = new ArrayList<>();
+        item2.add("Item 2 expanded ListView");
+        item2.add("Subpoint 2");
+        item2.add("subpoint 3");
+
+        listHash.put(listDataHeader.get(0),item1);
+        listHash.put(listDataHeader.get(1),item2);
+
     }
 }

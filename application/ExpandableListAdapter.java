@@ -1,4 +1,4 @@
-package com.example.shy16.smartshelf;
+package com.example.shy16.expandablelistview;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -8,17 +8,19 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.List;
+
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
     private List<String> listDataHeader;
-    private HashMap<String,List<String>> listHashMap;
+    private HashMap<String, List<String>> listHashMap;
 
-    public ExpandableListAdapter(Context context, List listDataHeader, HashMap<String, List<String>> listHashMap) {
+    public ExpandableListAdapter (Context context, List<String> listDataHeader, HashMap<String, List<String>> listHashMap) {
         this.context = context;
         this.listDataHeader = listDataHeader;
         this.listHashMap = listHashMap;
     }
-
 
     @Override
     public int getGroupCount() {
@@ -37,17 +39,17 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int i, int i1) {
-        return listHashMap.get(listDataHeader.get(i)).get(i1); // i = Group Item, i1 = ChildItem
+        return listHashMap.get(listDataHeader.get(i)).get(i1); //i = Group item, i1 = child item
     }
 
     @Override
     public long getGroupId(int i) {
-        return 0;
+        return i;
     }
 
     @Override
     public long getChildId(int i, int i1) {
-        return 0;
+        return i1;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if(view == null)
         {
             LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.list_group, null);
+            view = inflater.inflate(R.layout.list_group,null);
         }
         TextView lblListHeader = (TextView)view.findViewById(R.id.lblListHeader);
         lblListHeader.setTypeface(null, Typeface.BOLD);
@@ -71,13 +73,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int i, int i1, boolean b, View view, ViewGroup viewGroup) {
-        final String childText = (String)getChild(i,i1);
+        final String childText = (String)getChild(i, i1);
         if(view == null)
         {
             LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.list_item, null);
+            view = inflater.inflate(R.layout.list_item,null);
         }
-
         TextView txtListChild = (TextView)view.findViewById(R.id.lblListItem);
         txtListChild.setText(childText);
         return view;

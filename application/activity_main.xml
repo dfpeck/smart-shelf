@@ -4,16 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.shy16.smartshelf.MainActivity">
+    tools:context=".MainActivity">
 
+    <ExpandableListView
+        android:id="@+id/lvExp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></ExpandableListView>
 
-    <Button
-        android:id="@+id/List"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Show List"
-        tools:layout_editor_absoluteX="148dp"
-        tools:layout_editor_absoluteY="83dp" />
 </RelativeLayout>
