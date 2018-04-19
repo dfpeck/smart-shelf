@@ -100,6 +100,23 @@ public class HistoryRecord extends TableRecord {
         return records;
     }
 
+    public static HistoryRecord[]
+        selectLatestByItem (Db db_, ItemsRecord item_, int count) throws SQLException {
+        HistoryRecord[] countedRecords = new HistoryRecord[count];
+        HistoryRecord[] allRecords = selectByItem(db_, item_); // get all History records for `item_`
+
+        // Return Only `count` Records //
+        for (int i=0; i<count; i++)
+            countedRecords[i] = allRecords[i];
+
+        return countedRecords;
+    }
+
+    public static HistoryRecord
+        selectLatestByItem (Db db_, ItemsRecord item_) throws SQLException {
+        return selectLatestByItem(db_, item_, 1)[0];
+    }
+
 
     /* INSERTION METHODS */
     /** @brief Insert a new record into the History table without creating an
