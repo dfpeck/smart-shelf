@@ -13,13 +13,19 @@ The android files are projects for android studio. You'll need android studio to
 which you can do on an emulator or through connecting your phone to the pc.
 ## Java ##
 netNode package code may be compiled using:
+
 javac @compileNetMat
+
 javac @compileNetUI
+
 javac @compileStartServer
 
 and then ran using:
+
 java netNode.TEST_NetMat
+
 java netNode.TEST_NetUI
+
 java netNode.TEST_StartServer
 
 # Style Guidelines #
