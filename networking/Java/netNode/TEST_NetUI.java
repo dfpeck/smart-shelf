@@ -20,7 +20,7 @@ public class TEST_NetUI {
        
        /* choose network function */
        while(choice != 3){
-	       System.out.println("(1) Mat DB Dump, (2) End server communication: ");
+	       System.out.println("(1) Send String, (2) End server communication: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   netUI.sendString("This is from TestUI");

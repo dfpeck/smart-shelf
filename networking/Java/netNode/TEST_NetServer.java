@@ -15,7 +15,7 @@ public class TEST_NetServer {
     	   choice = netServer.checkIfSocketClosed(choice);
     	   
     	   //prompt user for input
-	       System.out.println("(1) sendString, (2) End server communication: ");
+	       System.out.println("(1) Send String, (2) End server communication: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   netServer.sendString("This is sent from TestServer");
