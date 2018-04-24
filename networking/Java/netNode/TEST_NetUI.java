@@ -1,12 +1,10 @@
-package Test;
+package netNode;
 
-import java.io.File;
-import java.net.URL;
 import java.util.Scanner;
 
-import netNode.NetMat;
+import netNode.NetUI;
 
-public class TestMat{
+public class TEST_NetUI {
    public static void main(String[] args) {
 	   String ip = "";
 	   int choice = 0;
@@ -17,25 +15,17 @@ public class TestMat{
        ip = scanner.nextLine();
        
        //initialize socket in new thread
-       NetMat netMat = new NetMat(ip);
-	   netMat.start();
+       NetUI netUI = new NetUI(ip);
+	   netUI.start();
        
        /* choose network function */
        while(choice != 3){
-	       System.out.println("(1) Send Database, (2) Send String, (3) Exit: ");
+	       System.out.println("(1) Mat DB Dump, (2) End server communication: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
-		   //get file from external storage
-
-		   URL url = TestMat.class.getResource("databaseToSend.txt");
-		   File file = new File(url.getPath());
-		   
-
-		   netMat.sendDB(file);
-	       }else if(choice == 2){ 
-		   netMat.sendString("This is from TestMat");
-	       }else if(choice == 3){
-		   netMat.close();
+	    	   netUI.sendString("This is from TestUI");
+	       }else if(choice == 2){
+	    	   netUI.close();
 	       }
        }
        scanner.close();

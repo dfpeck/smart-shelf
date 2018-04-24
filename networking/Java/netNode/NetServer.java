@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import Test.TestServer;
+import Test.TEST_NetServer;
 
 
 public class NetServer extends Thread {
@@ -37,7 +37,9 @@ public class NetServer extends Thread {
     }
 	
     public void run() {
-    	TestServer testServer = new TestServer();
+		//starts loop for user input in new thead. Not needed in final implementation, as they'll
+		//be calling the functions of their own accord.
+    	TEST_NetServer testServer = new TEST_NetServer();
     	testServer.test(this);
     	System.out.println("NetServer ready for function calls...");
     }

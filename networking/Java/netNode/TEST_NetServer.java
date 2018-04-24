@@ -1,10 +1,10 @@
-package Test;
+package netNode;
 
 import java.util.Scanner;
 
 import netNode.NetServer;
 
-public class TestServer {
+public class TEST_NetServer {
     public void test(NetServer netServer) {
 	   int choice = 0;
 	   Scanner scanner = new Scanner(System.in);

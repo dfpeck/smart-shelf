@@ -1,8 +1,8 @@
-package Test;
+package netNode;
 
 import netNode.StartServer;
 
-public class TestStartServer {
+public class TEST_StartServer {
 	   public static void main(String[] args) {
 		   
 		   StartServer server = new StartServer();

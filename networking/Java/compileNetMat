@@ -1,3 +1,2 @@
--d bin/
-src/netNode/NetMat.java
-src/Test/TestMat.java
+netNode/NetMat.java
+netNode/TEST_NetMat.java
