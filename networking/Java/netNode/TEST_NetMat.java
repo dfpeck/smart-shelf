@@ -27,7 +27,7 @@ public class TEST_NetMat{
 	       if(choice == 1){
 		   //get file from external storage
 
-		   URL url = TestMat.class.getResource("databaseToSend.txt");
+		   URL url = TEST_NetMat.class.getResource("databaseToSend.txt");
 		   File file = new File(url.getPath());
 		   
 
