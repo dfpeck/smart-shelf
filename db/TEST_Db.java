@@ -1,10 +1,10 @@
 package db;
 
 import java.sql.*;
-import java.io.Console;
 import java.io.File;
 import java.util.Vector;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class TEST_Db {
     static String prompt = "> ";
@@ -15,7 +15,7 @@ public class TEST_Db {
     public static void main (String[] args) {
         int choice;
         boolean loop = true;
-        Console console = System.console();
+		Scanner scanner = new Scanner(System.in);
 
         System.out.println("Testing " + testDbFile.getAbsolutePath());
 
@@ -31,7 +31,7 @@ public class TEST_Db {
                 System.out.format("%2d) %s%n", test, tests.get(test));
             System.out.format("%2d) Run all tests%n", 0);
             System.out.format("%2d) Exit\n", -1);
-            choice = Integer.parseInt(console.readLine(prompt));
+            choice = Integer.parseInt(scanner.nextLine());
 
             switch (choice) {
             case -1:
