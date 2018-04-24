@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import db.Db;
 
 public class NetMat extends Thread {
 
@@ -61,7 +62,7 @@ public class NetMat extends Thread {
     }
 
     //send file through socket.
-    public void sendDB(File file){
+    public void sendDB(Db db){
     	//create request string
         String intent = "SendDatabase~";
         
@@ -72,6 +73,9 @@ public class NetMat extends Thread {
 			out.flush();
 	        System.out.println("sendDatabase intent sent");
 	    	
+			Db db;
+			File file = db.getFile();
+			
 	        //byte array with size of the file 
 	        byte[] bytes = new byte[(int) file.length()];
 	

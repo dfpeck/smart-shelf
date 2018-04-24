@@ -88,6 +88,7 @@ public class StartServer {
         InputStream in = null;
         OutputStream out = null;
         String intent = "";
+		Db db;
 
         StartServerRequestThread(Socket socket) {
         	System.out.println("socket thread constructor...");
@@ -194,7 +195,7 @@ public class StartServer {
         		System.out.println("listening for file contents...");
         		
             	//open file
-        		URL url = getClass().getResource("databaseToReceive.txt");
+        		URL url = getClass().getResource("NewDatabase.db");
                 File file = new File(url.getPath());
                 //will need to increase size of byte array if information exceeds 1024 bytes
                 byte[] bytes = new byte[1024];
@@ -206,6 +207,11 @@ public class StartServer {
                 
                 //closing stream objects
                 bOut.close();
+				
+				//set file on db object and return it.
+				db.setFile(file);
+				
+				return db;
                 
                 System.out.println("wrote to file");
         	} catch (IOException e) {
