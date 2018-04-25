@@ -88,7 +88,7 @@ public class StartServer {
         InputStream in = null;
         OutputStream out = null;
         String intent = "";
-		Db db = new Db();
+		Db db = null;
 
         StartServerRequestThread(Socket socket) {
         	System.out.println("socket thread constructor...");
@@ -192,25 +192,14 @@ public class StartServer {
         //writes to the file from the inputstream
         private void getDatabase(InputStream in){
         	try{
-        		System.out.println("listening for file contents...");
-        		
-            	//open file
-                File file = new File("netNode\\NewDatabase.db");
-                //will need to increase size of byte array if information exceeds 1024 bytes
-                byte[] bytes = new byte[1024];
-                BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
-
-                //read in from the socket input stream and write to file output stream
-                int bytesRead = in.read(bytes, 0, bytes.length);
-                bOut.write(bytes, 0, bytesRead);
-                
-                //closing stream objects
-                bOut.close();
+        		ObjectInputStream is = new ObjectInputStream(in);
 				
-				db.setFile(file);
-				System.out.println("set db.file to received file");
+				db = (Db) is.readObject();
+				
+				File file = new File("netNode\\NewDatabase.db");
+				file = db.getFile();
+				
                 
-                System.out.println("wrote to file");
         	} catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("IOException in getDatabase()");

@@ -73,24 +73,11 @@ public class NetMat extends Thread {
 			out.flush();
 	        System.out.println("sendDatabase intent sent");
 	    	
-			File file = db.getFile();
+			ObjectOutputStream os = new ObjectOutputStream(out);
+			os.writeObject(db);
 			
-	        //byte array with size of the file 
-	        byte[] bytes = new byte[(int) file.length()];
-	
-	        //read in from the file
-	        try{
-	        	BufferedInputStream bIn = new BufferedInputStream(new FileInputStream(file));
-	        	
-	        	bIn.read(bytes, 0, bytes.length);
-	        	
-		        //output on socket
-	        	out.flush();
-	        	out.write(bytes, 0, bytes.length);
-	        	out.flush();
-		
-		        bIn.close();
-	        	
+			os.close();
+			
 	        } catch (FileNotFoundException e)
 	        {
 	        	e.printStackTrace();
