@@ -88,8 +88,6 @@ public class NetMat extends Thread {
 	        	out.flush();
 	        	out.write(bytes, 0, bytes.length);
 	        	out.flush();
-	        	out.write("~".getBytes());
-	        	out.flush();
 		
 		        bIn.close();
 	        	

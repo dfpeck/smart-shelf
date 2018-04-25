@@ -88,7 +88,7 @@ public class StartServer {
         InputStream in = null;
         OutputStream out = null;
         String intent = "";
-		Db db;
+		Db db = new Db();
 
         StartServerRequestThread(Socket socket) {
         	System.out.println("socket thread constructor...");
@@ -195,8 +195,7 @@ public class StartServer {
         		System.out.println("listening for file contents...");
         		
             	//open file
-        		URL url = getClass().getResource("NewDatabase.db");
-                File file = new File(url.getPath());
+                File file = new File("netNode\\NewDatabase.db");
                 //will need to increase size of byte array if information exceeds 1024 bytes
                 byte[] bytes = new byte[1024];
                 BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
