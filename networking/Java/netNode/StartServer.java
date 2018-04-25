@@ -1,17 +1,15 @@
 package netNode;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.URL;
 import java.util.Enumeration;
 
 
@@ -194,7 +192,12 @@ public class StartServer {
         	try{
         		ObjectInputStream is = new ObjectInputStream(in);
 				
-				db = (Db) is.readObject();
+				try {
+					db = (Db) is.readObject();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+					System.out.println("ClassNotFoundException in getDatabase()");
+				}
 				
 				File file = new File("netNode\\NewDatabase.db");
 				file = db.getFile();

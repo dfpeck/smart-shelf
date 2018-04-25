@@ -1,11 +1,8 @@
 package netNode;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -77,15 +74,8 @@ public class NetMat extends Thread {
 			os.writeObject(db);
 			
 			os.close();
-			
-	        } catch (FileNotFoundException e)
-	        {
-	        	e.printStackTrace();
-	        	System.out.println("FileNotFoundException in dump()");
-	        }
 	        
 	        System.out.println("Sent Database");
-        
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("IOException in sendDatabase()");
