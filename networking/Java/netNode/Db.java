@@ -1,14 +1,14 @@
-package db;
+package netNode;
 
 import java.io.File;
 
-import java.io.FileNotFoundException;
+import java.net.URL;
 
 public class Db {
     private File file;
 
     public Db () {
-        URL url = TEST_NetMat.class.getResource("SendDatabase.db");
+        URL url = Db.class.getResource("SendDatabase.db");
 		File file = new File(url.getPath());
     }
 
@@ -16,7 +16,7 @@ public class Db {
 		return file;
 	}
 	
-	public File setFile(File file) {
+	public void setFile(File file) {
 		this.file = file;
 	}
 }

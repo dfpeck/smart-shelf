@@ -208,10 +208,8 @@ public class StartServer {
                 //closing stream objects
                 bOut.close();
 				
-				//set file on db object and return it.
 				db.setFile(file);
-				
-				return db;
+				System.out.println("set db.file to received file");
                 
                 System.out.println("wrote to file");
         	} catch (IOException e) {

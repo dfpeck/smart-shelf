@@ -12,6 +12,12 @@ public class TEST_NetMat{
 	   int choice = 0;
 	   Scanner scanner = new Scanner(System.in);
 	   
+	   //setup database object
+	   Db db = new Db();
+	   URL url = TEST_NetMat.class.getResource("SendDatabase.db");
+	   File file = new File(url.getPath());
+	   db.setFile(file);
+	   
 	   /* need to manually input ip until ip scanner function is created */
        System.out.println("Input ip to connect to: ");
        ip = scanner.nextLine();
@@ -25,17 +31,11 @@ public class TEST_NetMat{
 	       System.out.println("(1) Send Database, (2) Send String, (3) Exit: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
-		   //get file from external storage
-
-		   URL url = TEST_NetMat.class.getResource("databaseToSend.txt");
-		   File file = new File(url.getPath());
-		   
-
-		   netMat.sendDB(file);
+	    	   netMat.sendDB(db);
 	       }else if(choice == 2){ 
-		   netMat.sendString("This is from TestMat");
+	    	   netMat.sendString("This is from TestMat");
 	       }else if(choice == 3){
-		   netMat.close();
+	    	   netMat.close();
 	       }
        }
        scanner.close();

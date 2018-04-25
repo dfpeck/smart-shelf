@@ -11,7 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import db.Db;
+import netNode.Db;
 
 public class NetMat extends Thread {
 
@@ -73,7 +73,6 @@ public class NetMat extends Thread {
 			out.flush();
 	        System.out.println("sendDatabase intent sent");
 	    	
-			Db db;
 			File file = db.getFile();
 			
 	        //byte array with size of the file 
