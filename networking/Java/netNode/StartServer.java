@@ -87,7 +87,7 @@ public class StartServer {
         InputStream in = null;
         OutputStream out = null;
         String intent = "";
-		Db db = null;
+		Db db = new Db();
 
         StartServerRequestThread(Socket socket) {
         	System.out.println("socket thread constructor...");
