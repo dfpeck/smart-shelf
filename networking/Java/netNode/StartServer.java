@@ -1,9 +1,10 @@
 package netNode;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -190,19 +191,25 @@ public class StartServer {
         //writes to the file from the inputstream
         private void getDatabase(InputStream in){
         	try{
-        		ObjectInputStream is = new ObjectInputStream(in);
-				
-				try {
-					db = (Db) is.readObject();
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-					System.out.println("ClassNotFoundException in getDatabase()");
-				}
-				
-				File file = new File("netNode\\NewDatabase.db");
-				file = db.getFile();
-				
+        		System.out.println("listening for file contents...");
+        		
+            	//open file
+                File file = new File("netNode\\NewDatabase.db");
+                //will need to increase size of byte array if information exceeds 1024 bytes
+                byte[] bytes = new byte[1024];
+                BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
+
+                //read in from the socket input stream and write to file output stream
+                int bytesRead = in.read(bytes, 0, bytes.length);
+                bOut.write(bytes, 0, bytesRead);
                 
+                //closing stream objects
+                bOut.close();
+				
+				db.setFile(file);
+				System.out.println("set db.file to received file");
+                
+                System.out.println("wrote to file");
         	} catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("IOException in getDatabase()");

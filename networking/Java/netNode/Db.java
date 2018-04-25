@@ -1,10 +1,9 @@
 package netNode;
 
 import java.io.File;
-import java.io.Serializable;
 import java.net.URL;
 
-public class Db implements Serializable{
+public class Db{
     private File file;
 
     public Db () {
