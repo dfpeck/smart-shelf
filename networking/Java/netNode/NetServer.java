@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import Test.TEST_NetServer;
+import netNode.TEST_NetServer;
 
 
 public class NetServer extends Thread {
