@@ -42,7 +42,6 @@ public class TEST_NetMat{
 	    	   System.out.println(netMat.pop());
 	    	   System.out.println(netMat.pop());
 	       }else if(choice == 4){
-	    
 	    	   netMat.close();
 	       }
        }
