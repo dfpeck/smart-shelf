@@ -18,7 +18,9 @@ public class TEST_NetServer {
 	       System.out.println("(1) Send String, (2) End server communication: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
-	    	   netServer.sendString("This is sent from TestServer");
+	    	   netServer.sendString("This is sent from TestServer.");
+	    	   netServer.sendString("This is also from Test Server.");
+	    	   netServer.sendString("Same.");
 	       }
 	       
 	       

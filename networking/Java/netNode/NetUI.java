@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 public class NetUI extends Thread {
@@ -19,6 +21,7 @@ public class NetUI extends Thread {
     Socket sendSocket = null;
     Socket listenSocket = null;
     ServerSocket serverSocket = null;
+    Queue<String> queue = new LinkedList<>();
 
     public NetUI(String ip) {
         this.ip = ip;
@@ -118,6 +121,16 @@ public class NetUI extends Thread {
         }
     }
 
+    public String pop(){
+    	if(queue.isEmpty())
+    	{
+    		return "empty";
+    	}else{
+    		return queue.remove();
+    	}
+    	
+    }
+    
     private class NetMatRequestThread extends Thread {
 
         private Socket socket;
@@ -206,9 +219,8 @@ public class NetUI extends Thread {
                     }
                 }
         		
-    	        //just print the string for now
-                //TODO put string in queue
-                System.out.println(sb.toString());
+    	        //add string to queue
+                queue.add(sb.toString());
                 
         	} catch (IOException e) {
                 e.printStackTrace();
