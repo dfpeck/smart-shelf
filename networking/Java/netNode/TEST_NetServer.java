@@ -10,7 +10,7 @@ public class TEST_NetServer {
 	   Scanner scanner = new Scanner(System.in);
        
        /* choose network function */
-       while(choice != 2){
+       while(choice != 3){
     	   //check if client has closed socket or not
     	   choice = netServer.checkIfSocketClosed(choice);
     	   

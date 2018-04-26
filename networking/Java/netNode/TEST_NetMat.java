@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 import netNode.NetMat;
+import netNode.Db;
 
 public class TEST_NetMat{
    public static void main(String[] args) {
@@ -27,7 +28,7 @@ public class TEST_NetMat{
 	   netMat.start();
        
        /* choose network function */
-       while(choice != 3){
+       while(choice != 4){
 	       System.out.println("(1) Send Database, (2) Send String, (3) Strings Retrieved, (4) Exit: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
