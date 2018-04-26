@@ -20,6 +20,7 @@ public class StartServer {
     ServerSocket serverSocket;
     static final int serverSocketPort = 8080;
     Queue<String> queue = new LinkedList<>();
+	static final String DATABASE_FILE_NAME = "TEST_inventory.mv.db";
 
     public StartServer() {
         SocketServerThread socketServerThread = new SocketServerThread(this);
@@ -210,9 +211,9 @@ public class StartServer {
         		System.out.println("listening for file contents...");
         		
             	//open file
-                File file = new File("NewDatabase.db");
+                File file = new File(DATABASE_FILE_NAME);
                 //will need to increase size of byte array if information exceeds 1024 bytes
-                byte[] bytes = new byte[1024];
+                byte[] bytes = new byte[100000];
                 BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
 
                 //read in from the socket input stream and write to file output stream
@@ -224,8 +225,6 @@ public class StartServer {
 				
 				db.setFile(file);
 				System.out.println("set db.file to received file");
-                
-                System.out.println("wrote to file");
         	} catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("IOException in getDatabase()");
