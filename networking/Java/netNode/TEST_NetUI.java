@@ -20,10 +20,12 @@ public class TEST_NetUI {
        
        /* choose network function */
        while(choice != 3){
-	       System.out.println("(1) Send String, (2) String Retrieved, (3) End server communication: ");
+	       System.out.println("(1) Send String, (2) Strings Retrieved, (3) End server communication: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
-	    	   netUI.sendString("This is from TestUI");
+	    	   netUI.sendString("This is sent from TestServer.");
+	    	   netUI.sendString("This is also from Test Server.");
+	    	   netUI.sendString("Same.");
 	       }else if(choice == 2){
 	    	   System.out.println(netUI.pop());
 	    	   System.out.println(netUI.pop());

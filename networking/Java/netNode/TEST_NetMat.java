@@ -28,13 +28,20 @@ public class TEST_NetMat{
        
        /* choose network function */
        while(choice != 3){
-	       System.out.println("(1) Send Database, (2) Send String, (3) Exit: ");
+	       System.out.println("(1) Send Database, (2) Send String, (3) Strings Retrieved, (4) Exit: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   netMat.sendDB(db);
 	       }else if(choice == 2){ 
-	    	   netMat.sendString("This is from TestMat");
-	       }else if(choice == 3){
+	    	   netMat.sendString("This is sent from TestServer.");
+	    	   netMat.sendString("This is also from Test Server.");
+	    	   netMat.sendString("Same.");
+	       }else if (choice == 3){
+	    	   System.out.println(netMat.pop());
+	    	   System.out.println(netMat.pop());
+	    	   System.out.println(netMat.pop());
+	       }else if(choice == 4){
+	    
 	    	   netMat.close();
 	       }
        }

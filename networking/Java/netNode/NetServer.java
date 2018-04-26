@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import netNode.TEST_NetServer;
+import netNode.StartServer;
 
 
 public class NetServer extends Thread {
@@ -16,9 +17,11 @@ public class NetServer extends Thread {
     Socket socket = null;
     InputStream in = null;
     OutputStream out = null;
+    StartServer startServer = null;
 
-    public NetServer(Socket s) {
+    public NetServer(Socket s, StartServer startServer) {
         socket = s;
+        this.startServer = startServer;
         
         try {
         	System.out.println("getting input and output streams for NetServer...");
@@ -74,6 +77,10 @@ public class NetServer extends Thread {
     		return 3;
     	}
 		return choice;
+    }
+    
+    public String pop(){
+    	return startServer.pop();
     }
 }
 

@@ -127,8 +127,7 @@ public class NetUI extends Thread {
     		return "empty";
     	}else{
     		return queue.remove();
-    	}
-    	
+    	} 	
     }
     
     private class NetMatRequestThread extends Thread {

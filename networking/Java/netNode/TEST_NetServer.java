@@ -15,12 +15,18 @@ public class TEST_NetServer {
     	   choice = netServer.checkIfSocketClosed(choice);
     	   
     	   //prompt user for input
-	       System.out.println("(1) Send String, (2) End server communication: ");
+	       System.out.println("(1) Send String, (2) Strings Retrieved, (3) End server communication: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   netServer.sendString("This is sent from TestServer.");
 	    	   netServer.sendString("This is also from Test Server.");
 	    	   netServer.sendString("Same.");
+	       }else if(choice == 2){
+	    	   System.out.println(netServer.pop());
+	    	   System.out.println(netServer.pop());
+	    	   System.out.println(netServer.pop());
+	       }else if(choice == 3){
+	    	   
 	       }
 	       
 	       

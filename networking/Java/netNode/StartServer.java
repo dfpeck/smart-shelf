@@ -12,14 +12,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 public class StartServer {
     ServerSocket serverSocket;
     static final int serverSocketPort = 8080;
+    Queue<String> queue = new LinkedList<>();
 
     public StartServer() {
-        SocketServerThread socketServerThread = new SocketServerThread();
+        SocketServerThread socketServerThread = new SocketServerThread(this);
         socketServerThread.start();
     }
 
@@ -37,12 +40,26 @@ public class StartServer {
             }
         }
     }
+    
+    public String pop(){
+    	if(queue.isEmpty())
+    	{
+    		return "empty";
+    	}else{
+    		return queue.remove();
+    	}
+    }
 
     // Creates a thread that listens on a port for incoming connects and
     // instantiates a listener thread for each of the connections requested.
     private class SocketServerThread extends Thread {
 
         int count = 0;
+        StartServer startServer = null;
+        
+        SocketServerThread(StartServer startServer){
+        	this.startServer = startServer;
+        }
 
         @Override
         public void run() {
@@ -70,7 +87,7 @@ public class StartServer {
                     
                     //create NetServer object in new thread so you can query the mat or UI
                     System.out.println("creating NetServer object...");
-                    new NetServer(sendSocket).start();
+                    new NetServer(sendSocket, startServer).start();
 
                 }
             } catch (IOException e) {
@@ -178,9 +195,8 @@ public class StartServer {
                     }
                 }
     	        
-                //just print the string for now
-                //TODO put string in queue
-                System.out.println(sb.toString());
+                //add string to queue
+                queue.add(sb.toString());
             	
         	} catch (IOException e) {
                 e.printStackTrace();
