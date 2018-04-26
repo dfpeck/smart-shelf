@@ -210,7 +210,7 @@ public class StartServer {
         		System.out.println("listening for file contents...");
         		
             	//open file
-                File file = new File("netNode\\NewDatabase.db");
+                File file = new File("NewDatabase.db");
                 //will need to increase size of byte array if information exceeds 1024 bytes
                 byte[] bytes = new byte[1024];
                 BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
