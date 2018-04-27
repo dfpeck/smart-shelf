@@ -24,9 +24,9 @@ public class StartServer {
 	NetServer netServer = null;
 
     public StartServer() {
-        new SocketServerThread().start();
-        NetServer netServer = new NetServer(this);
+    	NetServer netServer = new NetServer(this);
         netServer.start();
+    	new SocketServerThread(netServer).start();    
     }
 
     public int getPort() {
@@ -58,7 +58,12 @@ public class StartServer {
     private class SocketServerThread extends Thread {
 
         int count = 0;
-
+        NetServer netServer = null;
+        
+        SocketServerThread(NetServer netServer){
+        	this.netServer = netServer;
+        }
+        
         @Override
         public void run() {
             try {
@@ -153,7 +158,7 @@ public class StartServer {
         public void run() {
             try {
             	//while the socket is alive
-            	while(socket != null)
+            	while(socket != null && in != null && out != null)
             	{
 	            	/**First we're getting input from the client to see what it wants. **/
 	                int byteRead = 0;
