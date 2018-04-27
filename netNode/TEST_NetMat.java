@@ -25,7 +25,7 @@ public class TEST_NetMat{
 	   netMat.start();
        
        while(choice != 4){
-	       System.out.println("(1) Send Database, (2) Send String, (3) Strings Retrieved, (4) Exit: ");
+	       System.out.println("(1) Send Database\n(2) Send String\n(3) Strings Retrieved\n(4) Exit: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   netMat.sendDB(db);
