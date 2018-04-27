@@ -15,8 +15,16 @@ import java.util.Queue;
 
 import netNode.Db;
 
+/** @brief Class for connecting and interacting with server.
+ *
+ *	After connecting to the server functions become available for use.
+ *  Also creates a thread for receiving requests from the server.
+ *
+ *  @param ip Server ip address.
+ */
 public class NetMat extends Thread {
 
+	/*Properties*/
     IOException ioException;
     UnknownHostException unknownHostException;
     static final int port = 8080;
@@ -28,6 +36,7 @@ public class NetMat extends Thread {
     ServerSocket serverSocket = null;
     Queue<String> queue = new LinkedList<>();
 
+	/*Constructors*/
     public NetMat(String ip) {
         this.ip = ip;
         try {
@@ -38,6 +47,8 @@ public class NetMat extends Thread {
 		}
     }
 	
+	/*Thead execution start*/
+	@override
     public void run() {
 
         //create socket
@@ -64,7 +75,15 @@ public class NetMat extends Thread {
         } 
     }
 
-    //send file through socket.
+    /*Network Functions*/
+	/** @brief sends db through socket
+	 *
+	 * takes the file pointed to by the db object and sends it through
+	 * the socket.
+	 *
+	 * @param db The database object the file will be extracted from to 
+	 *           send across the network.
+	 */
     public void sendDB(Db db){
     	//create request string
         String intent = "SendDatabase~";
@@ -106,7 +125,10 @@ public class NetMat extends Thread {
 		}
     }
     
-    //send str through socket
+    /** @brief sends string through socket
+	 *
+	 * @param str The string to send to the server.
+	 */
     public void sendString(String str){
     	//create request string
         String intent = "SendString~";
@@ -132,6 +154,10 @@ public class NetMat extends Thread {
         }
     }
 
+	/** @brief closes the socket
+	 *
+	 *  closes the socket on the client side.
+	 */
     public void close(){
     	if (sendSocket != null) {
             try {
@@ -168,6 +194,10 @@ public class NetMat extends Thread {
         }
     }
 
+	/** @brief returns top of the string retrieved queue
+	 *
+	 *  @return "empty" if queue is empty. String at top of queue if not empty.
+	 */
     public String pop(){
     	if(queue.isEmpty())
     	{
@@ -177,14 +207,20 @@ public class NetMat extends Thread {
     	} 	
     }
     
+	/** @brief Helper class for retrieving requests from connected sockets
+	 *
+	 *  @param socket The socket that will be listened on.
+	 */
     private class NetMatRequestThread extends Thread {
 
+		/*Properties*/
         private Socket socket;
         StringBuilder sb = new StringBuilder();
         InputStream in = null;
         OutputStream out = null;
         String intent = "";
 
+		/*Constructors*/
         NetMatRequestThread(Socket socket) {
         	System.out.println("NetMatRequestThread constructor...");
             this.socket = socket;
@@ -198,20 +234,20 @@ public class NetMat extends Thread {
 			}
         }
 
+		/*Thead execution start*/
         @Override
         public void run() {
             try {
-            	//while the socket is alive
             	while(socket != null)
             	{
 	            	/**First we're getting input from the client to see what it wants. **/
 	                int byteRead = 0;
 	
-	                // Read from input stream. Note: inputStream.read() will block
-	                // if no data return
 	                //reset stringbuilder buffer
 	                sb.setLength(0);
 	                
+					// Read from input stream. Note: inputStream.read() will block
+	                // if no data return
 	                System.out.println("attempting to read intent...");
 	                while (byteRead != -1) {
 	                    byteRead = in.read();
@@ -226,7 +262,7 @@ public class NetMat extends Thread {
 	                /** then checking and responding **/
 	                // compare lexigraphically since bytes will be different
 	                if(intent.compareTo("SendString") == 0){
-	                	getString(out);
+	                	getString();
 	                }
             	}
 
@@ -248,12 +284,17 @@ public class NetMat extends Thread {
             }
         }
 
-        private void getString(OutputStream out){
+		/** @brief Helper function for reading a string from the socket
+		 *
+		 *  Reads in string from the socket and adds it to the queue that
+		 *  the user can retrieve later.
+		 */
+        private void getString(){
         	try{
+				//reset stringbuilder buffer
         		sb.setLength(0);
 
-        		System.out.println("listening for string...");
-        		 // Read from input stream. Note: inputStream.read() will block
+        		// Read from input stream. Note: inputStream.read() will block
                 // if no data return
         		int byteRead = 0;
                 while (byteRead != -1) {
@@ -267,10 +308,11 @@ public class NetMat extends Thread {
         		
                 //add string to queue
                 queue.add(sb.toString());
+				System.out.println("Retrieved string.");
                 
         	} catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("IOException in reqDatabase");
+                System.out.println("IOException in reqDatabase" + e.toString());
         	}
         }
         

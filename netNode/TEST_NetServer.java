@@ -14,7 +14,6 @@ public class TEST_NetServer {
     	   //check if client has closed socket or not
     	   choice = netServer.checkIfSocketClosed(choice);
     	   
-    	   //prompt user for input
 	       System.out.println("(1) Send String, (2) Strings Retrieved, (3) End server communication: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
@@ -28,8 +27,6 @@ public class TEST_NetServer {
 	       }else if(choice == 3){
 	    	   
 	       }
-	       
-	       
        }
        scanner.close();
        return;

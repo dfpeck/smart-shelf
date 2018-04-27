@@ -12,22 +12,19 @@ public class TEST_NetMat{
 	   String ip = "";
 	   int choice = 0;
 	   Scanner scanner = new Scanner(System.in);
+	   final String DATABASE_FILE_NAME = "TEST_inventory.mv.db";
 	   
-	   //setup database object
+	   File file = new File(DATABASE_FILE_NAME);
 	   Db db = new Db();
-	   URL url = TEST_NetMat.class.getResource("SendDatabase.db");
-	   File file = new File(url.getPath());
 	   db.setFile(file);
 	   
 	   /* need to manually input ip until ip scanner function is created */
        System.out.println("Input ip to connect to: ");
        ip = scanner.nextLine();
        
-       //initialize socket in new thread
        NetMat netMat = new NetMat(ip);
 	   netMat.start();
        
-       /* choose network function */
        while(choice != 4){
 	       System.out.println("(1) Send Database, (2) Send String, (3) Strings Retrieved, (4) Exit: ");
 	       choice = Integer.parseInt(scanner.nextLine());
@@ -48,4 +45,3 @@ public class TEST_NetMat{
        scanner.close();
    }		
 }
-   
