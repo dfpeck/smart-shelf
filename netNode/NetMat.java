@@ -218,7 +218,7 @@ public class NetMat extends Thread {
         StringBuilder sb = new StringBuilder();
         InputStream in = null;
         OutputStream out = null;
-        String intent = "";
+        String intent = "";  
 
 		/*Constructors*/
         NetMatRequestThread(Socket socket) {
@@ -263,6 +263,16 @@ public class NetMat extends Thread {
 	                // compare lexigraphically since bytes will be different
 	                if(intent.compareTo("SendString") == 0){
 	                	getString();
+	                }else if(intent.compareTo("GetIdentity") == 0){
+	                    try {        	        
+	            	        out.flush();
+	            	        out.write("mat~".getBytes());
+	            	        out.flush();
+	            	        System.out.println("Identity sent");
+	                    } catch (IOException e){
+	            			e.printStackTrace();
+	            			System.out.println("IOException sending identity");
+	                    }
 	                }
             	}
 

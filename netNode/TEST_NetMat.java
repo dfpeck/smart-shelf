@@ -1,7 +1,6 @@
 package netNode;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Scanner;
 
 import netNode.NetMat;
@@ -31,8 +30,8 @@ public class TEST_NetMat{
 	       if(choice == 1){
 	    	   netMat.sendDB(db);
 	       }else if(choice == 2){ 
-	    	   netMat.sendString("This is sent from TestServer.");
-	    	   netMat.sendString("This is also from Test Server.");
+	    	   netMat.sendString("This is sent from TEST_NetMat.");
+	    	   netMat.sendString("This is also from TEST_NetMat.");
 	    	   netMat.sendString("Same.");
 	       }else if (choice == 3){
 	    	   System.out.println(netMat.pop());

@@ -21,8 +21,8 @@ public class TEST_NetUI {
 	       System.out.println("(1) Send String, (2) Strings Retrieved, (3) End server communication: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
-	    	   netUI.sendString("This is sent from TestServer.");
-	    	   netUI.sendString("This is also from Test Server.");
+	    	   netUI.sendString("This is sent from TEST_NetUI.");
+	    	   netUI.sendString("This is also from TEST_NetUI.");
 	    	   netUI.sendString("Same.");
 	       }else if(choice == 2){
 	    	   System.out.println(netUI.pop());

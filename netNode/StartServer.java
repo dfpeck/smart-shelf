@@ -21,10 +21,12 @@ public class StartServer {
     static final int serverSocketPort = 8080;
     Queue<String> queue = new LinkedList<>();
 	static final String DATABASE_FILE_NAME = "TEST_inventory.mv.db";
+	NetServer netServer = null;
 
     public StartServer() {
-        SocketServerThread socketServerThread = new SocketServerThread(this);
-        socketServerThread.start();
+        new SocketServerThread().start();
+        NetServer netServer = new NetServer(this);
+        netServer.start();
     }
 
     public int getPort() {
@@ -56,17 +58,15 @@ public class StartServer {
     private class SocketServerThread extends Thread {
 
         int count = 0;
-        StartServer startServer = null;
-        
-        SocketServerThread(StartServer startServer){
-        	this.startServer = startServer;
-        }
 
         @Override
         public void run() {
             try {
                 // create ServerSocket using specified port
                 serverSocket = new ServerSocket(serverSocketPort);
+                OutputStream out = null;
+                InputStream in = null;
+                StringBuilder sb = new StringBuilder();
 
                 while (true) {
                     // block the call until connection is created and return
@@ -82,14 +82,42 @@ public class StartServer {
                     Socket sendSocket = new Socket(listenSocket.getInetAddress(), serverSocketPort);
                     System.out.println("created socket for sending requests...");
                     
-                    //listening for requests
+                    /*find identity of socket*/
+                    out = sendSocket.getOutputStream();
+                    in = sendSocket.getInputStream();
+                    String intent = "GetIdentity~";
+                    
+                    try {
+                    	out.flush();
+                    	out.write(intent.getBytes());
+                    	out.flush();
+            	        System.out.println("GetIdentity intent sent...");
+            	        
+        				//reset stringbuilder buffer
+                		sb.setLength(0);
+
+                		// Read from input stream. Note: inputStream.read() will block
+                        // if no data return
+                		int byteRead = 0;
+                        while (byteRead != -1) {
+                            byteRead = in.read();
+                            if (byteRead == 126){
+                                byteRead = -1;
+                            }else {
+                                sb.append((char) byteRead);
+                            }
+                        }           	        
+                    } catch (IOException e){
+            			e.printStackTrace();
+            			System.out.println("IOException in getIdentity");
+                    }
+                    
+                    /*start up send and receive threads*/
                     System.out.println("attempting to run request thread...");
                     new StartServerRequestThread(listenSocket).start();
                     
-                    //create NetServer object in new thread so you can query the mat or UI
-                    System.out.println("creating NetServer object...");
-                    new NetServer(sendSocket, startServer).start();
-
+                    System.out.println("setting new " + sb.toString() + " socket...");
+                    netServer.setSocket(sendSocket, sb.toString());
                 }
             } catch (IOException e) {
             	System.out.println("IOException in SocketServerThread");

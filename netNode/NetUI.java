@@ -46,7 +46,7 @@ public class NetUI extends Thread {
             //open socket for listening for requests from the server
         	listenSocket = serverSocket.accept();
         	
-        	new NetMatRequestThread(listenSocket).start();
+        	new NetUIRequestThread(listenSocket).start();
         	
         } catch (UnknownHostException e) {
             this.unknownHostException = e;
@@ -130,7 +130,7 @@ public class NetUI extends Thread {
     	} 	
     }
     
-    private class NetMatRequestThread extends Thread {
+    private class NetUIRequestThread extends Thread {
 
         private Socket socket;
         StringBuilder sb = new StringBuilder();
@@ -138,7 +138,7 @@ public class NetUI extends Thread {
         OutputStream out = null;
         String intent = "";
 
-        NetMatRequestThread(Socket socket) {
+        NetUIRequestThread(Socket socket) {
         	System.out.println("NetMatRequestThread constructor...");
             this.socket = socket;
             
@@ -179,7 +179,17 @@ public class NetUI extends Thread {
 	                /** then checking and responding **/
 	                // compare lexigraphically since bytes will be different
 	                if(intent.compareTo("SendString") == 0){
-	                	getString(out);
+	                	getString();
+	                }else if(intent.compareTo("GetIdentity") == 0){
+	                    try {        	        
+	            	        out.flush();
+	            	        out.write("ui~".getBytes());
+	            	        out.flush();
+	            	        System.out.println("Identity sent");
+	                    } catch (IOException e){
+	            			e.printStackTrace();
+	            			System.out.println("IOException sending identity");
+	                    }
 	                }
             	}
 
@@ -201,7 +211,7 @@ public class NetUI extends Thread {
             }
         }
 
-        private void getString(OutputStream out){
+        private void getString(){
         	try{
         		sb.setLength(0);
 

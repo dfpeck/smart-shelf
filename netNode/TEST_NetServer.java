@@ -10,22 +10,30 @@ public class TEST_NetServer {
 	   Scanner scanner = new Scanner(System.in);
        
        /* choose network function */
-       while(choice != 3){
+       while(choice != 6){
     	   //check if client has closed socket or not
     	   choice = netServer.checkIfSocketClosed(choice);
     	   
-	       System.out.println("(1) Send String, (2) Strings Retrieved, (3) End server communication: ");
+	       System.out.println("(1) Send String to mat, (2) Send String to UI, (3) Strings Retrieved, (4) Close socket with UI, (5) Close socket with Mat, (6) Close all sockets: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
-	    	   netServer.sendString("This is sent from TestServer.");
-	    	   netServer.sendString("This is also from Test Server.");
-	    	   netServer.sendString("Same.");
+	    	   netServer.sendStringToMat("This is sent from TestServer.");
+	    	   netServer.sendStringToMat("This is also from TestServer.");
+	    	   netServer.sendStringToMat("Same.");
 	       }else if(choice == 2){
-	    	   System.out.println(netServer.pop());
-	    	   System.out.println(netServer.pop());
-	    	   System.out.println(netServer.pop());
+	    	   netServer.sendStringToUI("This is sent from TestServer.");
+	    	   netServer.sendStringToUI("This is also from TestServer.");
+	    	   netServer.sendStringToUI("Same.");
 	       }else if(choice == 3){
-	    	   
+	    	   System.out.println(netServer.pop());
+	    	   System.out.println(netServer.pop());
+	    	   System.out.println(netServer.pop());
+	       }else if(choice == 4){
+	    	   // TODO close socket with UI
+	       }else if(choice == 5){
+	    	   // TODO close socket with mat
+	       }else if(choice == 6){
+	    	   // TODO close both sockets
 	       }
        }
        scanner.close();
