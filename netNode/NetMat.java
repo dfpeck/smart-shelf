@@ -48,7 +48,7 @@ public class NetMat extends Thread {
     }
 	
 	/*Thead execution start*/
-	@override
+	@Override
     public void run() {
 
         //create socket
