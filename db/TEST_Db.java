@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class TEST_Db {
     static String prompt = "> ";
-    static String testDbName = "./TEST_inventory";
+    static String testDbName = "./inventory";
     static File testDbFile = new File(testDbName + ".mv.db");
     static HashMap<Integer, String> tests = new HashMap<Integer, String>();
 
