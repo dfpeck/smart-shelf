@@ -71,7 +71,7 @@ public class Db {
         conn = DriverManager.getConnection("jdbc:h2:" + name);
 
         if (needsPopulation) // if the database needs tables
-            if (!create()) // populate it, and on failure…
+            if (!create()) // populate it, and on failure...
                 return false;
 
         isOpen = true;
