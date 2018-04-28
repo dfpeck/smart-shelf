@@ -6,9 +6,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import netNode.TEST_NetServer;
-import netNode.StartServer;
-
+import netNode.StartServerSocket;
+import db.Db;
 
 public class NetServer extends Thread {
 
@@ -20,23 +19,28 @@ public class NetServer extends Thread {
     Socket uiSocket = null;
     InputStream uiIn = null;
     OutputStream uiOut = null;
-    StartServer startServer = null;
+    StartServerSocket startServerSocket = null;
+    Db db = null;
 
-    public NetServer(StartServer startServer) {
-        this.startServer = startServer;
+    public NetServer(StartServerSocket startServerSocket, Db db) {
+        this.startServerSocket = startServerSocket;
+        this.db = db;
     }
 	
     public void run() {
-		//starts loop for user input in new thead. Not needed in final implementation, as they'll
-		//be calling the functions of their own accord.
-    	TEST_NetServer testServer = new TEST_NetServer();
-    	testServer.test(this);
+		/*starts loop for user input in new thead. Not needed in final implementation, as they'll
+		  be calling the functions of their own accord.*/
+    	//TEST_NetServer testServer = new TEST_NetServer();
+    	//testServer.test(this);
+    	ServerInteractor serverInteractor = new ServerInteractor();
+    	serverInteractor.main(this, db);
+    	
+    	
     	System.out.println("NetServer ready for function calls...");
     }
     
     public void setSocket(Socket socket, String client){
-		System.out.println("comparison time...");
-		if(client.compareTo("mat") == 0){
+    	if(client == "mat"){
             try {
             	System.out.println("getting input and output streams for NetServer...");
             	matSocket = socket;
@@ -52,7 +56,7 @@ public class NetServer extends Thread {
                 System.out.println("IOException in socket creation");
                 return;
             }
-    	}else if(client.compareTo("ui") == 0){
+    	}else if(client == "ui"){
             try {
             	System.out.println("getting input and output streams for NetServer...");
             	uiSocket = socket;
@@ -71,7 +75,7 @@ public class NetServer extends Thread {
     	}
     }
     
-    public void sendStringToMat(String str){
+    public boolean sendStringToMat(String str){
     	//create request string
         String intent = "SendString~";
         
@@ -88,14 +92,16 @@ public class NetServer extends Thread {
 	        matOut.write("~".getBytes());
 	        matOut.flush();
 	        System.out.println("string sent: " + str);
+	        return true;
 	       
         } catch (IOException e){
 			e.printStackTrace();
 			System.out.println("IOException in request()");
+			return false;
         }
     }
     
-    public void sendStringToUI(String str){
+    public boolean sendStringToUI(String str){
     	//create request string
         String intent = "SendString~";
         
@@ -112,10 +118,12 @@ public class NetServer extends Thread {
 	        uiOut.write("~".getBytes());
 	        uiOut.flush();
 	        System.out.println("string sent: " + str);
+	        return true;
 	       
         } catch (IOException e){
 			e.printStackTrace();
 			System.out.println("IOException in request()");
+			return false;
         }
     }
 
@@ -134,6 +142,6 @@ public class NetServer extends Thread {
     }
     
     public String pop(){
-    	return startServer.pop();
+    	return startServerSocket.pop();
     }
 }

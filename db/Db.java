@@ -32,6 +32,10 @@ public class Db {
         return isOpen;
     }
 
+	public String getFileName() {
+		return name;
+	}
+	
     /* INITIALIZATION METHODS */
     /** @brief Create a new database.
      *
@@ -67,7 +71,7 @@ public class Db {
         conn = DriverManager.getConnection("jdbc:h2:" + name);
 
         if (needsPopulation) // if the database needs tables
-            if (!create()) // populate it, and on failureâ€¦
+            if (!create()) // populate it, and on failure…
                 return false;
 
         isOpen = true;
@@ -82,7 +86,11 @@ public class Db {
     }
 
     /* UPDATE METHODS */
-
+    public void copy_contents(Db db){
+    	System.out.println("copy contents of new_db into db");
+    }
+    
+    
     /* HELPER FUNCTIONS */
     public static Vector<String> readSqlFromFile (String sqlFileName) {
         Scanner sqlScanner;
@@ -90,7 +98,7 @@ public class Db {
             // pattern to match strings with at least one non-whitespace
             // character
         Vector<String> sqlStatements = new Vector<String>();
-        String inStr, sqlStr;
+        //String inStr, sqlStr;
 
         try {
             sqlScanner = new Scanner(new File(sqlFileName));

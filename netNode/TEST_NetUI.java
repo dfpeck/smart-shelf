@@ -18,7 +18,7 @@ public class TEST_NetUI {
 	   netUI.start();
        
        while(choice != 3){
-	       System.out.println("(1) Send String\n(2) Strings Retrieved\n(3) End server communication: ");
+	       System.out.println("(1) Send String, (2) Strings Retrieved, (3) End server communication: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   netUI.sendString("This is sent from TEST_NetUI.");

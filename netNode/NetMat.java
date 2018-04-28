@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import netNode.Db;
+import db.Db;
 
 /** @brief Class for connecting and interacting with server.
  *
@@ -95,7 +95,7 @@ public class NetMat extends Thread {
 			out.flush();
 	        System.out.println("sendDatabase intent sent");
 	    	
-			File file = db.getFile();
+			File file = new File(db.getFileName() + ".mv.db");
 			
 			//byte array with size of the file 
 	        byte[] bytes = new byte[(int) file.length()];

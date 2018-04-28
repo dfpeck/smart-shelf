@@ -14,7 +14,7 @@ public class TEST_NetServer {
     	   //check if client has closed socket or not
     	   choice = netServer.checkIfSocketClosed(choice);
     	   
-	       System.out.println("(1) Send String to mat\n(2) Send String to UI\n(3) Strings Retrieved\n(4) Close socket with UI\n(5) Close socket with Mat\n(6) Close all sockets: ");
+	       System.out.println("(1) Send String to mat, (2) Send String to UI, (3) Strings Retrieved, (4) Close socket with UI, (5) Close socket with Mat, (6) Close all sockets: ");
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   netServer.sendStringToMat("This is sent from TestServer.");
