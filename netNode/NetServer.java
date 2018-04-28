@@ -40,7 +40,7 @@ public class NetServer extends Thread {
     }
     
     public void setSocket(Socket socket, String client){
-    	if(client == "mat"){
+    	if(client.compareTo("mat") == 0){
             try {
             	System.out.println("getting input and output streams for NetServer...");
             	matSocket = socket;
@@ -56,7 +56,7 @@ public class NetServer extends Thread {
                 System.out.println("IOException in socket creation");
                 return;
             }
-    	}else if(client == "ui"){
+    	}else if(client.compareTo("ui") == 0){
             try {
             	System.out.println("getting input and output streams for NetServer...");
             	uiSocket = socket;
