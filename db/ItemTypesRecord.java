@@ -39,13 +39,8 @@ public class ItemTypesRecord extends TableRecord {
     /* QUERY METHODS */
     public static ItemTypesRecord
         selectById (Db db_, long itemTypeId_) throws SQLException {
-        PreparedStatement statement =
-            db_.conn.prepareStatement("SELECT * FROM ITEMTYPES"
-                                      + " WHERE ITEMTYPEID = ?;");
-        statement.setLong(1, itemTypeId_);
-        ResultSet rs = statement.executeQuery();
-        rs.next();
-        return new ItemTypesRecord(db_, rs);
+        return new ItemTypesRecord(db_, selectByIdLong(db_, itemTypeId_,
+                                                       "ItemTypes", "itemTypeId"));
     }
 
 
@@ -116,6 +111,37 @@ public class ItemTypesRecord extends TableRecord {
         return insertAndRetrieveLongKey(db_, statement);
     }
 
+
+    /* ACCESSORS */
+    /** Unique ID for the item type.
+     * @return itemTypeId
+     */
+    public long getId () {
+        return itemTypeId;
+    }
+
+    /** User-friendly name for the item type.
+     * @return itemTypeName
+     */
+    public String getName () {
+        return itemTypeName;
+    }
+
+    /** Comment describing the item type.
+     * @return itemTypeComment
+     */
+    public String getComment () {
+        return itemTypeComment;
+    }
+
+    /** Whether this type of item acts as a container.
+     * @return isContainer
+     */
+    public boolean isContainer () {
+        return isContainer;
+    }
+
+
     /* STANDARD METHODS */
     public String toString () {
         String containerYN;
@@ -126,6 +152,6 @@ public class ItemTypesRecord extends TableRecord {
         return "ItemTypes<"
             + Long.toString(itemTypeId) + ", "
             + "'" + itemTypeName + "', "
-            + "conatainer: " + containerYN + ">";
+            + "container: " + containerYN + ">";
     }
 }

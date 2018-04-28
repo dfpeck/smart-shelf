@@ -1,6 +1,7 @@
 package db;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import java.sql.SQLException;
 
@@ -21,6 +22,24 @@ public class MatsRecord extends TableRecord {
         matId = matId_;
         matType = matType_;
         matComment = matComment_;
+    }
+
+    public MatsRecord (Db db_, ResultSet rs) throws SQLException {
+        db = db_;
+        matId = rs.getLong("matId");
+        matType = MatTypesRecord.selectById(db_, rs.getString("matType"));
+        matComment = rs.getString("matComment");
+    }
+
+    public MatsRecord (Db db_, ResultSet rs, int row) throws SQLException {
+        this(db_, getAdjustedResultSet(rs, row));
+    }
+
+
+    /* SELECTION METHODS */
+    public static MatsRecord
+        selectById (Db db_, long matId_) throws SQLException {
+        return new MatsRecord(db_, selectByIdLong(db_, matId_, "Mats", "matId"));
     }
 
 
@@ -80,5 +99,35 @@ public class MatsRecord extends TableRecord {
         statement.setString(3, matComment_);
         statement.executeUpdate();
         return matId_;
+    }
+
+
+    /* ACCESSORS */
+    /** Unique ID for the mat.
+     * @return matId
+     */
+    public long getId () {
+        return matId;
+    }
+
+    /** The mat type associated with this mat.
+     * @return record IDed by matType
+     */
+    public MatTypesRecord getType () {
+        return matType;
+    }
+
+    /** Comment describing the mat.
+     * @return matComment
+     */
+    public String getComment () {
+        return matComment;
+    }
+
+
+    /* STANDARD METHODS */
+    public String toString () {
+        return "Mats<" + Long.toString(matId) + ","
+            + " '" + matType + "'>";
     }
 }

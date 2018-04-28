@@ -11,9 +11,9 @@ public class TEST_Db {
     static String testDbName = "./TEST_inventory";
     static File testDbFile = new File(testDbName.substring(2) + ".mv.db");
     static HashMap<Integer, String> tests = new HashMap<Integer, String>();
-    static long itemTypeId=1, itemId, matId;
-    static String matTypeId;
-    static HistoryKey historyId;
+    static long itemTypeId=1, itemId=1, matId=1;
+    static String matTypeId="DUMMYTEST";
+    static HistoryKey historyId = new HistoryKey(itemId, new Timestamp(System.currentTimeMillis()));
 
     public static void main (String[] args) {
         int choice;
@@ -83,6 +83,7 @@ public class TEST_Db {
         }
         else {
             System.out.println(test + " specifies no test");
+            return;
         }
 
         if (success)
@@ -149,7 +150,7 @@ public class TEST_Db {
             System.out.println("Inserted Items record "+ Long.toString(itemId));
 
             System.out.print("Inserting to MatTypes...");
-            matTypeId = MatTypesRecord.insert(db, "DUMMYTEST", "Dummy record for testing");
+            matTypeId = MatTypesRecord.insert(db, matTypeId, "Dummy record for testing");
             System.out.println("inserted MatTypes record " + matTypeId);
 
             System.out.print("Inserting to Mats...");
@@ -159,7 +160,7 @@ public class TEST_Db {
             System.out.print("Inserting to History...");
             historyId = HistoryRecord.insert(db, itemId,
                                              new Timestamp(System.currentTimeMillis()),
-                                             matId, 1, new Double[] {1.0, 2.0},
+                                             matId, EventType.ADDED.ordinal(), new Double[] {1.0, 2.0},
                                              0.0, 0.0);
             if (historyId == null) return false;
             System.out.println("inserted History record " + historyId);
@@ -182,6 +183,26 @@ public class TEST_Db {
             ItemTypesRecord itemType =
                 ItemTypesRecord.selectById(db, itemTypeId);
             System.out.println("Selected: " + itemType.toString());
+
+            System.out.print("Selecting from MatTypes...");
+            MatTypesRecord matType =
+                MatTypesRecord.selectById(db, matTypeId);
+            System.out.println("Selected: " + matType.toString());
+
+            System.out.print("Selecting from Mats...");
+            MatsRecord mat =
+                MatsRecord.selectById(db, matId);
+            System.out.println("Selected: " + mat.toString());
+
+            System.out.print("Selecting from Items...");
+            ItemsRecord item =
+                ItemsRecord.selectById(db, itemId);
+            System.out.println("Selected: " + item.toString());
+
+            System.out.print("Selecting from History...");
+            HistoryRecord history =
+                HistoryRecord.selectLatestByItem(db, item);
+            System.out.println("Selected: " + history.toString());
 
             db.close();
         }

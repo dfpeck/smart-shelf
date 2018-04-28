@@ -1,6 +1,8 @@
 package db;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
 
 import java.sql.SQLException;
 
@@ -15,12 +17,30 @@ public class ItemsRecord extends TableRecord {
     /* CONSTRUCTORS */
     public ItemsRecord (Db db_,
                         long itemId_,
-                        ItemTypesRecord itemType_//,
-                        /*HistoryRecord lastHistory_*/) {
+                        ItemTypesRecord itemType_,
+                        HistoryRecord lastHistory_) {
         db = db_;
         itemId = itemId_;
         itemType = itemType_;
-        // lastHistory = lastHistory_;
+        lastHistory = lastHistory_;
+    }
+
+    public ItemsRecord (Db db_, ResultSet rs) throws SQLException {
+        db = db_;
+        itemId = rs.getLong("itemId");
+        itemType = ItemTypesRecord.selectById(db_, rs.getLong("itemType"));
+        lastHistory = HistoryRecord.selectLatestByItem(db, this);
+    }
+
+    public ItemsRecord (Db db_, ResultSet rs, int row) throws SQLException {
+        this(db_, getAdjustedResultSet(rs, row));
+    }
+
+
+    /* QUERY METHODS */
+    public static ItemsRecord selectById (Db db_, long itemId_)
+        throws SQLException {
+        return new ItemsRecord(db_, selectByIdLong(db_, itemId_, "Items", "itemId"));
     }
 
 
@@ -74,5 +94,88 @@ public class ItemsRecord extends TableRecord {
         statement.setLong(1, itemId_);
         statement.setLong(2, itemType_);
         return insertAndRetrieveLongKey(db_, statement);
+    }
+
+
+    /* ACCESSORS */
+    /** @brief Unique ID for the item. */
+    public long getId () {
+        return itemId;
+    }
+
+    /** @brief The item type associated with this item. */
+    public ItemTypesRecord getType () {
+        return itemType;
+    }
+
+    /** @brief The last time this item was modified. */
+    public Timestamp getLastModified () {
+        return lastHistory.getDatetime();
+    }
+
+    /** @brief Whether the item is on a mat or not. */
+    public boolean isOnMat () {
+        return lastHistory.isOnMat();
+    }
+
+    /** @brief The mat the item is on.
+     *
+     * Returns `null` if the item is not on a mat.
+     */
+    public MatsRecord getMat () {
+        if (isOnMat())
+            return lastHistory.getMat();
+        else
+            return null;
+    }
+
+    /** @brief The weight of the item. **/
+    public Double getWeight () {
+        return lastHistory.getWeight();
+    }
+
+    /** @brief The x-coordinate of the item on its mat.
+     *
+     * Returns `null` if the item is not on a mat.
+     */
+    public Double getX () {
+        if (isOnMat())
+            return lastHistory.getX();
+        else
+            return null;
+    }
+
+    /** @brief The y-coordinate of the item on its mat.
+     *
+     * Returns `null` if the item is not on a mat.
+     */
+    public Double getY () {
+        if (isOnMat())
+            return lastHistory.getY();
+        else
+            return null;
+    }
+
+    /** @brief The coordinates of the item on its mat.
+     *
+     * Returns `null` if the item is not on a mat.
+     */
+    public Double[] getCoords () {
+        return lastHistory.getCoords();
+    }
+
+    /** @brief The most recent History record associated with the item. */
+    public HistoryRecord lastHistory () {
+        return lastHistory;
+    }
+
+
+    /* STANDARD METHODS */
+    public String toString () {
+        return "Items<"
+            + Long.toString(itemId) + ", "
+            + "type: " + itemType.getName() + ", "
+            + "weight: " + getWeight()
+            + ">";
     }
 }

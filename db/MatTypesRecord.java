@@ -1,6 +1,7 @@
 package db;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import java.sql.SQLException;
 
@@ -17,6 +18,22 @@ public class MatTypesRecord extends TableRecord {
         db = db_;
         matTypeId = matTypeId_;
         matTypeComment = matTypeComment_;
+    }
+
+    public MatTypesRecord (Db db_, ResultSet rs) throws SQLException {
+        this(db_, rs.getString("matTypeId"), rs.getString("matTypeComment"));
+    }
+
+    public MatTypesRecord (Db db_, ResultSet rs, int row) throws SQLException {
+        this(db_, getAdjustedResultSet(rs, row));
+    }
+
+
+    /* SELECTION METHODS */
+    public static MatTypesRecord
+        selectById (Db db_, String matTypeId_) throws SQLException {
+        return new MatTypesRecord(db_,  selectByIdString(db_, matTypeId_,
+                                                         "MatTypes", "matTypeId"));
     }
 
 
@@ -45,5 +62,27 @@ public class MatTypesRecord extends TableRecord {
         statement.setString(2, matTypeComment_);
         statement.executeUpdate();
         return matTypeId_;
+    }
+
+
+    /* ACCESSORS */
+    /** Unique ID for the mat type.
+     * @return matTypeId
+     */
+    public String getId () {
+        return matTypeId;
+    }
+
+    /** Comment describing the mat type.
+     * @return matTypeComment
+     */
+    public String getComment () {
+        return matTypeComment;
+    }
+
+
+    /* STANDARD METHODS */
+    public String toString () {
+        return "MatTypes<'" + matTypeId + "'>";
     }
 }
