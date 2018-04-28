@@ -64,6 +64,13 @@ public class HistoryRecord extends TableRecord {
 
 
     /* QUERY METHODS */
+    /** @brief Select a History record using its ID (primary key value).
+     *
+     * @param db_ Db object connected to the database to be queried
+     * @param key_ ID of the History record
+     *
+     * @return HistoryRecord representing the selected record
+     */
     public static HistoryRecord
         selectById (Db db_, HistoryKey key_) throws SQLException {
         // HistoryRecord's unusual key structure requires a specialized function
@@ -75,13 +82,63 @@ public class HistoryRecord extends TableRecord {
         return new HistoryRecord (db_, statement.executeQuery(), 1);
     }
 
+    /** @brief Select a History record using its ID (primary key value).
+     *
+     * @param db_ Db object connected to the database to be queried
+     * @param item_ Items record associated with the History record
+     * @param datetime_ java.sql.Timestamp associated with the History record
+     *
+     * @return HistoryRecord representing the selected record
+     */
     public static HistoryRecord
         selectById (Db db_, ItemsRecord item_, Timestamp datetime_) throws SQLException {
         return selectById(db_, new HistoryKey(item_.getId(), datetime_));
     }
 
+    /** @brief Select the single most recent History record associated with a
+     * particular item.
+     *
+     * @param db_ Db object connected to the database to be queried
+     * @param item_ Items record to query the history of
+     *
+     * @param HistoryRecord representing the selected record
+     */
+    public static HistoryRecord
+        selectLatestByItem (Db db_, ItemsRecord item_) throws SQLException {
+        return selectLatestByItem(db_, item_, 1)[0];
+    }
+
+    /** @brief Select the `count` most recent History records associated with a
+     * particular item.
+     *
+     * @param db_ Db object connected to the database to be queried
+     * @param item_ Items record to query the history of
+     * @param count number of records to return
+     *
+     * @return list of HistoryRecords representing the selected records
+     */
     public static HistoryRecord[]
-        selectByItem (Db db_, ItemsRecord item_) throws SQLException {
+        selectLatestByItem (Db db_, ItemsRecord item_, int count) throws SQLException {
+        HistoryRecord[] countedRecords = new HistoryRecord[count];
+        HistoryRecord[] allRecords = selectAllByItem(db_, item_); // get all History records for `item_`
+
+        // Return Only `count` Records //
+        for (int i=0; i<count; i++)
+            countedRecords[i] = allRecords[i];
+
+        return countedRecords;
+    }
+
+    /** @brief Select all History records associated with a particular item.
+     *
+     * @param db_ Db object connected to the database to be queried
+     * @param item_ Items record to query the history of
+     *
+     * @return list of HistoryRecords representing the selected
+     * records in reverse chronological order
+     */
+    public static HistoryRecord[]
+        selectAllByItem (Db db_, ItemsRecord item_) throws SQLException {
         PreparedStatement statement =
             db_.conn.prepareStatement("SELECT * FROM History"
                                       + " WHERE item = ?"
@@ -107,23 +164,6 @@ public class HistoryRecord extends TableRecord {
         }
 
         return records;
-    }
-
-    public static HistoryRecord[]
-        selectLatestByItem (Db db_, ItemsRecord item_, int count) throws SQLException {
-        HistoryRecord[] countedRecords = new HistoryRecord[count];
-        HistoryRecord[] allRecords = selectByItem(db_, item_); // get all History records for `item_`
-
-        // Return Only `count` Records //
-        for (int i=0; i<count; i++)
-            countedRecords[i] = allRecords[i];
-
-        return countedRecords;
-    }
-
-    public static HistoryRecord
-        selectLatestByItem (Db db_, ItemsRecord item_) throws SQLException {
-        return selectLatestByItem(db_, item_, 1)[0];
     }
 
 
@@ -204,47 +244,59 @@ public class HistoryRecord extends TableRecord {
 
 
     /* ACCESSORS */
+    /** @brief The item associated with the event. */
     public ItemsRecord getItem () {
         return item;
     }
 
+    /** @brief The time at which the event occurred. */
     public Timestamp getDatetime () {
         return datetime;
     }
 
+    /** @brief Whether the associated item was on a mat or not after the event. */
     public boolean isOnMat () {
         return eventType != EventType.REMOVED;
             // || eventType == EventType.DISABLED);
     }
 
+    /** @brief The mat associated with the event. */
     public MatsRecord getMat () {
         return mat;
     }
     
-
+    /** @brief The type of event that occurred. */
     public EventType getEventType () {
         return eventType;
     }
 
+    /** @brief The change in sensor readings the event produced. */
     public Double[] getSensors () {
         return sensors;
     }
 
+    /** @brief The weight of the associated item after the event. */
     public Double getWeight () {
         Double weight = 0.0;
         for (Double d : sensors)
             weight += d;
-        return weight;
+        return Math.abs(weight);
     }
 
+    /** @brief The x-coordinate of the associated item on the associated mat
+     * after the event. */
     public Double getX () {
         return x;
     }
 
+    /** @brief The y-coordinate of the associated item on the associated mat
+     * after the event. */
     public Double getY () {
         return y;
     }
 
+    /** @brief The coordinates of the associated item on the associated mat
+     * after the event. */
     public Double[] getCoords () {
         return new Double[]{x, y};
     }

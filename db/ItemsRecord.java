@@ -98,28 +98,30 @@ public class ItemsRecord extends TableRecord {
 
 
     /* ACCESSORS */
-    /** Unique ID for the item.
-     * @return itemId
-     */
+    /** @brief Unique ID for the item. */
     public long getId () {
         return itemId;
     }
 
-    /** The item type associated with this item.
-     * @return record IDed by itemType
-     */
+    /** @brief The item type associated with this item. */
     public ItemTypesRecord getType () {
         return itemType;
     }
 
+    /** @brief The last time this item was modified. */
     public Timestamp getLastModified () {
         return lastHistory.getDatetime();
     }
 
+    /** @brief Whether the item is on a mat or not. */
     public boolean isOnMat () {
         return lastHistory.isOnMat();
     }
 
+    /** @brief The mat the item is on.
+     *
+     * Returns `null` if the item is not on a mat.
+     */
     public MatsRecord getMat () {
         if (isOnMat())
             return lastHistory.getMat();
@@ -127,18 +129,15 @@ public class ItemsRecord extends TableRecord {
             return null;
     }
 
-    public EventType getEventType () {
-        return lastHistory.getEventType();
-    }
-
-    public Double[] getSensors () {
-        return lastHistory.getSensors();
-    }
-
+    /** @brief The weight of the item. **/
     public Double getWeight () {
         return lastHistory.getWeight();
     }
 
+    /** @brief The x-coordinate of the item on its mat.
+     *
+     * Returns `null` if the item is not on a mat.
+     */
     public Double getX () {
         if (isOnMat())
             return lastHistory.getX();
@@ -146,6 +145,10 @@ public class ItemsRecord extends TableRecord {
             return null;
     }
 
+    /** @brief The y-coordinate of the item on its mat.
+     *
+     * Returns `null` if the item is not on a mat.
+     */
     public Double getY () {
         if (isOnMat())
             return lastHistory.getY();
@@ -153,6 +156,7 @@ public class ItemsRecord extends TableRecord {
             return null;
     }
 
+    /** @brief The most recent History record associated with the item. */
     public HistoryRecord lastHistory () {
         return lastHistory;
     }
