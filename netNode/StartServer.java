@@ -3,7 +3,7 @@ package netNode;
 import netNode.StartServerSocket;
 
 import java.sql.SQLException;
-import org.h2.tools.Server;
+//import org.h2.tools.Server;
 
 import db.Db;
 
