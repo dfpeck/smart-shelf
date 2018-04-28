@@ -156,6 +156,14 @@ public class ItemsRecord extends TableRecord {
             return null;
     }
 
+    /** @brief The coordinates of the item on its mat.
+     *
+     * Returns `null` if the item is not on a mat.
+     */
+    public Double[] getCoords () {
+        return lastHistory.getCoords();
+    }
+
     /** @brief The most recent History record associated with the item. */
     public HistoryRecord lastHistory () {
         return lastHistory;
