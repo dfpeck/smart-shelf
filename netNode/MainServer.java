@@ -45,14 +45,14 @@ public class MainServer {
                 break;
             case 1:
             	System.out.println("Which socket?");
-            	if(netServer.getCount() == 0){
+            	if(netServer.getCount() < 0){
             		System.out.println("No sockets connected yet.");
             	}else{
-	            	for(count = netServer.getCount(); count > 0; count--){
-	            		System.out.println(count +") " + netServer.getIdentity());
+	            	for(count = netServer.getCount(); count >= 0; count--){
+	            		System.out.println(count +") " + netServer.getIdentity(count));
 	            	}
 	            	choice2 = Integer.parseInt(scanner.nextLine());
-	            	if(choice2 <= netServer.getCount() && choice2 > 0){
+	            	if(choice2 <= netServer.getCount() && choice2 >= 0){
 	            		success = netServer.sendString("This is from the server.", choice2);
 	            	}else{
 	            		System.out.println("Not a valid socket.");

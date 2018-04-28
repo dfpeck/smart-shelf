@@ -165,7 +165,7 @@ public class NetClient implements Runnable {
 	 */
     public void close(){
     	//telling the server to shutdown this particular client.
-    	sendString("close " + identity);
+    	sendString("close");
     	try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e1) {

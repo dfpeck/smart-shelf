@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Vector;
 
 import db.Db;
 import netNode.StartServerSocket;
@@ -12,12 +13,15 @@ public class NetServer implements Runnable {
 
     IOException ioException;
     UnknownHostException unknownHostException;
-    Socket[] socket = null;
-    OutputStream[] out = null;
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	Vector<Socket> socket = new Vector();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	Vector<OutputStream> out = new Vector();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	Vector<String> identity = new Vector();
     StartServerSocket startServerSocket = null;
     Db db = null;
-    String identity = "";
-    int count = 0;
+    int count = -1;
 
     public NetServer(StartServerSocket startServerSocket, Db db) {
         this.startServerSocket = startServerSocket;
@@ -36,9 +40,9 @@ public class NetServer implements Runnable {
     public void setSocket(Socket socket, String client, int num){
         try {
         	System.out.println("getting output stream for NetServer...");
-        	this.socket[num] = socket;
-        	out[num] = socket.getOutputStream();
-        	identity = client;
+        	this.socket.add(num, socket);
+        	out.add(num, socket.getOutputStream());
+        	identity.add(num, client);
         	count = num;
 
         } catch (UnknownHostException e) {
@@ -52,8 +56,8 @@ public class NetServer implements Runnable {
         }
     }
     
-    public String getIdentity(){
-    	return identity;
+    public String getIdentity(int num){
+    	return identity.get(num);
     }
     
     public int getCount(){
@@ -66,17 +70,17 @@ public class NetServer implements Runnable {
         
         if(out != null){
 		    try {
-		    	out[num].flush();
-		    	out[num].write(intent.getBytes());
-		    	out[num].flush();
+		    	out.get(num).flush();
+		    	out.get(num).write(intent.getBytes());
+		    	out.get(num).flush();
 		        System.out.println("sendString intent sent...");
 		        
 		        //send string
-		        out[num].flush();
-		        out[num].write(str.getBytes());
-		        out[num].flush();
-		        out[num].write("~".getBytes());
-		        out[num].flush();
+		        out.get(num).flush();
+		        out.get(num).write(str.getBytes());
+		        out.get(num).flush();
+		        out.get(num).write("~".getBytes());
+		        out.get(num).flush();
 		        System.out.println("string sent: " + str);
 		        return true;
 		       
@@ -92,9 +96,10 @@ public class NetServer implements Runnable {
     }
 
     public void close(int num){
-    	if(socket[num] != null){
+    	if(socket.get(num) != null){
     		try {
-				socket[num].close();
+    			identity.set(num, "OFFLINE");
+				socket.get(num).close();
 				System.out.print("Closed socket #" + num + ".");
 			} catch (IOException e) {
 				System.err.print("IOException closing socket #" + num + ".");
@@ -103,10 +108,10 @@ public class NetServer implements Runnable {
     }
     
     public void exit(){
-    	if(count <= 0){
+    	if(count < 0){
     		System.out.println("No sockets to close.");
     	}
-    	for(int i = count; i > 0; i--){
+    	for(int i = count; i >= 0; i--){
     		close(i);
     	}
     	startServerSocket.closeServer();

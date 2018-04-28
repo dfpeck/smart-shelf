@@ -14,6 +14,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Vector;
 
 import db.Db;
 
@@ -75,10 +76,12 @@ public class StartServerSocket {
     // instantiates a listener thread for each of the connections requested.
     private class SocketServer implements Runnable {
 
-        int count = 1;
+        int count = 0;
         NetServer netServer = null;
-        StartServerRequest[] startServerRequests = null;
-        Thread[] startServerRequestThreads = null;
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+		Vector<StartServerRequest> startServerRequests = new Vector();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+		Vector<Thread> startServerRequestThreads = new Vector();
         
         SocketServer(NetServer netServer){
         	this.netServer = netServer;
@@ -99,7 +102,6 @@ public class StartServerSocket {
 	                    // Socket object for mat/ui -> server communication
 	                    Socket listenSocket = serverSocket.accept();
 	                    System.out.println("accepted socket...");
-	                    count++;
 	                    System.out.println("#" + count + " from "
 	                    		               + listenSocket.getInetAddress() + ":"
 	                    		               + listenSocket.getPort());
@@ -140,12 +142,13 @@ public class StartServerSocket {
 	                    
 	                    /*start up send and receive threads*/
 	                    System.out.println("attempting to run request thread...");
-	                    startServerRequests[count] = new StartServerRequest(listenSocket, count);
-	                    startServerRequestThreads[count] = new Thread(startServerRequests[count]);
-	                    startServerRequestThreads[count].start();
+	                    startServerRequests.add(count, new StartServerRequest(listenSocket, count));
+	                    startServerRequestThreads.add(count, new Thread(startServerRequests.get(count)));
+	                    startServerRequestThreads.get(count).start();
 	                    
 	                    System.out.println("setting new " + sb.toString() + " socket...");
 	                    netServer.setSocket(sendSocket, sb.toString(), count);
+	                    count++;
                 	} catch (SocketException e){
                 		System.out.println("Interrupted SocketServer");
                 	}
@@ -165,11 +168,10 @@ public class StartServerSocket {
         InputStream in = null;
         OutputStream out = null;
         String intent = "";
-        String intentSplit[];
         int count = 0;
         
         StartServerRequest(Socket socket, int count) {
-        	System.out.println("socket thread constructor...");
+        	System.out.println("startServerRequest constructor...");
             this.socket = socket;
             try {
             	// Create byte stream to dump read bytes into
@@ -178,13 +180,14 @@ public class StartServerSocket {
 				out = socket.getOutputStream();
             } catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("error getting input or output stream in SocketServerRequestThread.");
+				System.out.println("error getting input or output stream in SocketServerRequest.");
 			}
             this.count = count;
         }
 
         @Override
         public void run() {
+        	System.out.println("StartServerRequest run()...");
             try {
             	//while the socket is alive
             	while(socket != null && in != null && out != null)
@@ -207,7 +210,6 @@ public class StartServerSocket {
 	                    }
 	                }
 	                intent = sb.toString();
-	                intentSplit = intent.split(" ");
 	                
 	                /** then checking and responding **/
 	                // compare lexigraphically since bytes will be different
@@ -219,7 +221,7 @@ public class StartServerSocket {
 	                	
 	                	getDatabase(in);
 	                	
-	                }else if(intentSplit[0].compareTo("close") == 0){
+	                }else if(intent.compareTo("close") == 0){
 	                	closeListener();
 	                	closeSender(count);
 	                }
