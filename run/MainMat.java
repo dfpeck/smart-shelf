@@ -1,11 +1,11 @@
-package netNode;
+package run;
 
 import java.util.Scanner;
 
 import db.Db;
 import netNode.NetMat;
 
-public class TEST_NetMat{
+public class MainMat{
    public static void main(String[] args) {
 	   String ip = "";
 	   int choice = 0;
@@ -28,11 +28,7 @@ public class TEST_NetMat{
 	    	   netMat.sendDB(db);
 	       }else if(choice == 2){ 
 	    	   netMat.sendString("This is sent from TEST_NetMat.");
-	    	   netMat.sendString("This is also from TEST_NetMat.");
-	    	   netMat.sendString("Same.");
 	       }else if (choice == 3){
-	    	   System.out.println(netMat.pop());
-	    	   System.out.println(netMat.pop());
 	    	   System.out.println(netMat.pop());
 	       }else if(choice == 4){
 	    	   netMat.close();

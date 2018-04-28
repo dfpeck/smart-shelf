@@ -1,11 +1,10 @@
-package netNode;
-
-import netNode.StartServerSocket;
+package run;
 
 import java.sql.SQLException;
 //import org.h2.tools.Server;
 
 import db.Db;
+import netNode.StartServerSocket;
 
 public class StartServer {
 	public static void main(String[] args) {

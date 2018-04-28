@@ -6,8 +6,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import netNode.StartServerSocket;
 import db.Db;
+import netNode.StartServerSocket;
 
 public class NetServer extends Thread {
 
@@ -32,8 +32,8 @@ public class NetServer extends Thread {
 		  be calling the functions of their own accord.*/
     	//TEST_NetServer testServer = new TEST_NetServer();
     	//testServer.test(this);
-    	ServerInteractor serverInteractor = new ServerInteractor();
-    	serverInteractor.main(this, db);
+    	MainServer mainServer = new MainServer();
+    	mainServer.main(this, db);
     	
     	
     	System.out.println("NetServer ready for function calls...");

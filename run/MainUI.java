@@ -1,10 +1,10 @@
-package netNode;
+package run;
 
 import java.util.Scanner;
 
 import netNode.NetUI;
 
-public class TEST_NetUI {
+public class MainUI {
    public static void main(String[] args) {
 	   String ip = "";
 	   int choice = 0;
@@ -22,11 +22,7 @@ public class TEST_NetUI {
 	       choice = Integer.parseInt(scanner.nextLine());
 	       if(choice == 1){
 	    	   netUI.sendString("This is sent from TEST_NetUI.");
-	    	   netUI.sendString("This is also from TEST_NetUI.");
-	    	   netUI.sendString("Same.");
 	       }else if(choice == 2){
-	    	   System.out.println(netUI.pop());
-	    	   System.out.println(netUI.pop());
 	    	   System.out.println(netUI.pop());
 	       }else if(choice == 3){
 	    	   netUI.close();
