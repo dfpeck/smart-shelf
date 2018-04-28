@@ -106,21 +106,21 @@ public class MatsRecord extends TableRecord {
     /** Unique ID for the mat.
      * @return matId
      */
-    public long id () {
+    public long getId () {
         return matId;
     }
 
     /** The mat type associated with this mat.
      * @return record IDed by matType
      */
-    public MatTypesRecord type () {
+    public MatTypesRecord getType () {
         return matType;
     }
 
     /** Comment describing the mat.
      * @return matComment
      */
-    public String comment () {
+    public String getComment () {
         return matComment;
     }
 

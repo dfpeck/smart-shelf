@@ -116,11 +116,41 @@ public class ItemsRecord extends TableRecord {
         return lastHistory.getDatetime();
     }
 
-    public double getWeight () {
-        double weight = 0;
-        for (Double d : lastHistory.getSensors())
-            weight += d;
-        return weight;
+    public boolean isOnMat () {
+        return lastHistory.isOnMat();
+    }
+
+    public MatsRecord getMat () {
+        if (isOnMat())
+            return lastHistory.getMat();
+        else
+            return null;
+    }
+
+    public EventType getEventType () {
+        return lastHistory.getEventType();
+    }
+
+    public Double[] getSensors () {
+        return lastHistory.getSensors();
+    }
+
+    public Double getWeight () {
+        return lastHistory.getWeight();
+    }
+
+    public Double getX () {
+        if (isOnMat())
+            return lastHistory.getX();
+        else
+            return null;
+    }
+
+    public Double getY () {
+        if (isOnMat())
+            return lastHistory.getY();
+        else
+            return null;
     }
 
     public HistoryRecord lastHistory () {

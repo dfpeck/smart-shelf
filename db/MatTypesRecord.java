@@ -69,14 +69,14 @@ public class MatTypesRecord extends TableRecord {
     /** Unique ID for the mat type.
      * @return matTypeId
      */
-    public String id () {
+    public String getId () {
         return matTypeId;
     }
 
     /** Comment describing the mat type.
      * @return matTypeComment
      */
-    public String comment () {
+    public String getComment () {
         return matTypeComment;
     }
 

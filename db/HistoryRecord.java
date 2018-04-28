@@ -204,12 +204,49 @@ public class HistoryRecord extends TableRecord {
 
 
     /* ACCESSORS */
+    public ItemsRecord getItem () {
+        return item;
+    }
+
     public Timestamp getDatetime () {
         return datetime;
     }
 
+    public boolean isOnMat () {
+        return eventType != EventType.REMOVED;
+            // || eventType == EventType.DISABLED);
+    }
+
+    public MatsRecord getMat () {
+        return mat;
+    }
+    
+
+    public EventType getEventType () {
+        return eventType;
+    }
+
     public Double[] getSensors () {
         return sensors;
+    }
+
+    public Double getWeight () {
+        Double weight = 0.0;
+        for (Double d : sensors)
+            weight += d;
+        return weight;
+    }
+
+    public Double getX () {
+        return x;
+    }
+
+    public Double getY () {
+        return y;
+    }
+
+    public Double[] getCoords () {
+        return new Double[]{x, y};
     }
 
 
