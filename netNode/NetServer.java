@@ -78,26 +78,30 @@ public class NetServer extends Thread {
     public boolean sendStringToMat(String str){
     	//create request string
         String intent = "SendString~";
-        
-        try {
-        	matOut.flush();
-        	matOut.write(intent.getBytes());
-        	matOut.flush();
-	        System.out.println("sendString intent sent...");
-	        
-	        //send string
-	        matOut.flush();
-	        matOut.write(str.getBytes());
-	        matOut.flush();
-	        matOut.write("~".getBytes());
-	        matOut.flush();
-	        System.out.println("string sent: " + str);
-	        return true;
-	       
-        } catch (IOException e){
-			e.printStackTrace();
-			System.out.println("IOException in request()");
-			return false;
+        if(matOut != null){
+	        try {
+	        	matOut.flush();
+	        	matOut.write(intent.getBytes());
+	        	matOut.flush();
+		        System.out.println("sendString intent sent...");
+		        
+		        //send string
+		        matOut.flush();
+		        matOut.write(str.getBytes());
+		        matOut.flush();
+		        matOut.write("~".getBytes());
+		        matOut.flush();
+		        System.out.println("string sent: " + str);
+		        return true;
+		       
+	        } catch (IOException e){
+				e.printStackTrace();
+				System.out.println("IOException in request()");
+				return false;
+	        }
+        }else{
+        	System.out.println("No mat connected.");
+        	return false;
         }
     }
     
@@ -105,38 +109,40 @@ public class NetServer extends Thread {
     	//create request string
         String intent = "SendString~";
         
-        try {
-        	uiOut.flush();
-        	uiOut.write(intent.getBytes());
-        	uiOut.flush();
-	        System.out.println("sendString intent sent...");
-	        
-	        //send string
-	        uiOut.flush();
-	        uiOut.write(str.getBytes());
-	        uiOut.flush();
-	        uiOut.write("~".getBytes());
-	        uiOut.flush();
-	        System.out.println("string sent: " + str);
-	        return true;
-	       
-        } catch (IOException e){
-			e.printStackTrace();
-			System.out.println("IOException in request()");
-			return false;
+        if(uiOut != null){
+		    try {
+		    	uiOut.flush();
+		    	uiOut.write(intent.getBytes());
+		    	uiOut.flush();
+		        System.out.println("sendString intent sent...");
+		        
+		        //send string
+		        uiOut.flush();
+		        uiOut.write(str.getBytes());
+		        uiOut.flush();
+		        uiOut.write("~".getBytes());
+		        uiOut.flush();
+		        System.out.println("string sent: " + str);
+		        return true;
+		       
+		    } catch (IOException e){
+				e.printStackTrace();
+				System.out.println("IOException in request()");
+				return false;
+		    }
+        }else{
+        	System.out.println("No ui connected");
+        	return false;
         }
     }
 
     public int checkIfSocketClosed(int choice){
     	if(matSocket == null && uiSocket == null){
-    		System.out.println("Mat && UI Client closed socket...ending communication.");
-    		return 5;
+    		System.out.println("No Mat or UI connection.");
     	}else if(uiSocket == null){
-    		System.out.println("UI Client closed socket...ending communication.");
-    		return 4;
+    		System.out.println("No UI connection");
     	}else if(matSocket == null){
-    		System.out.println("UI Client closed socket...ending communication.");
-    		return 3;
+    		System.out.println("no Mat connection");
     	}
 		return choice;
     }
