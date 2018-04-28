@@ -200,11 +200,9 @@ public class TEST_Db {
             System.out.println("Selected: " + item.toString());
 
             System.out.print("Selecting from History...");
-            HistoryRecord[] history =
-                HistoryRecord.selectByItem(db, item);
-            for (HistoryRecord h : history)
-                System.out.print(h.toString() + "  ");
-            System.out.println();
+            HistoryRecord history =
+                HistoryRecord.selectLatestByItem(db, item);
+            System.out.println("Selected: " + history.toString());
 
             db.close();
         }

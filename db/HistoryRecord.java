@@ -39,8 +39,16 @@ public class HistoryRecord extends TableRecord {
     }
 
     public HistoryRecord (Db db_, ResultSet rs) throws SQLException {
+        this(db_, ItemsRecord.selectById(db_, rs.getLong("item")), rs);
+    }
+
+    public HistoryRecord (Db db_, ResultSet rs, int row) throws SQLException {
+        this(db_, getAdjustedResultSet(rs, row));
+    }
+
+    public HistoryRecord (Db db_, ItemsRecord item_, ResultSet rs) throws SQLException {
         db = db_;
-        item = ItemsRecord.selectById(db_, rs.getLong("item"));
+        item = item_;
         datetime = rs.getTimestamp("datetime");
         mat = MatsRecord.selectById(db_, rs.getLong("mat"));
         eventType = EventType.values()[rs.getInt("eventType")];
@@ -49,9 +57,10 @@ public class HistoryRecord extends TableRecord {
         y = rs.getDouble("y");
     }
 
-    public HistoryRecord (Db db_, ResultSet rs, int row) throws SQLException {
-        this(db_, getAdjustedResultSet(rs, row));
+    public HistoryRecord (Db db_, ItemsRecord item_, ResultSet rs, int row) throws SQLException {
+        this(db_, item_, getAdjustedResultSet(rs, row));
     }
+        
 
 
     /* QUERY METHODS */
@@ -68,7 +77,7 @@ public class HistoryRecord extends TableRecord {
 
     public static HistoryRecord
         selectById (Db db_, ItemsRecord item_, Timestamp datetime_) throws SQLException {
-        return selectById(db_, new HistoryKey(item_.id(), datetime_));
+        return selectById(db_, new HistoryKey(item_.getId(), datetime_));
     }
 
     public static HistoryRecord[]
@@ -79,7 +88,7 @@ public class HistoryRecord extends TableRecord {
                                       + " ORDER BY datetime DESC;",
                                       ResultSet.TYPE_SCROLL_INSENSITIVE,
                                       ResultSet.CONCUR_READ_ONLY);
-        statement.setLong(1, item_.id());
+        statement.setLong(1, item_.getId());
         ResultSet rs = statement.executeQuery();
 
         HistoryRecord[] records;
@@ -93,7 +102,7 @@ public class HistoryRecord extends TableRecord {
 
         int row = 0;
         while (rs.next()) {
-            records[row] = new HistoryRecord (db_, rs);
+            records[row] = new HistoryRecord (db_, item_, rs);
             row++;
         }
 
@@ -194,10 +203,20 @@ public class HistoryRecord extends TableRecord {
     }
 
 
-    /** STANDARD METHODS */
+    /* ACCESSORS */
+    public Timestamp getDatetime () {
+        return datetime;
+    }
+
+    public Double[] getSensors () {
+        return sensors;
+    }
+
+
+    /* STANDARD METHODS */
     public String toString () {
         return "History<"
-            + Long.toString(item.id()) + ", "
+            + Long.toString(item.getId()) + ", "
             + datetime.toString() + ", "
             + eventType.name()
             + ">";

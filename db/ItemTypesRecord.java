@@ -116,21 +116,21 @@ public class ItemTypesRecord extends TableRecord {
     /** Unique ID for the item type.
      * @return itemTypeId
      */
-    public long id () {
+    public long getId () {
         return itemTypeId;
     }
 
     /** User-friendly name for the item type.
      * @return itemTypeName
      */
-    public String name () {
+    public String getName () {
         return itemTypeName;
     }
 
     /** Comment describing the item type.
      * @return itemTypeComment
      */
-    public String comment () {
+    public String getComment () {
         return itemTypeComment;
     }
 
