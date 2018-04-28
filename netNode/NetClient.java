@@ -22,7 +22,7 @@ import db.Db;
  *
  *  @param ip Server ip address.
  */
-public class NetClient extends Thread {
+public class NetClient implements Runnable {
 
 	/*Properties*/
     IOException ioException;
@@ -35,6 +35,8 @@ public class NetClient extends Thread {
     Socket listenSocket = null;
     ServerSocket serverSocket = null;
     Queue<String> queue = new LinkedList<>();
+    NetMatRequest netMatRequest = null;
+    Thread netMatRequestThread = null;
     String identity = "";
 
 	/*Constructors*/
@@ -63,7 +65,9 @@ public class NetClient extends Thread {
             //open socket for listening for requests from the server
         	listenSocket = serverSocket.accept();
         	
-        	new NetMatRequestThread(listenSocket).start();
+        	netMatRequest = new NetMatRequest(listenSocket);
+        	netMatRequestThread = new Thread(netMatRequest);
+        	netMatRequestThread.start();
         	
         } catch (UnknownHostException e) {
             this.unknownHostException = e;
@@ -160,9 +164,16 @@ public class NetClient extends Thread {
 	 *  closes the socket on the client side.
 	 */
     public void close(){
+    	//telling the server to shutdown this particular client.
+    	sendString("close " + identity);
+    	try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			System.err.println("InterruptedException in close()");
+		}
     	if (sendSocket != null) {
             try {
-            	System.out.println("closing socket");
+            	System.out.println("closing sendSocket");
                 sendSocket.close();  
                 
             } catch (IOException e) {
@@ -173,7 +184,7 @@ public class NetClient extends Thread {
         }
     	if (listenSocket != null){
         	try {
-            	System.out.println("closing socket");
+            	System.out.println("closing listenSocket");
                 listenSocket.close();
                 
             } catch (IOException e) {
@@ -184,7 +195,7 @@ public class NetClient extends Thread {
         }
     	if (serverSocket != null){
         	try {
-            	System.out.println("closing socket");
+            	System.out.println("closing serverSocket");
                 listenSocket.close();
                 
             } catch (IOException e) {
@@ -193,6 +204,7 @@ public class NetClient extends Thread {
                 return;
             }
         }
+    	System.out.println("All sockets closed");
     }
 
 	/** @brief returns top of the string retrieved queue
@@ -212,17 +224,17 @@ public class NetClient extends Thread {
 	 *
 	 *  @param socket The socket that will be listened on.
 	 */
-    private class NetMatRequestThread extends Thread {
+    private class NetMatRequest implements Runnable {
 
 		/*Properties*/
         private Socket socket;
         StringBuilder sb = new StringBuilder();
         InputStream in = null;
         OutputStream out = null;
-        String intent = "";  
+        String intent = "";
 
 		/*Constructors*/
-        NetMatRequestThread(Socket socket) {
+        NetMatRequest(Socket socket) {
         	System.out.println("NetMatRequestThread constructor...");
             this.socket = socket;
             
@@ -259,7 +271,6 @@ public class NetClient extends Thread {
 	                    }
 	                }
 	                intent = sb.toString();
-	
 	                /** then checking and responding **/
 	                // compare lexigraphically since bytes will be different
 	                if(intent.compareTo("SendString") == 0){

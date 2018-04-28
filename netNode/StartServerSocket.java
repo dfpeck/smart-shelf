@@ -24,28 +24,42 @@ public class StartServerSocket {
 	static final String NEW_DATABASE_FILE_NAME = "NEW_inventory";
 	static final String DATABASE_FILE_NAME = "inventory";
 	NetServer netServer = null;
+	Thread netServerThread = null;
+	SocketServer socketServer = null;
+	Thread socketServerThread = null;
 	Db db = null;
+	boolean listen = true;
+	
 
     public StartServerSocket(Db db) {
     	this.db = db;
-    	NetServer netServer = new NetServer(this, db);
-        netServer.start();
-    	new SocketServerThread(netServer).start();    
+    	netServer = new NetServer(this, db);
+    	netServerThread = new Thread(netServer);
+        netServerThread.start();
+    	socketServer = new SocketServer(netServer);
+    	socketServerThread = new Thread(socketServer);
+    	socketServerThread.start();    
     }
 
     public int getPort() {
         return serverSocketPort;
     }
 
-    public void close() {
+    public void closeServer() {
+    	listen = false;
         if (serverSocket != null) {
             try {
                 serverSocket.close();
+                System.out.println("Closed serverSocket");
             } catch (IOException e) {
-                e.printStackTrace();
                 System.out.println("IOException in closing socket");
             }
         }
+        
+    }
+    
+    public void closeSender(int count){
+    	netServer.close(count);
     }
     
     public String pop(){
@@ -59,12 +73,14 @@ public class StartServerSocket {
 
     // Creates a thread that listens on a port for incoming connects and
     // instantiates a listener thread for each of the connections requested.
-    private class SocketServerThread extends Thread {
+    private class SocketServer implements Runnable {
 
-        int count = 0;
+        int count = 1;
         NetServer netServer = null;
+        StartServerRequest[] startServerRequests = null;
+        Thread[] startServerRequestThreads = null;
         
-        SocketServerThread(NetServer netServer){
+        SocketServer(NetServer netServer){
         	this.netServer = netServer;
         }
         
@@ -77,73 +93,82 @@ public class StartServerSocket {
                 InputStream in = null;
                 StringBuilder sb = new StringBuilder();
 
-                while (true) {
-                    // block the call until connection is created and return
-                    // Socket object for mat/ui -> server communication
-                    Socket listenSocket = serverSocket.accept();
-                    System.out.println("accepted socket...");
-                    count++;
-                    System.out.println("#" + count + " from "
-                    		               + listenSocket.getInetAddress() + ":"
-                    		               + listenSocket.getPort());
-
-                    //Now creating second socket for server -> mat/ui communication
-                    Socket sendSocket = new Socket(listenSocket.getInetAddress(), serverSocketPort);
-                    System.out.println("created socket for sending requests...");
-                    
-                    /*find identity of socket*/
-                    out = sendSocket.getOutputStream();
-                    in = sendSocket.getInputStream();
-                    String intent = "GetIdentity~";
-                    
-                    try {
-                    	out.flush();
-                    	out.write(intent.getBytes());
-                    	out.flush();
-            	        System.out.println("GetIdentity intent sent...");
-            	        
-        				//reset stringbuilder buffer
-                		sb.setLength(0);
-
-                		// Read from input stream. Note: inputStream.read() will block
-                        // if no data return
-                		int byteRead = 0;
-                        while (byteRead != -1) {
-                            byteRead = in.read();
-                            if (byteRead == 126){
-                                byteRead = -1;
-                            }else {
-                                sb.append((char) byteRead);
-                            }
-                        }           	        
-                    } catch (IOException e){
-            			e.printStackTrace();
-            			System.out.println("IOException in getIdentity");
-                    }
-                    
-                    /*start up send and receive threads*/
-                    System.out.println("attempting to run request thread...");
-                    new StartServerRequestThread(listenSocket).start();
-                    
-                    System.out.println("setting new " + sb.toString() + " socket...");
-                    netServer.setSocket(sendSocket, sb.toString());
+                while (listen == true) {
+                	try{
+	                    // block the call until connection is created and return
+	                    // Socket object for mat/ui -> server communication
+	                    Socket listenSocket = serverSocket.accept();
+	                    System.out.println("accepted socket...");
+	                    count++;
+	                    System.out.println("#" + count + " from "
+	                    		               + listenSocket.getInetAddress() + ":"
+	                    		               + listenSocket.getPort());
+	
+	                    //Now creating second socket for server -> mat/ui communication
+	                    Socket sendSocket = new Socket(listenSocket.getInetAddress(), serverSocketPort);
+	                    System.out.println("created socket for sending requests...");
+	                    
+	                    /*find identity of socket*/
+	                    out = sendSocket.getOutputStream();
+	                    in = sendSocket.getInputStream();
+	                    String intent = "GetIdentity~";
+	                    
+	                    try {
+	                    	out.flush();
+	                    	out.write(intent.getBytes());
+	                    	out.flush();
+	            	        System.out.println("GetIdentity intent sent...");
+	            	        
+	        				//reset stringbuilder buffer
+	                		sb.setLength(0);
+	
+	                		// Read from input stream. Note: inputStream.read() will block
+	                        // if no data return
+	                		int byteRead = 0;
+	                        while (byteRead != -1) {
+	                            byteRead = in.read();
+	                            if (byteRead == 126){
+	                                byteRead = -1;
+	                            }else {
+	                                sb.append((char) byteRead);
+	                            }
+	                        }           	        
+	                    } catch (IOException e){
+	            			e.printStackTrace();
+	            			System.out.println("IOException in getIdentity");
+	                    }
+	                    
+	                    /*start up send and receive threads*/
+	                    System.out.println("attempting to run request thread...");
+	                    startServerRequests[count] = new StartServerRequest(listenSocket, count);
+	                    startServerRequestThreads[count] = new Thread(startServerRequests[count]);
+	                    startServerRequestThreads[count].start();
+	                    
+	                    System.out.println("setting new " + sb.toString() + " socket...");
+	                    netServer.setSocket(sendSocket, sb.toString(), count);
+                	} catch (SocketException e){
+                		System.out.println("Interrupted SocketServer");
+                	}
                 }
             } catch (IOException e) {
-            	System.out.println("IOException in SocketServerThread");
+            	System.out.println("IOException in SocketServer");
                 e.printStackTrace();
             }
+            System.out.println("exited socketServer loop...");
         }
     }
 
-    private class StartServerRequestThread extends Thread {
+    private class StartServerRequest implements Runnable {
 
-        private Socket socket;
-        StringBuilder sb = new StringBuilder();
+    	StringBuilder sb = new StringBuilder();
+    	Socket socket = null;
         InputStream in = null;
         OutputStream out = null;
         String intent = "";
+        String intentSplit[];
+        int count = 0;
         
-        StartServerRequestThread(Socket socket) {
+        StartServerRequest(Socket socket, int count) {
         	System.out.println("socket thread constructor...");
             this.socket = socket;
             try {
@@ -155,6 +180,7 @@ public class StartServerSocket {
 				e.printStackTrace();
 				System.out.println("error getting input or output stream in SocketServerRequestThread.");
 			}
+            this.count = count;
         }
 
         @Override
@@ -181,7 +207,8 @@ public class StartServerSocket {
 	                    }
 	                }
 	                intent = sb.toString();
-	
+	                intentSplit = intent.split(" ");
+	                
 	                /** then checking and responding **/
 	                // compare lexigraphically since bytes will be different
 	                if(intent.compareTo("SendString") == 0){
@@ -192,6 +219,9 @@ public class StartServerSocket {
 	                	
 	                	getDatabase(in);
 	                	
+	                }else if(intentSplit[0].compareTo("close") == 0){
+	                	closeListener();
+	                	closeSender(count);
 	                }
             	}
 
@@ -211,6 +241,7 @@ public class StartServerSocket {
                     }
                 }
             }
+            System.out.println("exited StartServerRequest loop for socket #" + count + "...");
         }
     
         //retrieves string representation of record and sends it back through the socket outputstream.
@@ -264,6 +295,17 @@ public class StartServerSocket {
         	} catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("IOException in getDatabase()");
+        	}
+        }
+    
+        private void closeListener(){
+        	if(socket != null){
+        		try {
+					socket.close();
+					System.out.println("closed socket #" + count + ".");
+				} catch (IOException e) {
+					System.err.println("IOException attempting to close listenSocket #" + count + ".");
+				}
         	}
         }
     }

@@ -16,13 +16,14 @@ public class MainServer {
 	public void main(NetServer netServer, Db db) {
 		this.db = db;
 		int choice;
+		int choice2;
 		Boolean success = false;
         boolean loop = true;
 		Scanner scanner = new Scanner(System.in);
-
-        tests.put(1, "Send string to Mat");
-        tests.put(2, "Send string to UI");
-        tests.put(3, "Retrieve string from queue");
+		int count = 0;
+		
+        tests.put(1, "Send string to Client");
+        tests.put(2, "Retrieve string from queue");
         
         while (loop) {
             System.out.println("==SELECT A TEST==");
@@ -36,17 +37,30 @@ public class MainServer {
                 loop = false;
                 try {
 					db.close();
+					success = true;
+					netServer.exit();
 				} catch (SQLException e) {
 					System.out.println("SQLException closing database.");
 				}
                 break;
             case 1:
-            	success = netServer.sendStringToMat("This is from the server.");
+            	System.out.println("Which socket?");
+            	if(netServer.getCount() == 0){
+            		System.out.println("No sockets connected yet.");
+            	}else{
+	            	for(count = netServer.getCount(); count > 0; count--){
+	            		System.out.println(count +") " + netServer.getIdentity());
+	            	}
+	            	choice2 = Integer.parseInt(scanner.nextLine());
+	            	if(choice2 <= netServer.getCount() && choice2 > 0){
+	            		success = netServer.sendString("This is from the server.", choice2);
+	            	}else{
+	            		System.out.println("Not a valid socket.");
+	            		success = false;
+	            	}	
+            	}
             	break;
             case 2:
-            	success = netServer.sendStringToUI("This is from the server.");
-            	break;
-            case 3:
             	System.out.println(netServer.pop());
             	success = true;
             	break;

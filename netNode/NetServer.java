@@ -1,7 +1,6 @@
 package netNode;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -9,18 +8,16 @@ import java.net.UnknownHostException;
 import db.Db;
 import netNode.StartServerSocket;
 
-public class NetServer extends Thread {
+public class NetServer implements Runnable {
 
     IOException ioException;
     UnknownHostException unknownHostException;
-    Socket matSocket = null;
-    InputStream matIn = null;
-    OutputStream matOut = null;
-    Socket uiSocket = null;
-    InputStream uiIn = null;
-    OutputStream uiOut = null;
+    Socket[] socket = null;
+    OutputStream[] out = null;
     StartServerSocket startServerSocket = null;
     Db db = null;
+    String identity = "";
+    int count = 0;
 
     public NetServer(StartServerSocket startServerSocket, Db db) {
         this.startServerSocket = startServerSocket;
@@ -30,121 +27,89 @@ public class NetServer extends Thread {
     public void run() {
 		/*starts loop for user input in new thead. Not needed in final implementation, as they'll
 		  be calling the functions of their own accord.*/
-    	//TEST_NetServer testServer = new TEST_NetServer();
-    	//testServer.test(this);
     	MainServer mainServer = new MainServer();
     	mainServer.main(this, db);
     	
-    	
-    	System.out.println("NetServer ready for function calls...");
+    	System.out.println("exited out of mainServer.main...");
     }
     
-    public void setSocket(Socket socket, String client){
-    	if(client.compareTo("mat") == 0){
-            try {
-            	System.out.println("getting input and output streams for NetServer...");
-            	matSocket = socket;
-                matIn = socket.getInputStream();
-                matOut = socket.getOutputStream();
+    public void setSocket(Socket socket, String client, int num){
+        try {
+        	System.out.println("getting output stream for NetServer...");
+        	this.socket[num] = socket;
+        	out[num] = socket.getOutputStream();
+        	identity = client;
+        	count = num;
 
-            } catch (UnknownHostException e) {
-                this.unknownHostException = e;
-                System.out.println("UnknownHostException in socket creation");
-                return;
-            } catch (IOException e) {
-                this.ioException = e;
-                System.out.println("IOException in socket creation");
-                return;
-            }
-    	}else if(client.compareTo("ui") == 0){
-            try {
-            	System.out.println("getting input and output streams for NetServer...");
-            	uiSocket = socket;
-                uiIn = socket.getInputStream();
-                uiOut = socket.getOutputStream();
-
-            } catch (UnknownHostException e) {
-                this.unknownHostException = e;
-                System.out.println("UnknownHostException in socket creation");
-                return;
-            } catch (IOException e) {
-                this.ioException = e;
-                System.out.println("IOException in socket creation");
-                return;
-            }
-    	}
-    }
-    
-    public boolean sendStringToMat(String str){
-    	//create request string
-        String intent = "SendString~";
-        if(matOut != null){
-	        try {
-	        	matOut.flush();
-	        	matOut.write(intent.getBytes());
-	        	matOut.flush();
-		        System.out.println("sendString intent sent...");
-		        
-		        //send string
-		        matOut.flush();
-		        matOut.write(str.getBytes());
-		        matOut.flush();
-		        matOut.write("~".getBytes());
-		        matOut.flush();
-		        System.out.println("string sent: " + str);
-		        return true;
-		       
-	        } catch (IOException e){
-				e.printStackTrace();
-				System.out.println("IOException in request()");
-				return false;
-	        }
-        }else{
-        	System.out.println("No mat connected.");
-        	return false;
+        } catch (UnknownHostException e) {
+            this.unknownHostException = e;
+            System.out.println("UnknownHostException in socket creation");
+            return;
+        } catch (IOException e) {
+            this.ioException = e;
+            System.out.println("IOException in socket creation");
+            return;
         }
     }
     
-    public boolean sendStringToUI(String str){
+    public String getIdentity(){
+    	return identity;
+    }
+    
+    public int getCount(){
+    	return count;
+    }
+    
+    public boolean sendString(String str, int num){
     	//create request string
         String intent = "SendString~";
         
-        if(uiOut != null){
+        if(out != null){
 		    try {
-		    	uiOut.flush();
-		    	uiOut.write(intent.getBytes());
-		    	uiOut.flush();
+		    	out[num].flush();
+		    	out[num].write(intent.getBytes());
+		    	out[num].flush();
 		        System.out.println("sendString intent sent...");
 		        
 		        //send string
-		        uiOut.flush();
-		        uiOut.write(str.getBytes());
-		        uiOut.flush();
-		        uiOut.write("~".getBytes());
-		        uiOut.flush();
+		        out[num].flush();
+		        out[num].write(str.getBytes());
+		        out[num].flush();
+		        out[num].write("~".getBytes());
+		        out[num].flush();
 		        System.out.println("string sent: " + str);
 		        return true;
 		       
 		    } catch (IOException e){
 				e.printStackTrace();
-				System.out.println("IOException in request()");
+				System.out.println("IOException in sendString()");
 				return false;
 		    }
         }else{
-        	System.out.println("No ui connected");
+        	System.out.println("No socket connected at" + num +".");
         	return false;
         }
     }
 
-    public int checkIfSocketClosed(int choice){
-    	if(matSocket == null && uiSocket == null){
-    		System.out.println("No Mat or UI connection.");
-    	}else if(uiSocket == null){
-    		System.out.println("No UI connection");
-    	}else if(matSocket == null){
-    		System.out.println("no Mat connection");
+    public void close(int num){
+    	if(socket[num] != null){
+    		try {
+				socket[num].close();
+				System.out.print("Closed socket #" + num + ".");
+			} catch (IOException e) {
+				System.err.print("IOException closing socket #" + num + ".");
+			}
     	}
-		return choice;
+    }
+    
+    public void exit(){
+    	if(count <= 0){
+    		System.out.println("No sockets to close.");
+    	}
+    	for(int i = count; i > 0; i--){
+    		close(i);
+    	}
+    	startServerSocket.closeServer();
     }
     
     public String pop(){

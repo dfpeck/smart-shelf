@@ -11,6 +11,8 @@ public class MainMat{
 	   int choice = 0;
 	   Scanner scanner = new Scanner(System.in);
 	   final String DATABASE_FILE_NAME = "inventory";
+	   NetMat netMat = null;
+	   Thread netMatThread = null;
 	   
 	   Db db = new Db(DATABASE_FILE_NAME);
 	   
@@ -18,8 +20,9 @@ public class MainMat{
        System.out.println("Input ip to connect to: ");
        ip = scanner.nextLine();
        
-       NetMat netMat = new NetMat(ip);
-	   netMat.start();
+       netMat = new NetMat(ip);
+       netMatThread = new Thread(netMat);
+	   netMatThread.start();
        
        while(choice != 4){
 	       System.out.println("(1) Send Database, (2) Send String, (3) Strings Retrieved, (4) Exit: ");
@@ -32,6 +35,17 @@ public class MainMat{
 	    	   System.out.println(netMat.pop());
 	       }else if(choice == 4){
 	    	   netMat.close();
+	    	   if (netMatThread != null){
+	    		   System.out.println("ending netMatThread");
+	    		   try {
+	    			   netMatThread.join();
+	    		   } catch (InterruptedException e) {
+	    			   System.out.println("netMatThread.join interrupted");
+	    		   }
+	    		   System.out.println("ended netMatThread.");
+	    	   }else{
+	    		   System.out.println("netMatThread == null");
+	    	   }
 	       }
        }
        scanner.close();
