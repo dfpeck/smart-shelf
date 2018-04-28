@@ -250,17 +250,16 @@ public class NetClient implements Runnable {
 		/*Thead execution start*/
         @Override
         public void run() {
-            try {
-            	while(socket != null)
-            	{
-	            	/**First we're getting input from the client to see what it wants. **/
-	                int byteRead = 0;
-	
-	                //reset stringbuilder buffer
-	                sb.setLength(0);
-	                
-					// Read from input stream. Note: inputStream.read() will block
-	                // if no data return
+        	while(socket != null){
+            	/**First we're getting input from the client to see what it wants. **/
+                int byteRead = 0;
+
+                //reset stringbuilder buffer
+                sb.setLength(0);
+                
+				// Read from input stream. Note: inputStream.read() will block
+                // if no data return
+                try{
 	                System.out.println("attempting to read intent...");
 	                while (byteRead != -1) {
 	                    byteRead = in.read();
@@ -286,22 +285,25 @@ public class NetClient implements Runnable {
 	            			System.out.println("IOException sending identity");
 	                    }
 	                }
-            	}
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("IOException in SocketServerRequestThread"
-                        + e.toString());
-            } finally {
-                if (socket != null) {
-                    try {
-                    	System.out.println("closing socket...");
-                        socket.close();
-                    } catch (IOException e){
-                        e.printStackTrace();
-                        System.out.println("IOException in SocketServerRequestThread"
-                                + e.toString());
-                    }
+                }catch(IOException e){
+                	System.out.println("It's likely that the server went offline, dumping socket...");
+                	try {
+                		socket.close();
+                		System.out.println("Socket closed");
+                	} catch (IOException e1){
+                		System.out.println("IOException closing socket in NetMatRequest.");
+                	}
+                }
+        	}
+            if (socket != null) {
+                try {
+                	System.out.println("closing socket...");
+                    socket.close();
+                    socket = null;
+                } catch (IOException e){
+                    e.printStackTrace();
+                    System.out.println("IOException closing socket in NetMatRequest"
+                            + e.toString());
                 }
             }
         }
