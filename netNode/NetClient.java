@@ -93,43 +93,45 @@ public class NetClient implements Runnable {
     	//create request string
         String intent = "SendDatabase~";
         
-		try {
-			//send intent
-			out.flush();
-			out.write(intent.getBytes());
-			out.flush();
-	        System.out.println("sendDatabase intent sent");
-	    	
-			File file = new File(db.getFileName() + ".mv.db");
+        if(out != null){
+			try {
+				//send intent
+				out.flush();
+				out.write(intent.getBytes());
+				out.flush();
+		        System.out.println("sendDatabase intent sent");
+		    	
+				File file = new File(db.getFileName() + ".mv.db");
+				
+				//byte array with size of the file 
+		        byte[] bytes = new byte[(int) file.length()];
+		        
+		        //read in from the file
+		        try{
+		        	BufferedInputStream bIn = new BufferedInputStream(new FileInputStream(file));
+		        	
+		        	bIn.read(bytes, 0, bytes.length);
+		        	
+			        //output on socket
+		        	out.flush();
+		        	out.write(bytes, 0, bytes.length);
+		        	out.flush();
+		        	out.write("~".getBytes());
+		        	out.flush();
 			
-			//byte array with size of the file 
-	        byte[] bytes = new byte[(int) file.length()];
-	        
-	        //read in from the file
-	        try{
-	        	BufferedInputStream bIn = new BufferedInputStream(new FileInputStream(file));
-	        	
-	        	bIn.read(bytes, 0, bytes.length);
-	        	
-		        //output on socket
-	        	out.flush();
-	        	out.write(bytes, 0, bytes.length);
-	        	out.flush();
-	        	out.write("~".getBytes());
-	        	out.flush();
-		
-		        bIn.close();
-	        } catch (FileNotFoundException e)
- 	        {
- 	        	e.printStackTrace();
-				System.out.println("FileNotFoundException in dump()");
- 	        }
-			
-	        System.out.println("Sent Database");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("IOException in sendDatabase()");
-		}
+			        bIn.close();
+		        } catch (FileNotFoundException e)
+	 	        {
+	 	        	e.printStackTrace();
+					System.out.println("FileNotFoundException in dump()");
+	 	        }
+				
+		        System.out.println("Sent Database");
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("IOException in sendDatabase()");
+			}
+        }
     }
     
     /** @brief sends string through socket
@@ -140,24 +142,26 @@ public class NetClient implements Runnable {
     	//create request string
         String intent = "SendString~";
         
-        try {
-        	//send intent
-        	out.flush();
-        	out.write(intent.getBytes());
-        	out.flush();
-	        System.out.println("sendString intent sent...");
-	        
-	        //send string
-	        out.flush();
-        	out.write(str.getBytes());
-        	out.flush();
-        	out.write("~".getBytes());
-        	out.flush();
-	        System.out.println("string sent: " + str);
-	        
-        } catch (IOException e){
-			e.printStackTrace();
-			System.out.println("IOException in sendString()");
+        if(out != null){
+	        try {
+	        	//send intent
+	        	out.flush();
+	        	out.write(intent.getBytes());
+	        	out.flush();
+		        System.out.println("sendString intent sent...");
+		        
+		        //send string
+		        out.flush();
+	        	out.write(str.getBytes());
+	        	out.flush();
+	        	out.write("~".getBytes());
+	        	out.flush();
+		        System.out.println("string sent: " + str);
+		        
+	        } catch (IOException e){
+				e.printStackTrace();
+				System.out.println("IOException in sendString()");
+	        }
         }
     }
 
@@ -307,6 +311,7 @@ public class NetClient implements Runnable {
                             + e.toString());
                 }
             }
+            close();
         }
 
 		/** @brief Helper function for reading a string from the socket
