@@ -173,7 +173,7 @@ public class NetClient implements Runnable {
 		} catch (InterruptedException e1) {
 			System.err.println("InterruptedException in close()");
 		}
-    	if (sendSocket != null) {
+    	if (!sendSocket.isClosed()) {
             try {
             	System.out.println("closing sendSocket");
                 sendSocket.close();  
@@ -184,7 +184,7 @@ public class NetClient implements Runnable {
                 return;
             }
         }
-    	if (listenSocket != null){
+    	if (!listenSocket.isClosed()){
         	try {
             	System.out.println("closing listenSocket");
                 listenSocket.close();
@@ -195,7 +195,7 @@ public class NetClient implements Runnable {
                 return;
             }
         }
-    	if (serverSocket != null){
+    	if (!serverSocket.isClosed()){
         	try {
             	System.out.println("closing serverSocket");
                 listenSocket.close();
@@ -252,7 +252,7 @@ public class NetClient implements Runnable {
 		/*Thead execution start*/
         @Override
         public void run() {
-        	while(socket != null){
+        	while(!socket.isClosed()){
             	/**First we're getting input from the client to see what it wants. **/
                 int byteRead = 0;
 
@@ -297,11 +297,10 @@ public class NetClient implements Runnable {
                 	}
                 }
         	}
-            if (socket != null) {
+            if (!socket.isClosed()) {
                 try {
                 	System.out.println("closing socket...");
                     socket.close();
-                    socket = null;
                 } catch (IOException e){
                     e.printStackTrace();
                     System.out.println("IOException closing socket in NetMatRequest"

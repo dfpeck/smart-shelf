@@ -96,13 +96,15 @@ public class NetServer implements Runnable {
     }
 
     public void close(int num){
-    	if(socket.get(num) != null){
+    	if(!socket.get(num).isClosed()){
     		try {
     			identity.set(num, "OFFLINE");
-				socket.get(num).close();
-				System.out.print("Closed socket #" + num + ".");
+    			socket.get(num).close();
+
+				System.out.println("netServer: Closed socket #" + num + ".");
+				System.out.println("identity of #" + num + " set to " + identity.get(num));
 			} catch (IOException e) {
-				System.err.print("IOException closing socket #" + num + ".");
+				System.err.println("IOException closing socket #" + num + ".");
 			}
     	}
     }
@@ -112,7 +114,8 @@ public class NetServer implements Runnable {
     		System.out.println("No sockets to close.");
     	}
     	for(int i = count; i >= 0; i--){
-    		close(i);
+    		sendString("close", i);
+    		close(i);	
     	}
     	startServerSocket.closeServer();
     }

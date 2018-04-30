@@ -38,10 +38,11 @@ public class MainServer {
                 try {
 					db.close();
 					success = true;
-					netServer.exit();
 				} catch (SQLException e) {
 					System.out.println("SQLException closing database.");
+					success = false;
 				}
+				netServer.exit();
                 break;
             case 1:
             	System.out.println("Which socket?");

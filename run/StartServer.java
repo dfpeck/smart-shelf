@@ -25,7 +25,7 @@ public class StartServer {
 	   Db db = new Db(dbName);
 	   try {
 		   db.open();
-		   System.out.println("DB Object created.");
+		   System.out.println("DB Object created/opened.");
 	   } catch (SQLException e) {
 		   System.out.println("SQLException opening database");
 	   }

@@ -48,6 +48,7 @@ public class StartServerSocket {
 
     public void closeServer() {
     	listen = false;
+    	System.out.println("listen == false");
         if (serverSocket != null) {
             try {
                 serverSocket.close();
@@ -157,6 +158,10 @@ public class StartServerSocket {
             	System.out.println("IOException in SocketServer");
                 e.printStackTrace();
             }
+            for(int i = 0; i < startServerRequestThreads.size(); i++)
+            {
+            	startServerRequests.get(i).closeListener();
+            }
             System.out.println("exited socketServer loop...");
         }
     }
@@ -190,7 +195,7 @@ public class StartServerSocket {
         	System.out.println("StartServerRequest run()...");
             try {
             	//while the socket is alive
-            	while(socket != null && in != null && out != null)
+            	while(!socket.isClosed())
             	{
 	            	/**First we're getting input from the client to see what it wants. **/
 	                int byteRead = 0;
@@ -233,7 +238,7 @@ public class StartServerSocket {
                 System.out.println("IOException in SocketServerRequestThread"
                         + e.toString());
             } finally {
-                if (socket != null) {
+                if (!socket.isClosed()) {
                     try {
                     	System.out.println("closing socket...");
                     	socket.close();
@@ -307,10 +312,10 @@ public class StartServerSocket {
         }
     
         private void closeListener(){
-        	if(socket != null){
+        	if(!socket.isClosed()){
         		try {
 					socket.close();
-					System.out.println("closed socket #" + count + ".");
+					System.out.println("closeListener: closed socket #" + count + ".");
 				} catch (IOException e) {
 					System.err.println("IOException attempting to close listenSocket #" + count + ".");
 				}
