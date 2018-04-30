@@ -42,6 +42,7 @@ public class Db {
         conn = null;
     }
 
+    /** @brief For providing `port` as an int. */
     public Db (String dbName_, String hostName_, int port_, String userName_, String password_) {
         this(dbName_, hostName_, Integer.toString(port_), userName_, password_);
     }
