@@ -104,7 +104,7 @@ public class NetClient implements Runnable {
 			
 			//byte array with size of the file 
 	        byte[] bytes = new byte[(int) file.length()];
-	
+	        System.out.println((int)file.length() + "bytes in file.");
 	        //read in from the file
 	        try{
 	        	BufferedInputStream bIn = new BufferedInputStream(new FileInputStream(file));

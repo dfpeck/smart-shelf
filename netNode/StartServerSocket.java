@@ -210,6 +210,7 @@ public class StartServerSocket {
 	                    }
 	                }
 	                intent = sb.toString();
+	                System.out.println(intent);
 	                
 	                /** then checking and responding **/
 	                // compare lexigraphically since bytes will be different
@@ -288,7 +289,7 @@ public class StartServerSocket {
                 //read in from the socket input stream and write to file output stream
                 int bytesRead = in.read(bytes, 0, bytes.length);
                 bOut.write(bytes, 0, bytesRead);
-                
+                System.out.println(bytesRead + "bytes read.");
                 //closing stream objects
                 bOut.close();
 				
