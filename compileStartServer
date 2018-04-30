@@ -1,12 +1,5 @@
 db/Db.java
-db/HistoryKey.java
-db/HistoryRecord.java
-db/ItemsRecord.java
-db/ItemTypesRecord.java
-db/MatsRecord.java
-db/MatTypesRecord.java
-db/TableRecord.java
-netNode/StartServer.java
+run/StartServer.java
 netNode/StartServerSocket.java
 netNode/NetServer.java
-netNode/ServerInteractor.java
+netNode/MainServer.java
