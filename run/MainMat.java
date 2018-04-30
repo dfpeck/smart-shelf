@@ -48,6 +48,14 @@ public class MainMat{
 	    	   }
 	       }
        }
+       
+       /* EMULATION FUNCTIONS */
+       /*
+        * 1) Simulate memory at determined limit: Mat send Server DB file,
+        * 										  Mat send Server string telling it to add NEW_DB it received to its DB,
+        * 										  Server eventually pops this string off the stack and does the command,
+        * 										  Server updates its DB file. 
+        */
        scanner.close();
    }		
 }

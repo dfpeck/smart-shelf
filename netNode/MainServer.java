@@ -75,6 +75,19 @@ public class MainServer {
         	else
         		System.out.println("==FAILED==");
         }
+        
+        /* EMULATION FUNCTIONS */
+        /*
+         * 1) Simulate request DB from mat: Server sends string to Mat asking for DB update,
+         * 									Mat eventually pops this string off the stack and does the command,
+         *                                  Mat sends DB file to Server,
+         *                                  Mat sends string to Server telling it to update its database,
+         *                                  Server eventually pops this string off the stack and does the command,
+         *                                  Server updates its DB with NEW_DB file.
+         *    When will the above function happen?
+         *    1) Every so much time.
+         *    2) First time UI requests a update to a record in a certain amount of time.
+         */
 
         System.out.println("==FINISHED==");
         scanner.close();

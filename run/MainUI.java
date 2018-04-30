@@ -42,6 +42,22 @@ public class MainUI {
 	    	   }
 	       }
        }
+       
+       /* EMULATION FUNCTIONS */
+       /*
+        * 1) Simulate UI adding item: UI sends string to Server asking for adding an item,
+        * 							  Server eventually pops this string off the stack and does the command,
+        *                             Server adds new slot for that item to DB,
+        *                             Server sends string to Mat telling it to add this new slot with id Server gave it,
+        *                             Mat eventually pops this string off the stack and does the command,
+        *                             Mat adds new slot to its DB with specific id. 
+        * 2) Simulate UI requesting update: For each item in table:
+        *                                                           UI sends string to Server requesting update to that record,
+        *                                                           Server eventually pops this string off the stack and does the command,
+        *                                                           Server sends string to UI with updated information,
+        *                                                           UI eventually pops this string off the stack and does the command,
+        *                                                           UI updates item. 
+        */
        scanner.close();
    }		
 }
