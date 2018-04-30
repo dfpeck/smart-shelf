@@ -287,9 +287,15 @@ public class StartServerSocket {
                 BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
 
                 //read in from the socket input stream and write to file output stream
-                int bytesRead = in.read(bytes, 0, bytes.length);
-                bOut.write(bytes, 0, bytesRead);
-                System.out.println(bytesRead + "bytes read.");
+                int bytesRead = 0;
+                do{
+	                bytesRead = in.read(bytes, 0, bytes.length);
+	                bOut.write(bytes, 0, bytesRead);
+	                System.out.println(bytesRead + "bytes read.");
+	                if (bytesRead == 126) {
+                        bytesRead = -1;
+                    }
+                }while(bytesRead != -1);
                 //closing stream objects
                 bOut.close();
 				

@@ -115,6 +115,8 @@ public class NetClient implements Runnable {
 	        	out.flush();
 	        	out.write(bytes, 0, bytes.length);
 	        	out.flush();
+	        	out.write("~".getBytes());
+	        	out.flush();
 		
 		        bIn.close();
 	        } catch (FileNotFoundException e)
