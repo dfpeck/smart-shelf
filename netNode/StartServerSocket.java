@@ -282,20 +282,19 @@ public class StartServerSocket {
         		
             	//open file
                 File file = new File(NEW_DATABASE_FILE_NAME + ".mv.db");
-                //will need to increase size of byte array if information exceeds 1024 bytes
-                byte[] bytes = new byte[100000];
                 BufferedOutputStream bOut = new BufferedOutputStream(new FileOutputStream(file));
 
                 //read in from the socket input stream and write to file output stream
-                int bytesRead = 0;
-                do{
-	                bytesRead = in.read(bytes, 0, bytes.length);
-	                bOut.write(bytes, 0, bytesRead);
-	                System.out.println(bytesRead + "bytes read.");
-	                if (bytesRead == 126) {
-                        bytesRead = -1;
+                int byteRead = 0;
+                while (byteRead != -1) {
+                    byteRead = in.read();
+                    if (byteRead == 126) {
+                        byteRead = -1;
+                    } else {
+                        bOut.write(byteRead);
                     }
-                }while(bytesRead != -1);
+                }
+
                 //closing stream objects
                 bOut.close();
 				
