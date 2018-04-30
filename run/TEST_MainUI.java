@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import netNode.NetUI;
 
-public class MainUI {
+public class TEST_MainUI {
    public static void main(String[] args) {
 	   String ip = "";
 	   int choice = 0;
