@@ -10,7 +10,11 @@ import java.net.Socket;
 
 import db.Db;
 
+/** @brief Class to receive incoming messages and deal with them as needed.
+*
+*/
 class ServerRequest implements Runnable {
+	/*PROPERTIES*/
 	static final String newDbName = "./NEW_inventory";
 	
 	static String host = "";
@@ -25,12 +29,21 @@ class ServerRequest implements Runnable {
     int count = 0;
     StringBuilder sb = new StringBuilder();
     
+    /*CONSTRUCTORS*/
+    /**
+     *  @param netServer the netServer class
+     *  @param socket the specific socket connected to
+     *  @param count the id of the connected socket
+     *  @param db the database object
+     *  @param host the host name of the server
+     *  @param tcpServerPort the port for the tcp server.
+     */
     ServerRequest(NetServer netServer, Socket socket, 
     		           int count, Db db, String host, int tcpServerPort) {
-    	//System.out.println("startServerRequest constructor...");
         this.socket = socket;
-        this.count = count;
+        this.netServer = netServer;
         this.db = db;
+        this.count = count;
         ServerRequest.host = host;
         ServerRequest.tcpServerPort = tcpServerPort;
         
@@ -46,9 +59,14 @@ class ServerRequest implements Runnable {
 		}   
     }
 
+    /*THREAD START*/
+    /** @brief thread execution begins
+    *
+    *	listens for the intent of the client socket and
+    *   responds appropriately to that intent.
+    */
     @Override
     public void run() {
-    	//System.out.println("StartServerRequest run()...");
         try {
         	//while the socket is alive
         	while(!socket.isClosed())
@@ -57,12 +75,11 @@ class ServerRequest implements Runnable {
             	 * the client to see what it wants. **/
                 int byteRead = 0;
 
-                // Read from input stream. Note: inputStream.read() will block
-                // if no data return
                 //reset stringbuilder buffer
                 sb.setLength(0);
                 
-                //System.out.println("attempting to read intent...");
+                // Read from input stream. Note: inputStream.read() will block
+                // if no data return
                 while (byteRead != -1) {
                     byteRead = in.read();
                     if (byteRead == 126){
@@ -71,18 +88,17 @@ class ServerRequest implements Runnable {
                         sb.append((char) byteRead);
                     }
                 }
+                
                 intent = sb.toString();
-                //System.out.println(intent);
                 
                 /** then checking and responding **/
-                // compare lexigraphically since bytes will be different
                 if(intent.compareTo("SendString") == 0){
                 	
-                	getString(out);
+                	getString();
                 	
                 }else if(intent.compareTo("SendDatabase") == 0){
                 	
-                	getDatabase(in);
+                	getDatabase();
                 	
                 }else if(intent.compareTo("close") == 0){
                 	netServer.sendString("close", count);
@@ -93,16 +109,12 @@ class ServerRequest implements Runnable {
         	}
 
         } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("IOException in SocketServerRequestThread"
-                    + e.toString());
+            System.err.println("IOException in SocketServerRequestThread");
         } finally {
             if (!socket.isClosed()) {
                 try {
-                	//System.out.println("closing socket...");
                 	socket.close();
                 } catch (IOException e){
-                    e.printStackTrace();
                     System.err.println("IOException in "
                     		+ "SocketServerRequestThread");
                 }
@@ -110,14 +122,17 @@ class ServerRequest implements Runnable {
         }
     }
 
-    //retrieves string representation of record and sends it back
-    //through the socket outputstream.
-    private void getString(OutputStream out){
+    /*HELPER FUNCTIONS*/
+    /** @brief function for processing incoming string input from socket
+    *
+    *	retrieves string from inputstream of socket and adds it to queue
+    *
+    */
+    private void getString(){
     	try{
     		//reset stringbuilder buffer
             sb.setLength(0);
             
-        	//System.out.println("listening for string...");
         	// Read from input stream. Note: inputStream.read() will block
             // if no data return
             int byteRead = 0;
@@ -130,17 +145,20 @@ class ServerRequest implements Runnable {
                 }
             }
 	        
-            //add string to queue
             netServer.addStringToQueue(sb.toString());
         	
     	} catch (IOException e) {
-            e.printStackTrace();
             System.err.println("IOException in getString()");
     	}
     }
     
-    //writes to the file from the inputstream
-    private void getDatabase(InputStream in){
+    /** @brief function for processing incoming file input from socket
+     * 
+     *  retrieves bytes from inputstream and dumps them in a new file.
+     *  The new db file is then merged with the old db file.
+     *  
+     */
+    private void getDatabase(){
     	try{
     		//System.out.println("listening for file contents...");
     		
@@ -161,17 +179,19 @@ class ServerRequest implements Runnable {
                 }
             }
 
-            //closing stream objects
             bOut.close();
 			
 			Db new_db = new Db(newDbName, host, tcpServerPort, "", "");
 			new_db.copy_contents(db);
+			
     	} catch (IOException e) {
-            e.printStackTrace();
             System.err.println("IOException in getDatabase()");
     	}
     }
 
+    /** @brief function to close this particular socket
+     * 
+     */
     protected void closeListener(){
     	if(!socket.isClosed()){
     		try {

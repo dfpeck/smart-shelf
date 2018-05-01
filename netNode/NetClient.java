@@ -19,14 +19,10 @@ import db.Db;
  *
  *	After connecting to the server functions become available for use.
  *  Also creates a thread for receiving requests from the server.
- *
- *  @param ip Server ip address.
  */
 public class NetClient implements Runnable {
 
-	/*Properties*/
-    IOException ioException;
-    UnknownHostException unknownHostException;
+	/*PROPERTIES*/
     static final int port = 8080;
     String ip;
     InputStream in = null;
@@ -35,28 +31,34 @@ public class NetClient implements Runnable {
     Socket listenSocket = null;
     ServerSocket serverSocket = null;
     Queue<String> queue = new LinkedList<>();
-    NetMatRequest netMatRequest = null;
-    Thread netMatRequestThread = null;
+    NetClientRequest netClientRequest = null;
+    Thread netClientRequestThread = null;
     String identity = "";
 
-	/*Constructors*/
+	/*CONSTRUCTORS*/
+    /**
+    *  @param ip Server ip address.
+    */
     public NetClient(String ip) {
         this.ip = ip;
         try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
 			System.err.println("IOException creating serverSocket");
-			e.printStackTrace();
 		}
     }
 	
-	/*Thead execution start*/
+    /*THREAD START*/
+    /** @brief Thread execution begins
+    *
+    *	open sockets for communication and start
+    *   listening for requests from server.
+    */
 	@Override
     public void run() {
 
         //create socket
         try {
-        	//System.out.println("creating sockets...");
             //open socket for sending requests to server
         	sendSocket = new Socket(ip, port);
         	in = sendSocket.getInputStream();
@@ -65,22 +67,21 @@ public class NetClient implements Runnable {
             //open socket for listening for requests from the server
         	listenSocket = serverSocket.accept();
         	
-        	netMatRequest = new NetMatRequest(listenSocket);
-        	netMatRequestThread = new Thread(netMatRequest);
-        	netMatRequestThread.start();
+        	//handles incoming information on socket
+        	netClientRequest = new NetClientRequest(this, listenSocket);
+        	netClientRequestThread = new Thread(netClientRequest);
+        	netClientRequestThread.start();
         	
         } catch (UnknownHostException e) {
-            this.unknownHostException = e;
             System.err.println("UnknownHostException in socket creation");
             return;
         } catch (IOException e) {
-            this.ioException = e;
             System.err.println("IOException in socket creation");
             return;
         } 
     }
 
-    /*Network Functions*/
+    /*NETWORK FUNCTIONS*/
 	/** @brief sends db through socket
 	 *
 	 * takes the file pointed to by the db object and sends it through
@@ -90,7 +91,6 @@ public class NetClient implements Runnable {
 	 *           send across the network.
 	 */
     public void sendDB(Db db){
-    	//create request string
         String intent = "SendDatabase~";
         
         if(out != null){
@@ -99,17 +99,14 @@ public class NetClient implements Runnable {
 				out.flush();
 				out.write(intent.getBytes());
 				out.flush();
-		        //System.out.println("sendDatabase intent sent");
 		    	
 				File file = new File(db.getFileName() + ".mv.db");
-				
-				//byte array with size of the file 
 		        byte[] bytes = new byte[(int) file.length()];
 		        
-		        //read in from the file
 		        try{
 		        	BufferedInputStream bIn = new BufferedInputStream(new FileInputStream(file));
 		        	
+		        	//read in from the file
 		        	bIn.read(bytes, 0, bytes.length);
 		        	
 			        //output on socket
@@ -122,13 +119,10 @@ public class NetClient implements Runnable {
 			        bIn.close();
 		        } catch (FileNotFoundException e)
 	 	        {
-	 	        	e.printStackTrace();
 					System.err.println("FileNotFoundException in dump()");
 	 	        }
 				
-		        System.out.println("Sent Database");
 			} catch (IOException e) {
-				e.printStackTrace();
 				System.err.println("IOException in sendDatabase()");
 			}
         }
@@ -148,7 +142,6 @@ public class NetClient implements Runnable {
 	        	out.flush();
 	        	out.write(intent.getBytes());
 	        	out.flush();
-		        //System.out.println("sendString intent sent...");
 		        
 		        //send string
 		        out.flush();
@@ -156,19 +149,13 @@ public class NetClient implements Runnable {
 	        	out.flush();
 	        	out.write("~".getBytes());
 	        	out.flush();
-		        //System.out.println("string sent: " + str);
-		        
 	        } catch (IOException e){
-				e.printStackTrace();
 				System.err.println("IOException in sendString()");
 	        }
         }
     }
 
-	/** @brief closes the socket
-	 *
-	 *  closes the socket on the client side.
-	 */
+	/** @brief tells the server to shut down this socket.*/
     public void close(){
     	//telling the server to shutdown this particular client.
     	try {
@@ -177,14 +164,13 @@ public class NetClient implements Runnable {
         	out.flush();
         	out.write("~".getBytes());
         	out.flush();
-	        //System.out.println("string sent: " + "close");
 	        
         } catch (IOException e){
-			e.printStackTrace();
 			System.err.println("IOException in sendString()");
         }
     }
 
+    /*QUEUE FUNCTIONS*/
 	/** @brief returns top of the string retrieved queue
 	 *
 	 *  @return "empty" if queue is empty. String at top of queue if not empty.
@@ -198,129 +184,16 @@ public class NetClient implements Runnable {
     	} 	
     }
     
-	/** @brief Helper class for retrieving requests from connected sockets
+    /** @brief adds string parameter to queue*/
+    void addStringToQueue(String str){
+    	queue.add(str);
+    }
+    
+    /** @brief returns identity
 	 *
-	 *  @param socket The socket that will be listened on.
+	 *  @return identity
 	 */
-    private class NetMatRequest implements Runnable {
-
-		/*Properties*/
-        private Socket socket;
-        StringBuilder sb = new StringBuilder();
-        InputStream in = null;
-        OutputStream out = null;
-        String intent = "";
-        boolean flag = true;
-
-		/*Constructors*/
-        NetMatRequest(Socket socket) {
-        	//System.out.println("NetMatRequestThread constructor...");
-            this.socket = socket;
-            
-            try {
-				this.in = socket.getInputStream();
-				this.out = socket.getOutputStream();
-			} catch (IOException e) {
-				System.err.println("IOException in NetMatRequestThread constructor...");
-				e.printStackTrace();
-			}
-        }
-
-		/*Thead execution start*/
-        @Override
-        public void run() {
-        	while(flag){
-            	/**First we're getting input from the client to see what it wants. **/
-                int byteRead = 0;
-
-                //reset stringbuilder buffer
-                sb.setLength(0);
-                
-				// Read from input stream. Note: inputStream.read() will block
-                // if no data return
-                try{
-	                //System.out.println("attempting to read intent...");
-	                while (byteRead != -1) {
-	                    byteRead = in.read();
-	                    if (byteRead == 126){
-	                        byteRead = -1;
-	                    }else {
-	                        sb.append((char) byteRead);
-	                    }
-	                }
-	                intent = sb.toString();
-	                /** then checking and responding **/
-	                // compare lexigraphically since bytes will be different
-	                if(intent.compareTo("SendString") == 0){
-	                	getString();
-	                }else if(intent.compareTo("GetIdentity") == 0){
-	                    try {        	        
-	            	        out.flush();
-	            	        out.write(identity.getBytes());
-	            	        out.flush();
-	            	        //System.out.println("Identity sent");
-	                    } catch (IOException e){
-	            			e.printStackTrace();
-	            			System.err.println("IOException sending identity");
-	                    }
-	                }else if(intent.compareTo("close") == 0){
-	                	flag = false;
-	                }
-                }catch(IOException e){
-                	System.err.println("It's likely that the server went offline, dumping socket...");
-                	try {
-                		socket.close();
-                		//System.out.println("Socket closed");
-                		flag = false;
-                	} catch (IOException e1){
-                		System.err.println("IOException closing socket in NetMatRequest.");
-                	}
-                }
-        	}
-            if (!socket.isClosed()) {
-                try {
-                	//System.out.println("closing socket...");
-                    socket.close();
-                    flag = false;
-                } catch (IOException e){
-                    e.printStackTrace();
-                    System.err.println("IOException closing socket in NetMatRequest"
-                            + e.toString());
-                }
-            }
-        }
-
-		/** @brief Helper function for reading a string from the socket
-		 *
-		 *  Reads in string from the socket and adds it to the queue that
-		 *  the user can retrieve later.
-		 */
-        private void getString(){
-        	try{
-				//reset stringbuilder buffer
-        		sb.setLength(0);
-
-        		// Read from input stream. Note: inputStream.read() will block
-                // if no data return
-        		int byteRead = 0;
-                while (byteRead != -1) {
-                    byteRead = in.read();
-                    if (byteRead == 126){
-                        byteRead = -1;
-                    }else {
-                        sb.append((char) byteRead);
-                    }
-                }
-        		
-                //add string to queue
-                queue.add(sb.toString());
-				//System.out.println("Retrieved string.");
-                
-        	} catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("IOException in reqDatabase" + e.toString());
-        	}
-        }
-        
+    String getIdentity(){
+    	return identity;
     }
 }

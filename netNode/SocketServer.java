@@ -11,9 +11,14 @@ import java.util.Vector;
 import db.Db;
 import netNode.ServerRequest;
 
-//Creates a thread that listens on a port for incoming connects and
-// instantiates a listener thread for each of the connections requested.
+/** @brief Class for listening for new connections
+*
+*	listens for connections to serverSocket and creates
+*	threads dedicated to sending and receiving from the new
+*	connected sockets.
+*/
 class SocketServer implements Runnable {
+	/*PROPERTIES*/
 	static final int serverSocketPort = 8080;
 	
 	static String host = "";
@@ -30,6 +35,13 @@ class SocketServer implements Runnable {
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	Vector<Thread> serverRequestThreads = new Vector();
     
+    /*CONSTRUCTORS*/
+    /** 
+     * @param netServer the nerServer
+     * @param db the db object
+     * @param host the server host name
+     * @param tcpServerPort port number to the tcp server
+     */
     SocketServer(NetServer netServer, Db db, String host, int tcpServerPort){
     	this.netServer = netServer;
     	this.db = db;
@@ -37,13 +49,26 @@ class SocketServer implements Runnable {
     	SocketServer.tcpServerPort = tcpServerPort;
     }
     
+    /*GETTERS*/
+    public int getPort(){
+    	return serverSocketPort;
+    }
+    
+    /*THREAD START*/
+    /** @brief Thread execution begins
+    *
+    *	listen for new connections to the serverSocket.
+    *	create new threads for sending and receiving responses
+    *	from this client and make these known to netServer.
+    */
     @Override
     public void run() {
         try {
-            // create ServerSocket using specified port
             serverSocket = new ServerSocket(serverSocketPort);
+            
             OutputStream out = null;
             InputStream in = null;
+            
             StringBuilder sb = new StringBuilder();
 
             while (listen == true) {
@@ -51,7 +76,7 @@ class SocketServer implements Runnable {
                     // block the call until connection is created and return
                     // Socket object for mat/ui -> server communication
                     Socket listenSocket = serverSocket.accept();
-                    //System.out.println("accepted socket...");
+
                     System.out.println("#" + count + " from "
                     		             + listenSocket.getInetAddress() + ":"
                     		             + listenSocket.getPort());
@@ -61,7 +86,7 @@ class SocketServer implements Runnable {
                     Socket sendSocket = new Socket(
                     		 listenSocket.getInetAddress(), serverSocketPort);
                     
-                    /*find identity of socket*/
+                    /**find identity of socket**/
                     out = sendSocket.getOutputStream();
                     in = sendSocket.getInputStream();
                     String intent = "GetIdentity~";
@@ -70,7 +95,6 @@ class SocketServer implements Runnable {
                     	out.flush();
                     	out.write(intent.getBytes());
                     	out.flush();
-            	        //System.out.println("GetIdentity intent sent...");
             	        
         				//reset stringbuilder buffer
                 		sb.setLength(0);
@@ -88,11 +112,10 @@ class SocketServer implements Runnable {
                             }
                         }           	        
                     } catch (IOException e){
-            			e.printStackTrace();
             			System.err.println("IOException in getIdentity");
                     }
                     
-                    /*start up send and receive threads*/
+                    /**start up send and receive threads**/
                     serverRequests.add(count, new ServerRequest(
                     		netServer, listenSocket, count, db, host,
                     		tcpServerPort));
@@ -103,36 +126,30 @@ class SocketServer implements Runnable {
                     System.out.println(sb.toString() + " connected.");
                     netServer.setSocket(sendSocket, sb.toString(), count);
                     count++;
+                    
             	} catch (SocketException e){
             		System.err.println("Interrupted SocketServer");
             	}
             }
         } catch (IOException e) {
         	System.err.println("IOException in SocketServer");
-            e.printStackTrace();
         }
         for(int i = 0; i < serverRequestThreads.size(); i++)
         {
         	serverRequests.get(i).closeListener();
         }
-        //System.out.println("exited socketServer loop...");
     }
     
+    /*HELPER FUNCTIONS*/
+    /** @brief stop listening for connections to serverSocket*/
     public void closeServer() {
     	listen = false;
-    	//System.out.println("listen == false");
         if (serverSocket != null) {
             try {
                 serverSocket.close();
-                //System.out.println("Closed serverSocket");
             } catch (IOException e) {
                 System.err.println("IOException in closing socket");
             }
-        }
-        
-    }
-    
-    public int getPort(){
-    	return serverSocketPort;
+        } 
     }
 }

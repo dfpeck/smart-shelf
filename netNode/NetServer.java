@@ -11,8 +11,16 @@ import java.util.Vector;
 import db.Db;
 import netNode.StartServerSocket;
 
-public class NetServer implements Runnable {
-
+/** @brief Main driver for server functions.
+ * 
+ *  Maintains itself as a holder for the sockets connected
+ *  to the server and supplies functions for sending messages
+ *  to the clients and retrieving the strings that have been
+ *  retrieved elsewhere and added to the queue
+ * 
+ */
+class NetServer implements Runnable {
+	/*Properties*/
     IOException ioException;
     
     UnknownHostException unknownHostException;
@@ -31,24 +39,49 @@ public class NetServer implements Runnable {
     
 	Queue<String> queue = new LinkedList<>();
 
-    public NetServer(StartServerSocket startServerSocket, Db db, SocketServer socketServer) {
+	/*Constructors*/
+	/**
+	 * @param startServerSocket the startServerSocket class
+	 * @param db the db object
+	 */
+    NetServer(StartServerSocket startServerSocket, Db db) {
         this.startServerSocket = startServerSocket;
-        this.socketServer = socketServer;
         this.db = db;
     }
-	
-    public void run() {
-		/*starts loop for user input in new thead. Not needed in final implementation, as they'll
-		  be calling the functions of their own accord.*/
-    	MainServer mainServer = new MainServer();
-    	mainServer.main(this, db);
-    	
-    	//System.out.println("exited out of mainServer.main...");
+    
+    /*Getters*/
+    String getIdentity(int num){
+    	return identity.get(num);
     }
     
-    public void setSocket(Socket socket, String client, int num){
+    int getCount(){
+    	return count;
+    }
+    
+    /*Setters*/
+    void setSocketServer(SocketServer socketServer){
+    	this.socketServer = socketServer;
+    }
+	
+    /** @brief Thread execution begins
+     * 
+     * 	starts the MainServer object for interaction with this class.
+     * 
+     */
+    public void run() {
+    	MainServer mainServer = new MainServer();
+    	mainServer.main(this, db);
+    }
+    
+    /** @brief sets up new sockets
+     * 
+     * 	@param socket socket to add
+     *  @param client ui or mat depending on the client that connects
+     *  @param num the id associated with the client.
+     * 
+     */
+    void setSocket(Socket socket, String client, int num){
         try {
-        	//System.out.println("getting output stream for NetServer...");
         	this.socket.add(num, socket);
         	out.add(num, socket.getOutputStream());
         	identity.add(num, client);
@@ -65,24 +98,22 @@ public class NetServer implements Runnable {
         }
     }
     
-    public String getIdentity(int num){
-    	return identity.get(num);
-    }
-    
-    public int getCount(){
-    	return count;
-    }
-    
-    public boolean sendString(String str, int num){
-    	//create request string
+    /** @brief sends string to specific client
+     * 
+     * 	@param str message to send
+     *  @param num the id of the client to send to
+     * 
+     */
+    boolean sendString(String str, int num){
         String intent = "SendString~";
+        
         if(str != "close"){
 	        if(out != null){
 			    try {
+			    	//send intent
 			    	out.get(num).flush();
 			    	out.get(num).write(intent.getBytes());
 			    	out.get(num).flush();
-			        //System.out.println("sendString intent sent...");
 			        
 			        //send string
 			        out.get(num).flush();
@@ -90,11 +121,10 @@ public class NetServer implements Runnable {
 			        out.get(num).flush();
 			        out.get(num).write("~".getBytes());
 			        out.get(num).flush();
-			        //System.out.println("string sent: " + str);
+
 			        return true;
 			       
 			    } catch (IOException e){
-					e.printStackTrace();
 					System.err.println("IOException in sendString()");
 					return false;
 			    }
@@ -109,18 +139,21 @@ public class NetServer implements Runnable {
             	out.get(num).flush();
             	out.get(num).write("~".getBytes());
             	out.get(num).flush();
-    	        //System.out.println("string sent: " + str);
     	        return true;
     	        
             } catch (IOException e){
-    			e.printStackTrace();
     			System.err.println("IOException in sendString()");
     			return false;
             }
         }     
     }
 
-    public String pop(){
+    /** @brief pop string from front of queue
+     * 
+     * 	@return the front of the queue or "empty" if queue is empty
+     * 
+     */
+    String pop(){
     	if(queue.isEmpty())
     	{
     		return "empty";
@@ -129,11 +162,17 @@ public class NetServer implements Runnable {
     	}
     }
     
+    /** @brief add string to queue*/
     void addStringToQueue(String str){
     	queue.add(str);
     }
     
-    public void close(int num){
+    /** @brief close specific socket
+     * 
+     * 	@param num the socket to close
+     * 
+     */
+    void close(int num){
     	if(!socket.get(num).isClosed()){
     		try {
     			identity.set(num, "OFFLINE");
@@ -147,7 +186,8 @@ public class NetServer implements Runnable {
     	}
     }
     
-    public void exit(){
+    /** @brief for all sockets: close them. Also close server.*/
+    void exit(){
     	if(count < 0){
     		System.out.println("No sockets to close.");
     	}
