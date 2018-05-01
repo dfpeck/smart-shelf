@@ -10,7 +10,7 @@ import java.net.Socket;
 
 import db.Db;
 
-class StartServerRequest implements Runnable {
+class ServerRequest implements Runnable {
 	static final String newDbName = "./NEW_inventory";
 	
 	static String host = "";
@@ -25,14 +25,14 @@ class StartServerRequest implements Runnable {
     int count = 0;
     StringBuilder sb = new StringBuilder();
     
-    StartServerRequest(NetServer netServer, Socket socket, 
+    ServerRequest(NetServer netServer, Socket socket, 
     		           int count, Db db, String host, int tcpServerPort) {
     	//System.out.println("startServerRequest constructor...");
         this.socket = socket;
         this.count = count;
         this.db = db;
-        StartServerRequest.host = host;
-        StartServerRequest.tcpServerPort = tcpServerPort;
+        ServerRequest.host = host;
+        ServerRequest.tcpServerPort = tcpServerPort;
         
         try {
         	// Create byte stream to dump read bytes into

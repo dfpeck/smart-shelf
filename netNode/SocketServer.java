@@ -9,7 +9,7 @@ import java.net.SocketException;
 import java.util.Vector;
 
 import db.Db;
-import netNode.StartServerRequest;
+import netNode.ServerRequest;
 
 //Creates a thread that listens on a port for incoming connects and
 // instantiates a listener thread for each of the connections requested.
@@ -26,9 +26,9 @@ class SocketServer implements Runnable {
     Db db = null;
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	Vector<StartServerRequest> startServerRequests = new Vector();
+	Vector<ServerRequest> serverRequests = new Vector();
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	Vector<Thread> startServerRequestThreads = new Vector();
+	Vector<Thread> serverRequestThreads = new Vector();
     
     SocketServer(NetServer netServer, Db db, String host, int tcpServerPort){
     	this.netServer = netServer;
@@ -93,12 +93,12 @@ class SocketServer implements Runnable {
                     }
                     
                     /*start up send and receive threads*/
-                    startServerRequests.add(count, new StartServerRequest(
+                    serverRequests.add(count, new ServerRequest(
                     		netServer, listenSocket, count, db, host,
                     		tcpServerPort));
-                    startServerRequestThreads.add(count, new Thread(
-                    		                startServerRequests.get(count)));
-                    startServerRequestThreads.get(count).start();
+                    serverRequestThreads.add(count, new Thread(
+                    		                serverRequests.get(count)));
+                    serverRequestThreads.get(count).start();
                     
                     System.out.println(sb.toString() + " connected.");
                     netServer.setSocket(sendSocket, sb.toString(), count);
@@ -111,9 +111,9 @@ class SocketServer implements Runnable {
         	System.err.println("IOException in SocketServer");
             e.printStackTrace();
         }
-        for(int i = 0; i < startServerRequestThreads.size(); i++)
+        for(int i = 0; i < serverRequestThreads.size(); i++)
         {
-        	startServerRequests.get(i).closeListener();
+        	serverRequests.get(i).closeListener();
         }
         //System.out.println("exited socketServer loop...");
     }
