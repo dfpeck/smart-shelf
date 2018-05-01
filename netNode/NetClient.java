@@ -171,8 +171,19 @@ public class NetClient implements Runnable {
 	 */
     public void close(){
     	//telling the server to shutdown this particular client.
-    	sendString("close");
     	try {
+	        out.flush();
+        	out.write("close".getBytes());
+        	out.flush();
+        	out.write("~".getBytes());
+        	out.flush();
+	        System.out.println("string sent: " + "close");
+	        
+        } catch (IOException e){
+			e.printStackTrace();
+			System.out.println("IOException in sendString()");
+        }
+    	/*try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e1) {
 			System.err.println("InterruptedException in close()");
@@ -210,7 +221,7 @@ public class NetClient implements Runnable {
                 return;
             }
         }
-    	System.out.println("All sockets closed");
+    	System.out.println("All sockets closed");*/
     }
 
 	/** @brief returns top of the string retrieved queue
@@ -238,6 +249,7 @@ public class NetClient implements Runnable {
         InputStream in = null;
         OutputStream out = null;
         String intent = "";
+        boolean flag = true;
 
 		/*Constructors*/
         NetMatRequest(Socket socket) {
@@ -256,7 +268,7 @@ public class NetClient implements Runnable {
 		/*Thead execution start*/
         @Override
         public void run() {
-        	while(!socket.isClosed()){
+        	while(flag){
             	/**First we're getting input from the client to see what it wants. **/
                 int byteRead = 0;
 
@@ -290,12 +302,15 @@ public class NetClient implements Runnable {
 	            			e.printStackTrace();
 	            			System.out.println("IOException sending identity");
 	                    }
+	                }else if(intent.compareTo("close") == 0){
+	                	flag = false;
 	                }
                 }catch(IOException e){
                 	System.out.println("It's likely that the server went offline, dumping socket...");
                 	try {
                 		socket.close();
                 		System.out.println("Socket closed");
+                		flag = false;
                 	} catch (IOException e1){
                 		System.out.println("IOException closing socket in NetMatRequest.");
                 	}
@@ -305,13 +320,13 @@ public class NetClient implements Runnable {
                 try {
                 	System.out.println("closing socket...");
                     socket.close();
+                    flag = false;
                 } catch (IOException e){
                     e.printStackTrace();
                     System.out.println("IOException closing socket in NetMatRequest"
                             + e.toString());
                 }
             }
-            close();
         }
 
 		/** @brief Helper function for reading a string from the socket

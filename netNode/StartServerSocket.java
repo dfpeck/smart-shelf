@@ -228,8 +228,10 @@ public class StartServerSocket {
 	                	getDatabase(in);
 	                	
 	                }else if(intent.compareTo("close") == 0){
+	                	netServer.sendString("close", count);
 	                	closeListener();
 	                	closeSender(count);
+	                	
 	                }
             	}
 

@@ -67,32 +67,49 @@ public class NetServer implements Runnable {
     public boolean sendString(String str, int num){
     	//create request string
         String intent = "SendString~";
-        
-        if(out != null){
-		    try {
-		    	out.get(num).flush();
-		    	out.get(num).write(intent.getBytes());
-		    	out.get(num).flush();
-		        System.out.println("sendString intent sent...");
-		        
-		        //send string
-		        out.get(num).flush();
-		        out.get(num).write(str.getBytes());
-		        out.get(num).flush();
-		        out.get(num).write("~".getBytes());
-		        out.get(num).flush();
-		        System.out.println("string sent: " + str);
-		        return true;
-		       
-		    } catch (IOException e){
-				e.printStackTrace();
-				System.out.println("IOException in sendString()");
-				return false;
-		    }
+        if(str != "close"){
+	        if(out != null){
+			    try {
+			    	out.get(num).flush();
+			    	out.get(num).write(intent.getBytes());
+			    	out.get(num).flush();
+			        System.out.println("sendString intent sent...");
+			        
+			        //send string
+			        out.get(num).flush();
+			        out.get(num).write(str.getBytes());
+			        out.get(num).flush();
+			        out.get(num).write("~".getBytes());
+			        out.get(num).flush();
+			        System.out.println("string sent: " + str);
+			        return true;
+			       
+			    } catch (IOException e){
+					e.printStackTrace();
+					System.out.println("IOException in sendString()");
+					return false;
+			    }
+	        }else{
+	        	System.out.println("No socket connected at" + num +".");
+	        	return false;
+	        }
         }else{
-        	System.out.println("No socket connected at" + num +".");
-        	return false;
+        	try {
+    	        out.get(num).flush();
+            	out.get(num).write(str.getBytes());
+            	out.get(num).flush();
+            	out.get(num).write("~".getBytes());
+            	out.get(num).flush();
+    	        System.out.println("string sent: " + str);
+    	        return true;
+    	        
+            } catch (IOException e){
+    			e.printStackTrace();
+    			System.out.println("IOException in sendString()");
+            }
         }
+        System.out.println("unreachable");
+        return false;
     }
 
     public void close(int num){
