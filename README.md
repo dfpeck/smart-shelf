@@ -8,25 +8,22 @@ Code for The Green's automatic inventory system.
 ## H2  ##
 Most classes in the `db` directory require the [H2 database
 engine](http://h2database.com) to be installed and in your Java classpath.
-## AndroidStudio ##
-The android files are projects for android studio. You'll need android studio to run them,
-which you can do on an emulator or through connecting your phone to the pc.
 ## Java ##
-netNode package code may be compiled using:
+NetNode and run code may be compiled using:
 
-javac @compileNetMat
+javac -cp /full/path/to/smart-shelf/db/h2-1.4.197.jar:/full/path/to/smart-shelf/ @compileNetMat
 
-javac @compileNetUI
+javac -cp /full/path/to/smart-shelf/db/h2-1.4.197.jar:/full/path/to/smart-shelf/ @compileNetUI
 
-javac @compileStartServer
+javac -cp /full/path/to/smart-shelf/db/h2-1.4.197.jar:/full/path/to/smart-shelf/ @compileStartServer
 
 and then ran using:
 
-java netNode.TEST_NetMat
+java -cp /full/path/to/smart-shelf/db/h2-1.4.197.jar:/full/path/to/smart-shelf/ run.MainMat
 
-java netNode.TEST_NetUI
+java -cp /full/path/to/smart-shelf/db/h2-1.4.197.jar:/full/path/to/smart-shelf/ run.TEST_MainUI
 
-java netNode.TEST_StartServer
+java -cp /full/path/to/smart-shelf/db/h2-1.4.197.jar:/full/path/to/smart-shelf/ run.StartServer
 
 # Style Guidelines #
 ## Code ##
