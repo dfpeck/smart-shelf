@@ -25,7 +25,7 @@ public class TEST_Db {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            server = Server.createTcpServer("-tcpPort", Integer.toString(testPort));
+            server = Server.createTcpServer("-tcpPort", Integer.toString(testPort), "-tcpAllowOthers");
             server.start();
 
             System.out.println("Testing " + testDbFile.getAbsolutePath());
