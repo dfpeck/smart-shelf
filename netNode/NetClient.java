@@ -45,7 +45,7 @@ public class NetClient implements Runnable {
         try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
-			System.out.println("IOException creating serverSocket");
+			System.err.println("IOException creating serverSocket");
 			e.printStackTrace();
 		}
     }
@@ -56,7 +56,7 @@ public class NetClient implements Runnable {
 
         //create socket
         try {
-        	System.out.println("creating sockets...");
+        	//System.out.println("creating sockets...");
             //open socket for sending requests to server
         	sendSocket = new Socket(ip, port);
         	in = sendSocket.getInputStream();
@@ -71,11 +71,11 @@ public class NetClient implements Runnable {
         	
         } catch (UnknownHostException e) {
             this.unknownHostException = e;
-            System.out.println("UnknownHostException in socket creation");
+            System.err.println("UnknownHostException in socket creation");
             return;
         } catch (IOException e) {
             this.ioException = e;
-            System.out.println("IOException in socket creation");
+            System.err.println("IOException in socket creation");
             return;
         } 
     }
@@ -99,7 +99,7 @@ public class NetClient implements Runnable {
 				out.flush();
 				out.write(intent.getBytes());
 				out.flush();
-		        System.out.println("sendDatabase intent sent");
+		        //System.out.println("sendDatabase intent sent");
 		    	
 				File file = new File(db.getFileName() + ".mv.db");
 				
@@ -123,13 +123,13 @@ public class NetClient implements Runnable {
 		        } catch (FileNotFoundException e)
 	 	        {
 	 	        	e.printStackTrace();
-					System.out.println("FileNotFoundException in dump()");
+					System.err.println("FileNotFoundException in dump()");
 	 	        }
 				
 		        System.out.println("Sent Database");
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("IOException in sendDatabase()");
+				System.err.println("IOException in sendDatabase()");
 			}
         }
     }
@@ -148,7 +148,7 @@ public class NetClient implements Runnable {
 	        	out.flush();
 	        	out.write(intent.getBytes());
 	        	out.flush();
-		        System.out.println("sendString intent sent...");
+		        //System.out.println("sendString intent sent...");
 		        
 		        //send string
 		        out.flush();
@@ -156,11 +156,11 @@ public class NetClient implements Runnable {
 	        	out.flush();
 	        	out.write("~".getBytes());
 	        	out.flush();
-		        System.out.println("string sent: " + str);
+		        //System.out.println("string sent: " + str);
 		        
 	        } catch (IOException e){
 				e.printStackTrace();
-				System.out.println("IOException in sendString()");
+				System.err.println("IOException in sendString()");
 	        }
         }
     }
@@ -177,51 +177,12 @@ public class NetClient implements Runnable {
         	out.flush();
         	out.write("~".getBytes());
         	out.flush();
-	        System.out.println("string sent: " + "close");
+	        //System.out.println("string sent: " + "close");
 	        
         } catch (IOException e){
 			e.printStackTrace();
-			System.out.println("IOException in sendString()");
+			System.err.println("IOException in sendString()");
         }
-    	/*try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-			System.err.println("InterruptedException in close()");
-		}
-    	if (!sendSocket.isClosed()) {
-            try {
-            	System.out.println("closing sendSocket");
-                sendSocket.close();  
-                
-            } catch (IOException e) {
-                this.ioException = e;
-                System.out.println("IOException when closing socket...");
-                return;
-            }
-        }
-    	if (!listenSocket.isClosed()){
-        	try {
-            	System.out.println("closing listenSocket");
-                listenSocket.close();
-                
-            } catch (IOException e) {
-                this.ioException = e;
-                System.out.println("IOException when closing socket...");
-                return;
-            }
-        }
-    	if (!serverSocket.isClosed()){
-        	try {
-            	System.out.println("closing serverSocket");
-                listenSocket.close();
-                
-            } catch (IOException e) {
-                this.ioException = e;
-                System.out.println("IOException when closing socket...");
-                return;
-            }
-        }
-    	System.out.println("All sockets closed");*/
     }
 
 	/** @brief returns top of the string retrieved queue
@@ -253,14 +214,14 @@ public class NetClient implements Runnable {
 
 		/*Constructors*/
         NetMatRequest(Socket socket) {
-        	System.out.println("NetMatRequestThread constructor...");
+        	//System.out.println("NetMatRequestThread constructor...");
             this.socket = socket;
             
             try {
 				this.in = socket.getInputStream();
 				this.out = socket.getOutputStream();
 			} catch (IOException e) {
-				System.out.println("IOException in NetMatRequestThread constructor...");
+				System.err.println("IOException in NetMatRequestThread constructor...");
 				e.printStackTrace();
 			}
         }
@@ -278,7 +239,7 @@ public class NetClient implements Runnable {
 				// Read from input stream. Note: inputStream.read() will block
                 // if no data return
                 try{
-	                System.out.println("attempting to read intent...");
+	                //System.out.println("attempting to read intent...");
 	                while (byteRead != -1) {
 	                    byteRead = in.read();
 	                    if (byteRead == 126){
@@ -297,33 +258,33 @@ public class NetClient implements Runnable {
 	            	        out.flush();
 	            	        out.write(identity.getBytes());
 	            	        out.flush();
-	            	        System.out.println("Identity sent");
+	            	        //System.out.println("Identity sent");
 	                    } catch (IOException e){
 	            			e.printStackTrace();
-	            			System.out.println("IOException sending identity");
+	            			System.err.println("IOException sending identity");
 	                    }
 	                }else if(intent.compareTo("close") == 0){
 	                	flag = false;
 	                }
                 }catch(IOException e){
-                	System.out.println("It's likely that the server went offline, dumping socket...");
+                	System.err.println("It's likely that the server went offline, dumping socket...");
                 	try {
                 		socket.close();
-                		System.out.println("Socket closed");
+                		//System.out.println("Socket closed");
                 		flag = false;
                 	} catch (IOException e1){
-                		System.out.println("IOException closing socket in NetMatRequest.");
+                		System.err.println("IOException closing socket in NetMatRequest.");
                 	}
                 }
         	}
             if (!socket.isClosed()) {
                 try {
-                	System.out.println("closing socket...");
+                	//System.out.println("closing socket...");
                     socket.close();
                     flag = false;
                 } catch (IOException e){
                     e.printStackTrace();
-                    System.out.println("IOException closing socket in NetMatRequest"
+                    System.err.println("IOException closing socket in NetMatRequest"
                             + e.toString());
                 }
             }
@@ -353,11 +314,11 @@ public class NetClient implements Runnable {
         		
                 //add string to queue
                 queue.add(sb.toString());
-				System.out.println("Retrieved string.");
+				//System.out.println("Retrieved string.");
                 
         	} catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("IOException in reqDatabase" + e.toString());
+                System.err.println("IOException in reqDatabase" + e.toString());
         	}
         }
         

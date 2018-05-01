@@ -29,17 +29,6 @@ public class TEST_MainUI {
 	    	   System.out.println(netUI.pop());
 	       }else if(choice == 3){
 	    	   netUI.close();
-	    	   if (netUIThread != null){
-	    		   System.out.println("ending netUIThread");
-	    		   try {
-	    			   netUIThread.join();
-	    		   } catch (InterruptedException e) {
-	    			   System.out.println("netUIThread.join interrupted");
-	    		   }
-	    		   System.out.println("ended netUIThread.");
-	    	   }else{
-	    		   System.out.println("netMatThread == null");
-	    	   }
 	       }
        }
        

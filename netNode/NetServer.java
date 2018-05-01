@@ -34,12 +34,12 @@ public class NetServer implements Runnable {
     	MainServer mainServer = new MainServer();
     	mainServer.main(this, db);
     	
-    	System.out.println("exited out of mainServer.main...");
+    	//System.out.println("exited out of mainServer.main...");
     }
     
     public void setSocket(Socket socket, String client, int num){
         try {
-        	System.out.println("getting output stream for NetServer...");
+        	//System.out.println("getting output stream for NetServer...");
         	this.socket.add(num, socket);
         	out.add(num, socket.getOutputStream());
         	identity.add(num, client);
@@ -47,11 +47,11 @@ public class NetServer implements Runnable {
 
         } catch (UnknownHostException e) {
             this.unknownHostException = e;
-            System.out.println("UnknownHostException in socket creation");
+            System.err.println("UnknownHostException in socket creation");
             return;
         } catch (IOException e) {
             this.ioException = e;
-            System.out.println("IOException in socket creation");
+            System.err.println("IOException in socket creation");
             return;
         }
     }
@@ -73,7 +73,7 @@ public class NetServer implements Runnable {
 			    	out.get(num).flush();
 			    	out.get(num).write(intent.getBytes());
 			    	out.get(num).flush();
-			        System.out.println("sendString intent sent...");
+			        //System.out.println("sendString intent sent...");
 			        
 			        //send string
 			        out.get(num).flush();
@@ -81,12 +81,12 @@ public class NetServer implements Runnable {
 			        out.get(num).flush();
 			        out.get(num).write("~".getBytes());
 			        out.get(num).flush();
-			        System.out.println("string sent: " + str);
+			        //System.out.println("string sent: " + str);
 			        return true;
 			       
 			    } catch (IOException e){
 					e.printStackTrace();
-					System.out.println("IOException in sendString()");
+					System.err.println("IOException in sendString()");
 					return false;
 			    }
 	        }else{
@@ -100,16 +100,15 @@ public class NetServer implements Runnable {
             	out.get(num).flush();
             	out.get(num).write("~".getBytes());
             	out.get(num).flush();
-    	        System.out.println("string sent: " + str);
+    	        //System.out.println("string sent: " + str);
     	        return true;
     	        
             } catch (IOException e){
     			e.printStackTrace();
-    			System.out.println("IOException in sendString()");
+    			System.err.println("IOException in sendString()");
+    			return false;
             }
-        }
-        System.out.println("unreachable");
-        return false;
+        }     
     }
 
     public void close(int num){
@@ -118,8 +117,8 @@ public class NetServer implements Runnable {
     			identity.set(num, "OFFLINE");
     			socket.get(num).close();
 
-				System.out.println("netServer: Closed socket #" + num + ".");
-				System.out.println("identity of #" + num + " set to " + identity.get(num));
+				//System.out.println("netServer: Closed socket #" + num + ".");
+				//System.out.println("identity of #" + num + " set to " + identity.get(num));
 			} catch (IOException e) {
 				System.err.println("IOException closing socket #" + num + ".");
 			}

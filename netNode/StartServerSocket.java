@@ -48,13 +48,13 @@ public class StartServerSocket {
 
     public void closeServer() {
     	listen = false;
-    	System.out.println("listen == false");
+    	//System.out.println("listen == false");
         if (serverSocket != null) {
             try {
                 serverSocket.close();
-                System.out.println("Closed serverSocket");
+                //System.out.println("Closed serverSocket");
             } catch (IOException e) {
-                System.out.println("IOException in closing socket");
+                System.err.println("IOException in closing socket");
             }
         }
         
@@ -102,14 +102,14 @@ public class StartServerSocket {
 	                    // block the call until connection is created and return
 	                    // Socket object for mat/ui -> server communication
 	                    Socket listenSocket = serverSocket.accept();
-	                    System.out.println("accepted socket...");
+	                    //System.out.println("accepted socket...");
 	                    System.out.println("#" + count + " from "
 	                    		               + listenSocket.getInetAddress() + ":"
 	                    		               + listenSocket.getPort());
 	
 	                    //Now creating second socket for server -> mat/ui communication
 	                    Socket sendSocket = new Socket(listenSocket.getInetAddress(), serverSocketPort);
-	                    System.out.println("created socket for sending requests...");
+	                    //System.out.println("created socket for sending requests...");
 	                    
 	                    /*find identity of socket*/
 	                    out = sendSocket.getOutputStream();
@@ -120,7 +120,7 @@ public class StartServerSocket {
 	                    	out.flush();
 	                    	out.write(intent.getBytes());
 	                    	out.flush();
-	            	        System.out.println("GetIdentity intent sent...");
+	            	        //System.out.println("GetIdentity intent sent...");
 	            	        
 	        				//reset stringbuilder buffer
 	                		sb.setLength(0);
@@ -138,31 +138,31 @@ public class StartServerSocket {
 	                        }           	        
 	                    } catch (IOException e){
 	            			e.printStackTrace();
-	            			System.out.println("IOException in getIdentity");
+	            			System.err.println("IOException in getIdentity");
 	                    }
 	                    
 	                    /*start up send and receive threads*/
-	                    System.out.println("attempting to run request thread...");
+	                    //System.out.println("attempting to run request thread...");
 	                    startServerRequests.add(count, new StartServerRequest(listenSocket, count));
 	                    startServerRequestThreads.add(count, new Thread(startServerRequests.get(count)));
 	                    startServerRequestThreads.get(count).start();
 	                    
-	                    System.out.println("setting new " + sb.toString() + " socket...");
+	                    System.out.println(sb.toString() + " connected.");
 	                    netServer.setSocket(sendSocket, sb.toString(), count);
 	                    count++;
                 	} catch (SocketException e){
-                		System.out.println("Interrupted SocketServer");
+                		System.err.println("Interrupted SocketServer");
                 	}
                 }
             } catch (IOException e) {
-            	System.out.println("IOException in SocketServer");
+            	System.err.println("IOException in SocketServer");
                 e.printStackTrace();
             }
             for(int i = 0; i < startServerRequestThreads.size(); i++)
             {
             	startServerRequests.get(i).closeListener();
             }
-            System.out.println("exited socketServer loop...");
+            //System.out.println("exited socketServer loop...");
         }
     }
 
@@ -176,7 +176,7 @@ public class StartServerSocket {
         int count = 0;
         
         StartServerRequest(Socket socket, int count) {
-        	System.out.println("startServerRequest constructor...");
+        	//System.out.println("startServerRequest constructor...");
             this.socket = socket;
             try {
             	// Create byte stream to dump read bytes into
@@ -185,14 +185,14 @@ public class StartServerSocket {
 				out = socket.getOutputStream();
             } catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("error getting input or output stream in SocketServerRequest.");
+				System.err.println("error getting input or output stream in SocketServerRequest.");
 			}
             this.count = count;
         }
 
         @Override
         public void run() {
-        	System.out.println("StartServerRequest run()...");
+        	//System.out.println("StartServerRequest run()...");
             try {
             	//while the socket is alive
             	while(!socket.isClosed())
@@ -205,7 +205,7 @@ public class StartServerSocket {
 	                //reset stringbuilder buffer
 	                sb.setLength(0);
 	                
-	                System.out.println("attempting to read intent...");
+	                //System.out.println("attempting to read intent...");
 	                while (byteRead != -1) {
 	                    byteRead = in.read();
 	                    if (byteRead == 126){
@@ -215,7 +215,7 @@ public class StartServerSocket {
 	                    }
 	                }
 	                intent = sb.toString();
-	                System.out.println(intent);
+	                //System.out.println(intent);
 	                
 	                /** then checking and responding **/
 	                // compare lexigraphically since bytes will be different
@@ -237,21 +237,21 @@ public class StartServerSocket {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("IOException in SocketServerRequestThread"
+                System.err.println("IOException in SocketServerRequestThread"
                         + e.toString());
             } finally {
                 if (!socket.isClosed()) {
                     try {
-                    	System.out.println("closing socket...");
+                    	//System.out.println("closing socket...");
                     	socket.close();
                     } catch (IOException e){
                         e.printStackTrace();
-                        System.out.println("IOException in SocketServerRequestThread"
+                        System.err.println("IOException in SocketServerRequestThread"
                                 + e.toString());
                     }
                 }
             }
-            System.out.println("exited StartServerRequest loop for socket #" + count + "...");
+            //System.out.println("exited StartServerRequest loop for socket #" + count + "...");
         }
     
         //retrieves string representation of record and sends it back through the socket outputstream.
@@ -260,7 +260,7 @@ public class StartServerSocket {
         		//reset stringbuilder buffer
                 sb.setLength(0);
                 
-            	System.out.println("listening for string...");
+            	//System.out.println("listening for string...");
             	// Read from input stream. Note: inputStream.read() will block
                 // if no data return
                 int byteRead = 0;
@@ -278,14 +278,14 @@ public class StartServerSocket {
             	
         	} catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("IOException in getString()");
+                System.err.println("IOException in getString()");
         	}
         }
         
         //writes to the file from the inputstream
         private void getDatabase(InputStream in){
         	try{
-        		System.out.println("listening for file contents...");
+        		//System.out.println("listening for file contents...");
         		
             	//open file
                 File file = new File(NEW_DATABASE_FILE_NAME + ".mv.db");
@@ -309,7 +309,7 @@ public class StartServerSocket {
 				new_db.copy_contents(db);
         	} catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("IOException in getDatabase()");
+                System.err.println("IOException in getDatabase()");
         	}
         }
     
@@ -317,7 +317,7 @@ public class StartServerSocket {
         	if(!socket.isClosed()){
         		try {
 					socket.close();
-					System.out.println("closeListener: closed socket #" + count + ".");
+					//System.out.println("closeListener: closed socket #" + count + ".");
 				} catch (IOException e) {
 					System.err.println("IOException attempting to close listenSocket #" + count + ".");
 				}

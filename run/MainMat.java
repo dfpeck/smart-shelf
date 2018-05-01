@@ -35,17 +35,6 @@ public class MainMat{
 	    	   System.out.println(netMat.pop());
 	       }else if(choice == 4){
 	    	   netMat.close();
-	    	   /*if (netMatThread != null){
-	    		   System.out.println("ending netMatThread");
-	    		   try {
-	    			   netMatThread.join();
-	    		   } catch (InterruptedException e) {
-	    			   System.out.println("netMatThread.join interrupted");
-	    		   }
-	    		   System.out.println("ended netMatThread.");
-	    	   }else{
-	    		   System.out.println("netMatThread == null");
-	    	   }*/
 	       }
        }
        
