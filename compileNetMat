@@ -1,3 +1,5 @@
 netNode/NetMat.java
+netNode/NetClient.java
+netNode/NetClientRequest.java
 run/MainMat.java
 db/Db.java
