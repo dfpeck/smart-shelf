@@ -7,8 +7,7 @@ import netNode.NetMat;
 
 public class MainMat{
 	static String dbName = "./inventory";
-    static String host = "172.27.210.109";
-    static int port = 1066;
+    static int tcpPort = 1066;
 	
    public static void main(String[] args) {
 	   
@@ -19,12 +18,12 @@ public class MainMat{
 	   
 	   Scanner scanner = new Scanner(System.in);
 	   
-	   //create clients db object
-	   Db db = new Db(dbName, host, port, "", "");
-	   
 	   /* need to manually input ip until ip scanner function is created */
        System.out.println("Input ip to connect to: ");
        ip = scanner.nextLine();
+       
+	   //create clients db object
+	   Db db = new Db(dbName, ip, tcpPort, "", "");
        
        netMat = new NetMat(ip);
        netMatThread = new Thread(netMat);
