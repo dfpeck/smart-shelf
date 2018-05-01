@@ -6,15 +6,21 @@ import db.Db;
 import netNode.NetMat;
 
 public class MainMat{
+	static String dbName = "./inventory";
+    static String host = "172.27.210.109";
+    static int port = 1066;
+	
    public static void main(String[] args) {
+	   
 	   String ip = "";
 	   int choice = 0;
-	   Scanner scanner = new Scanner(System.in);
-	   final String DATABASE_FILE_NAME = "inventory";
 	   NetMat netMat = null;
 	   Thread netMatThread = null;
 	   
-	   Db db = new Db(DATABASE_FILE_NAME);
+	   Scanner scanner = new Scanner(System.in);
+	   
+	   //create clients db object
+	   Db db = new Db(dbName, host, port, "", "");
 	   
 	   /* need to manually input ip until ip scanner function is created */
        System.out.println("Input ip to connect to: ");

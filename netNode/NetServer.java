@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Vector;
 
 import db.Db;
@@ -12,6 +14,7 @@ import netNode.StartServerSocket;
 public class NetServer implements Runnable {
 
     IOException ioException;
+    
     UnknownHostException unknownHostException;
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	Vector<Socket> socket = new Vector();
@@ -19,12 +22,18 @@ public class NetServer implements Runnable {
 	Vector<OutputStream> out = new Vector();
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	Vector<String> identity = new Vector();
+    
     StartServerSocket startServerSocket = null;
+    SocketServer socketServer = null;
     Db db = null;
+    
     int count = -1;
+    
+	Queue<String> queue = new LinkedList<>();
 
-    public NetServer(StartServerSocket startServerSocket, Db db) {
+    public NetServer(StartServerSocket startServerSocket, Db db, SocketServer socketServer) {
         this.startServerSocket = startServerSocket;
+        this.socketServer = socketServer;
         this.db = db;
     }
 	
@@ -111,6 +120,19 @@ public class NetServer implements Runnable {
         }     
     }
 
+    public String pop(){
+    	if(queue.isEmpty())
+    	{
+    		return "empty";
+    	}else{
+    		return queue.remove();
+    	}
+    }
+    
+    void addStringToQueue(String str){
+    	queue.add(str);
+    }
+    
     public void close(int num){
     	if(!socket.get(num).isClosed()){
     		try {
@@ -133,10 +155,6 @@ public class NetServer implements Runnable {
     		sendString("close", i);
     		close(i);	
     	}
-    	startServerSocket.closeServer();
-    }
-    
-    public String pop(){
-    	return startServerSocket.pop();
+    	socketServer.closeServer();
     }
 }

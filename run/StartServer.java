@@ -1,28 +1,29 @@
 package run;
 
 import java.sql.SQLException;
-//import org.h2.tools.Server;
+import org.h2.tools.Server;
 
 import db.Db;
 import netNode.StartServerSocket;
 
 public class StartServer {
+	static String dbName = "./inventory";
+    static String host = "localhost";
+    static int port = 1066;
+    
 	public static void main(String[] args) {
 	   /* Start H2 TCP Server and create Db objects for mat */
-	   //try {
-		   //Server server = Server.createTcpServer("-tcpPort", "8080", "-tcpAllowOthers").start();
+	   try {
+		   Server tcpServer = Server.createTcpServer("-tcpPort", Integer.toString(port), "-tcpAllowOthers");
+		   tcpServer.start();
 		   System.out.println("The H2 TCP server has started.");
-	   //} catch (SQLException e) {
-	   //	System.err.println("SQLException starting TCP Server");
-	   //}
+	   } catch (SQLException e) {
+		   System.err.println("SQLException starting TCP Server");
+	   }
 	   
-	   /* Create Db objects */
-	   // create Db object that's connected to this this server
-	   // create Db objects that are connected to each mat
+	   //create server's db object
+	   Db db = new Db(dbName, host, port, "", "");
 	   
-	   //Here I'm creating a dummy db object so my code functions.
-	   String dbName = "./inventory";
-	   Db db = new Db(dbName);
 	   try {
 		   db.open();
 		   System.out.println("DB Object created/opened.");
@@ -31,8 +32,8 @@ public class StartServer {
 	   }
 	   
 	   /* Start Socket Message Passing Server */
-	   StartServerSocket server = new StartServerSocket(db);
+	   StartServerSocket socketServer = new StartServerSocket(db, host, port);
        System.out.println("The server has started.");
-       System.out.println(server.getIpAddress() + ":" + server.getPort());
+       System.out.println(socketServer.getIpAddress() + ":" + socketServer.getPort());
 	}
 }

@@ -1,5 +1,7 @@
 db/Db.java
 run/StartServer.java
 netNode/StartServerSocket.java
+netNode/SocketServer.java
+netNode/StartServerRequest.java
 netNode/NetServer.java
 netNode/MainServer.java

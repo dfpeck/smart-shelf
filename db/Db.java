@@ -16,41 +16,57 @@ public class Db {
     /** The name of the database. Do not include ".mv.db" extension.
      */
     Connection conn;
-    private String name;
+    private String dbName;
+    private String hostName;
+    private String port;
+    private String userName, password;
     private File file;
     private boolean isOpen;
 
     /* CONSTRUCTORS */
-    public Db (String name_init) {
-        name = name_init;
-        file = new File(name + ".mv.db");
+    /** 
+     * @param dbName_ the name of the database, including the file path (from
+     * root), but not including the extension, which is managed by H2
+     * @param hostName_ the name of the host on the network
+     * @param port_ the port on which the server is broadcasting
+     * @param userName the user with which to access the server
+     * @param password the user's password
+     */
+    public Db (String dbName_, String hostName_, String port_, String userName_, String password_) {
+        dbName = dbName_;
+        hostName = hostName_;
+        port = port_;
+        userName = userName_;
+        password = password_;
+        file = new File(dbName + ".mv.db");
         conn = null;
     }
+
+    /** @brief For providing `port` as an int. */
+    public Db (String dbName_, String hostName_, int port_, String userName_, String password_) {
+        this(dbName_, hostName_, Integer.toString(port_), userName_, password_);
+    }
+
 
     /* GETTERS */
     public boolean isOpen () {
         return isOpen;
     }
-
+    
 	public String getFileName() {
-		return name;
+		return dbName;
 	}
-	
+
     /* INITIALIZATION METHODS */
     /** @brief Create a new database.
      *
      * @return Success or failure.
      */
-    protected boolean create () {
-        try {
+    protected void create () throws SQLException {
         for (String sql : readSqlFromFile("db/create_tables.sql"))
             conn.prepareStatement(sql).execute();
-        }
-        catch (SQLException e) {
-            System.err.println(e);
-            return false;
-        }
-        return true;
+        for (EventType e : EventType.values())
+            e.insert(this);
     }
 
     /** @brief Open the database connection.
@@ -58,7 +74,7 @@ public class Db {
      * Must be called before database is usable.
      */
     public boolean open () throws SQLException {
-        boolean needsPopulation = !(file.exists() && !file.isDirectory());
+        boolean needsPopulation = !file.exists() || file.isDirectory();
 
         try {
             Class.forName("org.h2.Driver");
@@ -68,11 +84,11 @@ public class Db {
             return false;
         }
 
-        conn = DriverManager.getConnection("jdbc:h2:" + name);
+        conn = DriverManager.getConnection("jdbc:h2:tcp://" + hostName + ":" + port
+                                           + "/" + dbName, userName, password);
 
         if (needsPopulation) // if the database needs tables
-            if (!create()) // populate it, and on failure...
-                return false;
+            create();        // populate it
 
         isOpen = true;
         return true;
@@ -89,8 +105,7 @@ public class Db {
     public void copy_contents(Db db){
     	System.out.println("copy contents of new_db into db");
     }
-    
-    
+
     /* HELPER FUNCTIONS */
     public static Vector<String> readSqlFromFile (String sqlFileName) {
         Scanner sqlScanner;

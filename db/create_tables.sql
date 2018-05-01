@@ -42,25 +42,3 @@ CREATE TABLE History (
     FOREIGN KEY (mat) REFERENCES Mats(matid),
     FOREIGN KEY (eventtype) REFERENCES EventTypes(eventtypeid)
     );
-
------------------------
--- EVENTTYPE ENTRIES --
------------------------
--- brand new item added to a mat
-INSERT INTO EventTypes (eventtypeid, eventtypename) VALUES (0, 'ADDED');
-
--- item completely removed from a mat
-INSERT INTO EventTypes (eventtypeid, eventtypename) VALUES (1, 'REMOVED');
-
--- item that was removed from a mat placed on a mat (may be the same mat or a
--- different mat
-INSERT INTO EventTypes (eventtypeid, eventtypename) VALUES (2, 'REPLACED');
-
--- container reduced in weight
-INSERT INTO EventTypes (eventtypeid, eventtypename) VALUES (3, 'REDUCED');
-
--- container increased in weight
-INSERT INTO EventTypes (eventtypeid, eventtypename) VALUES (4, 'REFILLED');
-
--- item slid across a mat (NOT IMPLEMENTED)
---INSERT INTO EventTypes (eventname) VALUES ('SLID');
