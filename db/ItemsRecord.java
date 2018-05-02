@@ -109,9 +109,10 @@ public class ItemsRecord extends TableRecord {
      */
     public long insert () throws SQLException {
         if (autoId)
-            return ItemsRecord.insert(db, itemType.getId());
+            itemId = ItemsRecord.insert(db, itemType.getId());
         else
-            return ItemsRecord.insert(db, itemId, itemType.getId());
+            ItemsRecord.insert(db, itemId, itemType.getId());
+        return itemId;
     }
 
 
