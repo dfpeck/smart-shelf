@@ -12,6 +12,7 @@ public class ItemTypesRecord extends TableRecord {
     protected long itemTypeId;
     protected String itemTypeName, itemTypeComment;
     protected boolean isContainer;
+    protected boolean autoId;
 
 
     /* CONSTRUCTORS */
@@ -19,12 +20,21 @@ public class ItemTypesRecord extends TableRecord {
                             long itemTypeId_,
                             String itemTypeName_,
                             String itemTypeComment_,
-                            boolean isContainer_) {
+                            boolean isContainer_,
+                            boolean autoId_) {
         db = db_;
         itemTypeId = itemTypeId_;
         itemTypeName = itemTypeName_;
         itemTypeComment = itemTypeComment_;
         isContainer = isContainer_;
+        autoId = autoId_;
+    }
+
+    public ItemTyepesRecord (Db db_,
+                             String itemTypeName_,
+                             String itemTypeComment_,
+                             boolean isContainer_) {
+        this(db_, 0, itemTypeName_, itemTypeComment_, isContainer_, true);
     }
 
     public ItemTypesRecord (Db db_, ResultSet rs) throws SQLException {
@@ -33,6 +43,7 @@ public class ItemTypesRecord extends TableRecord {
         itemTypeName = rs.getString("itemTypeName");
         itemTypeComment = rs.getString("itemTypeComment");
         isContainer = rs.getBoolean("isContainer");
+        autoId = true;
     }
 
 
@@ -110,6 +121,16 @@ public class ItemTypesRecord extends TableRecord {
         statement.setBoolean(4, isContainer_);
         return insertAndRetrieveLongKey(db_, statement);
     }
+
+    /** @brief Insert a new record based on an object.
+     *
+     */
+    public long insert () throws SQLException {
+        if (autoId)
+            itemTypeId = ItemTypesRecord.insert(db, itemTypeName, itemTypeComment, isContainer);
+        else
+            ItemTypesRecord.insert(db, itemTypeId, itemTypeName, itemTypeComment, isContainer);
+        return itemTypeId;
 
 
     /* ACCESSORS */
