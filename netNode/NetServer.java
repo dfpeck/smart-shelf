@@ -150,13 +150,13 @@ class NetServer implements Runnable {
 
     /** @brief pop string from front of queue
      * 
-     * 	@return the front of the queue or "empty" if queue is empty
+     * 	@return the front of the queue or `null` if queue is empty
      * 
      */
     String pop(){
     	if(queue.isEmpty())
     	{
-    		return "empty";
+    		return null;
     	}else{
     		return queue.remove();
     	}
