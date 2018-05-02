@@ -22,7 +22,11 @@ public class TEST_MainUI {
        
        while(choice != 3){
 	       System.out.println("(1) Send String, (2) Strings Retrieved, (3) End server communication: ");
-	       choice = Integer.parseInt(scanner.nextLine());
+	       try{
+	    	   choice = Integer.parseInt(scanner.nextLine());
+	       } catch(NumberFormatException e){
+	    	   System.out.println("Not an number, try again.");
+	       }
 	       if(choice == 1){
 	    	   netUI.sendString("This is sent from TEST_NetUI.");
 	       }else if(choice == 2){

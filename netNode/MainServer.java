@@ -15,8 +15,8 @@ public class MainServer {
     
 	public void main(NetServer netServer, Db db) {
 		this.db = db;
-		int choice;
-		int choice2;
+		int choice = 0;
+		int choice2 = 0;
 		Boolean success = false;
         boolean loop = true;
 		Scanner scanner = new Scanner(System.in);
@@ -30,7 +30,11 @@ public class MainServer {
             for (int test : tests.keySet())
                 System.out.format("%2d) %s%n", test, tests.get(test));
             System.out.format("%2d) Exit\n", -1);
-            choice = Integer.parseInt(scanner.nextLine());
+            try{
+ 	    		choice = Integer.parseInt(scanner.nextLine());
+            } catch(NumberFormatException e){
+ 	    		System.out.println("Not an number, try again.");
+ 	        }
             
             switch (choice) {
             case -1:

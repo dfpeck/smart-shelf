@@ -31,7 +31,11 @@ public class MainMat{
        
        while(choice != 4){
 	       System.out.println("(1) Send Database, (2) Send String, (3) Strings Retrieved, (4) Exit: ");
-	       choice = Integer.parseInt(scanner.nextLine());
+	       try{
+	    	   choice = Integer.parseInt(scanner.nextLine());
+	       } catch(NumberFormatException e){
+	    	   System.out.println("Not an number, try again.");
+	       }
 	       if(choice == 1){
 	    	   netMat.sendDB(db);
 	       }else if(choice == 2){ 
