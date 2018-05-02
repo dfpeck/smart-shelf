@@ -30,7 +30,7 @@ public class ItemTypesRecord extends TableRecord {
         autoId = autoId_;
     }
 
-    public ItemTyepesRecord (Db db_,
+    public ItemTypesRecord (Db db_,
                              String itemTypeName_,
                              String itemTypeComment_,
                              boolean isContainer_) {
@@ -131,6 +131,7 @@ public class ItemTypesRecord extends TableRecord {
         else
             ItemTypesRecord.insert(db, itemTypeId, itemTypeName, itemTypeComment, isContainer);
         return itemTypeId;
+    }
 
 
     /* ACCESSORS */
