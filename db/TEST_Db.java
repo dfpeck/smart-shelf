@@ -64,7 +64,7 @@ public class TEST_Db {
             }
 
             server.stop();
-
+            scanner.close();
             System.out.println("==FINISHED==");
         }
         catch (SQLException e) {

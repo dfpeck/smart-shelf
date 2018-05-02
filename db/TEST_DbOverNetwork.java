@@ -59,7 +59,7 @@ public class TEST_DbOverNetwork {
             }
         }
 
-
+        scanner.close();
         System.out.println("==FINISHED==");
     }
 
