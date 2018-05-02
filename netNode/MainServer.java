@@ -69,10 +69,6 @@ public class MainServer {
             	System.out.println(netServer.pop());
             	success = true;
             	break;
-            default:
-                System.out.println("Not a correct option, try again.");
-                success = false;
-                break;
             }
             
             if(success)
