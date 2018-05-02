@@ -1,6 +1,7 @@
 package db;
 
 import java.sql.*;
+import org.h2.tools.Server;
 import java.io.Console;
 import java.io.File;
 import java.util.Vector;
@@ -9,53 +10,66 @@ import java.util.HashMap;
 public class TEST_Db {
     static String prompt = "> ";
     static String testDbName = "./TEST_inventory";
+    static String testHost = "localhost";
+    static int testPort = 1066;
     static File testDbFile = new File(testDbName.substring(2) + ".mv.db");
     static HashMap<Integer, String> tests = new HashMap<Integer, String>();
     static long itemTypeId=1, itemId=1, matId=1;
     static String matTypeId="DUMMYTEST";
     static HistoryKey historyId = new HistoryKey(itemId, new Timestamp(System.currentTimeMillis()));
+    static Server server;
 
     public static void main (String[] args) {
         int choice;
         boolean loop = true;
         Console console = System.console();
 
-        System.out.println("Testing " + testDbFile.getAbsolutePath());
+        try {
+            server = Server.createTcpServer("-tcpPort", Integer.toString(testPort));
+            server.start();
 
-        tests.put(1, "Create Database");
-        tests.put(2, "Open Database");
-        tests.put(3, "Read SQL from File");
-        tests.put(4, "Insert Records into Database");
-        tests.put(5, "Select Records from Database");
+            System.out.println("Testing " + testDbFile.getAbsolutePath());
 
-        while (loop) {
-            System.out.println("==SELECT A TEST==");
-            for (int test : tests.keySet())
-                System.out.format("%2d) %s%n", test, tests.get(test));
-            System.out.format("%2d) Run all tests%n", 0);
-            System.out.format("%2d) Exit\n", -1);
-            try {
-                choice = Integer.parseInt(console.readLine(prompt));
+            tests.put(1, "Create Database");
+            tests.put(2, "Open Database");
+            tests.put(3, "Read SQL from File");
+            tests.put(4, "Insert Records into Database");
+            tests.put(5, "Select Records from Database");
 
-                switch (choice) {
-                case -1:
-                    loop = false;
-                    break;
-                case 0:
-                    for (int i=1; i<=tests.size(); i++)
-                        runTest(i);
-                    break;
-                default:
-                    runTest(choice);
-                    break;
+            while (loop) {
+                System.out.println("==SELECT A TEST==");
+                for (int test : tests.keySet())
+                    System.out.format("%2d) %s%n", test, tests.get(test));
+                System.out.format("%2d) Run all tests%n", 0);
+                System.out.format("%2d) Exit\n", -1);
+                try {
+                    choice = Integer.parseInt(console.readLine(prompt));
+
+                    switch (choice) {
+                    case -1:
+                        loop = false;
+                        break;
+                    case 0:
+                        for (int i=1; i<=tests.size(); i++)
+                            runTest(i);
+                        break;
+                    default:
+                        runTest(choice);
+                        break;
+                    }
+                }
+                catch (NumberFormatException e) {
+                    System.out.println("Please enter a number");
                 }
             }
-            catch (NumberFormatException e) {
-                System.out.println("Please enter a number");
-            }
-        }
 
-        System.out.println("==FINISHED==");
+            server.stop();
+
+            System.out.println("==FINISHED==");
+        }
+        catch (SQLException e) {
+            System.err.println(e);
+        }
     }
 
     protected static void runTest (int test) {
@@ -94,7 +108,7 @@ public class TEST_Db {
 
     public static boolean openDatabase () {
         boolean success;
-        Db db = new Db(testDbName);
+        Db db = new Db(testDbName, testHost, testPort, "", "");
         try {
             success = db.open();
             db.close();
@@ -137,7 +151,7 @@ public class TEST_Db {
     }
 
     public static boolean insertRecords () {
-        Db db = new Db(testDbName);
+        Db db = new Db(testDbName, testHost, testPort, "", "");
         try {
             db.open();
 
@@ -175,7 +189,7 @@ public class TEST_Db {
     }
 
     public static boolean selectRecords () {
-        Db db = new Db(testDbName);
+        Db db = new Db(testDbName, testHost, testPort, "", "");
         try {
             db.open();
 
