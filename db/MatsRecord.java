@@ -1,12 +1,48 @@
 package db;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import java.sql.SQLException;
 
 /** @brief Class to represent Mats table entries.
  */
 public class MatsRecord extends TableRecord {
+    protected long matId;
+    protected MatTypesRecord matType;
+    protected String matComment;
+
+
+    /* CONSTRUCTORS */
+    public MatsRecord (Db db_,
+                       long matId_,
+                       MatTypesRecord matType_,
+                       String matComment_) {
+        db = db_;
+        matId = matId_;
+        matType = matType_;
+        matComment = matComment_;
+    }
+
+    public MatsRecord (Db db_, ResultSet rs) throws SQLException {
+        db = db_;
+        matId = rs.getLong("matId");
+        matType = MatTypesRecord.selectById(db_, rs.getString("matType"));
+        matComment = rs.getString("matComment");
+    }
+
+    public MatsRecord (Db db_, ResultSet rs, int row) throws SQLException {
+        this(db_, getAdjustedResultSet(rs, row));
+    }
+
+
+    /* SELECTION METHODS */
+    public static MatsRecord
+        selectById (Db db_, long matId_) throws SQLException {
+        return new MatsRecord(db_, selectByIdLong(db_, matId_, "Mats", "matId"));
+    }
+
+
     /* INESRTION METHODS */
     /** @brief Insert a new record into the Mats table without creating an
      * object.
@@ -15,24 +51,24 @@ public class MatsRecord extends TableRecord {
      * new record. Use this method when adding brand new Mats records to the
      * system.
      *
-     * @param db The database into which to insert the record.
+     * @param db_ The database into which to insert the record.
      * @param matType_ `matTypeId` of the associated MatTypes record.
      * @param matComment_ Optinal additional information about the Mat.
      *
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns 0.
      */
-    public static long insert (Db db,
+    public static long insert (Db db_,
                                String matType_,
                                String matComment_) throws SQLException {
         PreparedStatement statement =
-            db.conn.prepareStatement("INSERT INTO Mats"
+            db_.conn.prepareStatement("INSERT INTO Mats"
                                      + " (matType, matComment)"
                                      + " VALUES (?, ?);",
                                      PreparedStatement.RETURN_GENERATED_KEYS);
         statement.setString(1, matType_);
         statement.setString(2, matComment_);
-        return insertAndRetrieveLongKey(db, statement);
+        return insertAndRetrieveLongKey(db_, statement);
     }
 
     /** @brief Insert a new record into the Mats table without creating an
@@ -42,7 +78,7 @@ public class MatsRecord extends TableRecord {
      * the record. It should only be used for copying data between database
      * instances. Do not use this method for creating brand new Mats records.
      *
-     * @param db The database into which to insert the record.
+     * @param db_ The database into which to insert the record.
      * @param matId_ The primary key for the record. May not be 0.
      * @param matType_ `matTypeId` of the associated MatTypes record.
      * @param matComment_ Optinal additional information about the Mat.
@@ -50,12 +86,12 @@ public class MatsRecord extends TableRecord {
      * @return The primary key of the newly inserted record. If the insert
      * fails, returns 0.
      */
-    public static long insert (Db db,
+    public static long insert (Db db_,
                                long matId_,
                                String matType_,
                                String matComment_) throws SQLException {
         PreparedStatement statement =
-            db.conn.prepareStatement("INSERT INTO Mats"
+            db_.conn.prepareStatement("INSERT INTO Mats"
                                      + " (matId, matType, matComment)"
                                      + " VALUES (?, ?, ?);");
         statement.setLong(1, matId_);
@@ -63,5 +99,35 @@ public class MatsRecord extends TableRecord {
         statement.setString(3, matComment_);
         statement.executeUpdate();
         return matId_;
+    }
+
+
+    /* ACCESSORS */
+    /** Unique ID for the mat.
+     * @return matId
+     */
+    public long getId () {
+        return matId;
+    }
+
+    /** The mat type associated with this mat.
+     * @return record IDed by matType
+     */
+    public MatTypesRecord getType () {
+        return matType;
+    }
+
+    /** Comment describing the mat.
+     * @return matComment
+     */
+    public String getComment () {
+        return matComment;
+    }
+
+
+    /* STANDARD METHODS */
+    public String toString () {
+        return "Mats<" + Long.toString(matId) + ","
+            + " '" + matType + "'>";
     }
 }

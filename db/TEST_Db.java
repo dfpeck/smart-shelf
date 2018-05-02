@@ -1,6 +1,7 @@
 package db;
 
 import java.sql.*;
+import org.h2.tools.Server;
 import java.io.Console;
 import java.io.File;
 import java.util.Vector;
@@ -9,45 +10,66 @@ import java.util.HashMap;
 public class TEST_Db {
     static String prompt = "> ";
     static String testDbName = "./TEST_inventory";
-    static File testDbFile = new File(testDbName + ".mv.db");
+    static String testHost = "localhost";
+    static int testPort = 1066;
+    static File testDbFile = new File(testDbName.substring(2) + ".mv.db");
     static HashMap<Integer, String> tests = new HashMap<Integer, String>();
+    static long itemTypeId=1, itemId=1, matId=1;
+    static String matTypeId="DUMMYTEST";
+    static HistoryKey historyId = new HistoryKey(itemId, new Timestamp(System.currentTimeMillis()));
+    static Server server;
 
     public static void main (String[] args) {
         int choice;
         boolean loop = true;
         Console console = System.console();
 
-        System.out.println("Testing " + testDbFile.getAbsolutePath());
+        try {
+            server = Server.createTcpServer("-tcpPort", Integer.toString(testPort));
+            server.start();
 
-        tests.put(1, "Create Database");
-        tests.put(2, "Open Database");
-        tests.put(3, "Read SQL from File");
-        tests.put(4, "Insert Records into Database");
-        // tests.put(5, "Insert Record with Manual ID");
-        
-        while (loop) {
-            System.out.println("==SELECT A TEST==");
-            for (int test : tests.keySet())
-                System.out.format("%2d) %s%n", test, tests.get(test));
-            System.out.format("%2d) Run all tests%n", 0);
-            System.out.format("%2d) Exit\n", -1);
-            choice = Integer.parseInt(console.readLine(prompt));
+            System.out.println("Testing " + testDbFile.getAbsolutePath());
 
-            switch (choice) {
-            case -1:
-                loop = false;
-                break;
-            case 0:
-                for (int i=1; i<=tests.size(); i++)
-                    runTest(i);
-                break;
-            default:
-                runTest(choice);
-                break;
+            tests.put(1, "Create Database");
+            tests.put(2, "Open Database");
+            tests.put(3, "Read SQL from File");
+            tests.put(4, "Insert Records into Database");
+            tests.put(5, "Select Records from Database");
+
+            while (loop) {
+                System.out.println("==SELECT A TEST==");
+                for (int test : tests.keySet())
+                    System.out.format("%2d) %s%n", test, tests.get(test));
+                System.out.format("%2d) Run all tests%n", 0);
+                System.out.format("%2d) Exit\n", -1);
+                try {
+                    choice = Integer.parseInt(console.readLine(prompt));
+
+                    switch (choice) {
+                    case -1:
+                        loop = false;
+                        break;
+                    case 0:
+                        for (int i=1; i<=tests.size(); i++)
+                            runTest(i);
+                        break;
+                    default:
+                        runTest(choice);
+                        break;
+                    }
+                }
+                catch (NumberFormatException e) {
+                    System.out.println("Please enter a number");
+                }
             }
-        }
 
-        System.out.println("==FINISHED==");
+            server.stop();
+
+            System.out.println("==FINISHED==");
+        }
+        catch (SQLException e) {
+            System.err.println(e);
+        }
     }
 
     protected static void runTest (int test) {
@@ -69,10 +91,13 @@ public class TEST_Db {
             case 4:
                 success = insertRecords();
                 break;
+            case 5:
+                success = selectRecords();
             }
         }
         else {
             System.out.println(test + " specifies no test");
+            return;
         }
 
         if (success)
@@ -83,7 +108,7 @@ public class TEST_Db {
 
     public static boolean openDatabase () {
         boolean success;
-        Db db = new Db(testDbName);
+        Db db = new Db(testDbName, testHost, testPort, "", "");
         try {
             success = db.open();
             db.close();
@@ -126,34 +151,31 @@ public class TEST_Db {
     }
 
     public static boolean insertRecords () {
-        Db db = new Db(testDbName);
+        Db db = new Db(testDbName, testHost, testPort, "", "");
         try {
             db.open();
 
             System.out.print("Inserting to ItemTypes...");
-            long itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
+            itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
             System.out.println("Inserted ItemTypes record " + Long.toString(itemTypeId));
 
             System.out.print("Inserting to Items...");
-            long itemId = ItemsRecord.insert(db, itemTypeId);
+            itemId = ItemsRecord.insert(db, itemTypeId);
             System.out.println("Inserted Items record "+ Long.toString(itemId));
 
             System.out.print("Inserting to MatTypes...");
-            String matTypeId = MatTypesRecord.insert(db, "DUMMYTEST",
-                                                     "Dummy record for testing");
+            matTypeId = MatTypesRecord.insert(db, matTypeId, "Dummy record for testing");
             System.out.println("inserted MatTypes record " + matTypeId);
 
             System.out.print("Inserting to Mats...");
-            long matId = MatsRecord.insert(db, matTypeId,
-                                           "Dummy record for testing");
+            matId = MatsRecord.insert(db, matTypeId, "Dummy record for testing");
             System.out.println("inserted Mats record " + matId);
 
             System.out.print("Inserting to History...");
-            HistoryKey historyId = HistoryRecord.insert(db, itemId,
-                                                        new Timestamp(System.currentTimeMillis()),
-                                                        matId, 1,
-                                                        new Double[] {1.0, 2.0},
-                                                        0.0, 0.0);
+            historyId = HistoryRecord.insert(db, itemId,
+                                             new Timestamp(System.currentTimeMillis()),
+                                             matId, EventType.ADDED.ordinal(), new Double[] {1.0, 2.0},
+                                             0.0, 0.0);
             if (historyId == null) return false;
             System.out.println("inserted History record " + historyId);
 
@@ -166,6 +188,46 @@ public class TEST_Db {
         return true;
     }
 
+    public static boolean selectRecords () {
+        Db db = new Db(testDbName, testHost, testPort, "", "");
+        try {
+            db.open();
+
+            System.out.print("Selecting from ItemTypes...");
+            ItemTypesRecord itemType =
+                ItemTypesRecord.selectById(db, itemTypeId);
+            System.out.println("Selected: " + itemType.toString());
+
+            System.out.print("Selecting from MatTypes...");
+            MatTypesRecord matType =
+                MatTypesRecord.selectById(db, matTypeId);
+            System.out.println("Selected: " + matType.toString());
+
+            System.out.print("Selecting from Mats...");
+            MatsRecord mat =
+                MatsRecord.selectById(db, matId);
+            System.out.println("Selected: " + mat.toString());
+
+            System.out.print("Selecting from Items...");
+            ItemsRecord item =
+                ItemsRecord.selectById(db, itemId);
+            System.out.println("Selected: " + item.toString());
+
+            System.out.print("Selecting from History...");
+            HistoryRecord history =
+                HistoryRecord.selectLatestByItem(db, item);
+            System.out.println("Selected: " + history.toString());
+
+            db.close();
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
+    // NOT USED IN CURRENT IMPLEMENTATION
     // public static boolean insertRecordsManualId () {
     //     Db db = new Db(testDbName);
     //     long insertedId, targetId = 200;
