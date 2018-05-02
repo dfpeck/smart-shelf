@@ -12,24 +12,33 @@ public class ItemsRecord extends TableRecord {
     protected long itemId;
     protected ItemTypesRecord itemType;
     protected HistoryRecord lastHistory;
+    protected boolean autoId;
 
 
     /* CONSTRUCTORS */
     public ItemsRecord (Db db_,
                         long itemId_,
                         ItemTypesRecord itemType_,
-                        HistoryRecord lastHistory_) {
+                        HistoryRecord lastHistory_,
+                        boolean autoId_) {
         db = db_;
         itemId = itemId_;
         itemType = itemType_;
         lastHistory = lastHistory_;
+        autoId = autoId_;
     }
+
+    public ItemsRecord (Db db_, ItemTypesRecord itemType_) {
+        this(db_, 0, itemType_, null, true);
+    }
+
 
     public ItemsRecord (Db db_, ResultSet rs) throws SQLException {
         db = db_;
         itemId = rs.getLong("itemId");
         itemType = ItemTypesRecord.selectById(db_, rs.getLong("itemType"));
         lastHistory = HistoryRecord.selectLatestByItem(db, this);
+        autoId = true;
     }
 
     public ItemsRecord (Db db_, ResultSet rs, int row) throws SQLException {
@@ -94,6 +103,12 @@ public class ItemsRecord extends TableRecord {
         statement.setLong(1, itemId_);
         statement.setLong(2, itemType_);
         return insertAndRetrieveLongKey(db_, statement);
+    }
+
+    /** @brief Insert a record representing an Item object into the Items table.
+     */
+    public long insert () throws SQLException {
+        return ItemsRecord.insert(db, itemId, itemType.getId());
     }
 
 
