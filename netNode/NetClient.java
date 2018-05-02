@@ -173,12 +173,12 @@ public class NetClient implements Runnable {
     /*QUEUE FUNCTIONS*/
 	/** @brief returns top of the string retrieved queue
 	 *
-	 *  @return "empty" if queue is empty. String at top of queue if not empty.
+	 *  @return `empty` if queue is empty. String at top of queue if not empty.
 	 */
     public String pop(){
     	if(queue.isEmpty())
     	{
-    		return "empty";
+    		return null;
     	}else{
     		return queue.remove();
     	} 	
