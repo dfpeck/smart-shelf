@@ -108,7 +108,10 @@ public class ItemsRecord extends TableRecord {
     /** @brief Insert a record representing an Item object into the Items table.
      */
     public long insert () throws SQLException {
-        return ItemsRecord.insert(db, itemId, itemType.getId());
+        if (autoId)
+            return ItemsRecord.insert(db, itemType.getId());
+        else
+            return ItemsRecord.insert(db, itemId, itemType.getId());
     }
 
 
