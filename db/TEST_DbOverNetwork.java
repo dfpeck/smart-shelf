@@ -7,10 +7,10 @@ import java.util.Vector;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class TEST_Db {
+public class TEST_DbOverNetwork {
     static String prompt = "> ";
     static String testDbName = "./TEST_inventory";
-    static String testHost = "localhost";
+    static String testHost = "172.27.210.109";
     static int testPort = 1066;
     static File testDbFile = new File(testDbName.substring(2) + ".mv.db");
     static HashMap<Integer, String> tests = new HashMap<Integer, String>();
@@ -24,52 +24,43 @@ public class TEST_Db {
         boolean loop = true;
         Scanner scanner = new Scanner(System.in);
 
-        try {
-            server = Server.createTcpServer("-tcpPort", Integer.toString(testPort), "-tcpAllowOthers");
-            server.start();
+        System.out.println("Testing " + testDbFile.getAbsolutePath());
 
-            System.out.println("Testing " + testDbFile.getAbsolutePath());
+        tests.put(1, "Create Database");
+        tests.put(2, "Open Database");
+        tests.put(3, "Read SQL from File");
+        tests.put(4, "Insert Records into Database");
+        tests.put(5, "Select Records from Database");
 
-            tests.put(1, "Create Database");
-            tests.put(2, "Open Database");
-            tests.put(3, "Read SQL from File");
-            tests.put(4, "Insert Records into Database");
-            tests.put(5, "Select Records from Database");
+        while (loop) {
+            System.out.println("==SELECT A TEST==");
+            for (int test : tests.keySet())
+                System.out.format("%2d) %s%n", test, tests.get(test));
+            System.out.format("%2d) Run all tests%n", 0);
+            System.out.format("%2d) Exit\n", -1);
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
 
-            while (loop) {
-                System.out.println("==SELECT A TEST==");
-                for (int test : tests.keySet())
-                    System.out.format("%2d) %s%n", test, tests.get(test));
-                System.out.format("%2d) Run all tests%n", 0);
-                System.out.format("%2d) Exit\n", -1);
-                try {
-                    choice = Integer.parseInt(scanner.nextLine());
-
-                    switch (choice) {
-                    case -1:
-                        loop = false;
-                        break;
-                    case 0:
-                        for (int i=1; i<=tests.size(); i++)
-                            runTest(i);
-                        break;
-                    default:
-                        runTest(choice);
-                        break;
-                    }
-                }
-                catch (NumberFormatException e) {
-                    System.out.println("Please enter a number");
+                switch (choice) {
+                case -1:
+                    loop = false;
+                    break;
+                case 0:
+                    for (int i=1; i<=tests.size(); i++)
+                        runTest(i);
+                    break;
+                default:
+                    runTest(choice);
+                    break;
                 }
             }
+            catch (NumberFormatException e) {
+                System.out.println("Please enter a number");
+            }
+        }
 
-            server.stop();
-            scanner.close();
-            System.out.println("==FINISHED==");
-        }
-        catch (SQLException e) {
-            System.err.println(e);
-        }
+        scanner.close();
+        System.out.println("==FINISHED==");
     }
 
     protected static void runTest (int test) {
