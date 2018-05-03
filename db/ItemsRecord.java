@@ -231,6 +231,11 @@ public class ItemsRecord extends TableRecord {
         return lastHistory.getDatetime();
     }
 
+    /** @brief The most recent sensor reading. */
+    public Double[] getSensors () {
+        return lastHistory.getSensors();
+    }
+
     /** @brief Whether the item is on a mat or not. */
     public boolean isOnMat () {
         return lastHistory.isOnMat();

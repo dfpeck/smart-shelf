@@ -22,7 +22,7 @@ public class Db {
     private String userName, password;
     private File file;
     private boolean isOpen;
-    private boolean addWaiting;
+    private ItemsRecord addWaiting = null;
 
     /* CONSTRUCTORS */
     /** 
@@ -42,7 +42,6 @@ public class Db {
         file = new File(dbName + ".mv.db");
         conn = null;
         isOpen = false;
-        addWaiting = false;
     }
 
     /** @brief For providing `port` as an int. */
@@ -106,35 +105,68 @@ public class Db {
     //     return;
     // }
 
-    public HistoryKey updateFromSensors (double[] sensors, int matId) {
-        double total = 0;
-        for (double s : sensors)
+    public HistoryKey updateFromSensors (Double[] sensors, int matId) throws SQLException {
+        ItemsRecord item = null;
+        ItemsRecord[] candidates = null;
+        EventType event = null;
+        Timestamp time = new Timestamp(System.currentTimeMillis());
+
+        Double total = 0.0;
+        for (Double s : sensors)
             total += s;
 
-        EventType event = null;
         if (total < 0)
             event = EventType.REMOVED;
         else
-            if (addWaiting)
-                System.out.println("!-- implement ADD");
+            if (addWaiting != null)
+                event = EventType.ADDED;
             else
                 event = EventType.REPLACED;
 
         switch (event) {
-        case ADDED:
+        case ADDED: // use the Item being added
+            item = addWaiting;
+            addWaiting = null;
             break;
 
-        case REPLACED:
+        case REPLACED: // use the Items whose weight is nearest our sensor readings
+            candidates = ItemsRecord.selectOffMat(this);
+            item = candidates[0];
+            for (ItemsRecord candidate : candidates)
+                if (total - candidate.getWeight() < total - item.getWeight())
+                    item = candidate;
             break;
 
-        case REMOVED:
+        case REMOVED: // least sum of squares test
+            candidates = ItemsRecord.selectOnMat(this, matId);
+            Double least_sum_of_squares = Double.MAX_VALUE, candidate_sum_of_squares;
+            for (ItemsRecord candidate : candidates) {
+                candidate_sum_of_squares = 0.0;
+                // get the sum of the squares of difference in sensor values
+                for (int i=0; i < sensors.length; i++)
+                    candidate_sum_of_squares +=
+                        Math.pow(sensors[i]-candidate.getSensors()[i], 2);
+                // if our candidate is close than our current best, replace
+                if (candidate_sum_of_squares < least_sum_of_squares) {
+                    least_sum_of_squares = candidate_sum_of_squares;
+                    item = candidate;
+                }
+            }
             break;
 
         default:
             break;
         }
 
-        return null; // !-- actual method should not return null
+        // insert record and return key
+        return HistoryRecord.insert(this, item.getId(), time, matId, event, sensors);
+    }
+
+    public HistoryKey updateFromSensors (double[] sensors, int matId) throws SQLException {
+        Double[] sensorsD = new Double[sensors.length];
+        for (int i=0; i<sensors.length; i++)
+            sensorsD[i] = (Double) sensors[i];
+        return updateFromSensors(sensorsD, matId);
     }
 
 
