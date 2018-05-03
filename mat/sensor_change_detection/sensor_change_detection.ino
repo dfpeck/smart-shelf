@@ -24,7 +24,6 @@ void setup() {
   int cal_inc = 0;
   
   Serial.begin(38400);
-  Serial.println("Wait...");
   
   //Initialize Load cell objects
   load_cell[0].begin(3, 2);  //Top left corner
@@ -41,18 +40,16 @@ void setup() {
       scale_factor[i] = 1000;
       load_cell[i].set_scale(scale_factor[i]);
       load_cell[i].tare(10);
+      load_cell[i].tare(10);
       previous.reading[i] = 0;
       stable.reading[i] = 0;
     }
-  Serial.println("Startup + tare is complete");
 
   //Calibration
   double temp_reading = 0;
-  Serial.println("Calibration beginning. Place 5lb at center of mat.");
     
     while (load_cell[0].get_units(5) < WEIGHT_THRESHOLD) {  //Wait for weight to be put on mat
       delay(50); }
-      Serial.println("Weight on mat");
       
     while (cal_inc < 10) {  //wait for sensor readings to stabilize
       if (abs(load_cell[0].get_units(5) - temp_reading) < WEIGHT_THRESHOLD)
@@ -60,8 +57,6 @@ void setup() {
       delay(50);
       temp_reading = load_cell[0].get_units(5);
     }
-
-    Serial.println("Readings stable");
     
     for (int i = 0; i <4; i++)  {   //Run calibration loop for all sensors
       temp_reading = load_cell[i].get_units(2);
@@ -75,7 +70,6 @@ void setup() {
        
       }      
     }
-    Serial.println("Calibration done. Remove weight.");
     while (abs(load_cell[0].get_units(3)) > WEIGHT_THRESHOLD) {}
    
 }
@@ -87,24 +81,24 @@ void loop() {
   recent_difference = 0;
   stable_difference = 0;
 
-  if (millis() > t+1) {
+  if (millis() > t+250) {
     //Serial.print("Current readings: ");
     for (int i = 0; i < 4; i++) { //Loop to get sensor readings and put them into readings array
-      current.reading[i] = load_cell[i].get_units(3);
-      current_weight+=current.reading[i];
-      delta.reading[i] = current.reading[i] - previous.reading[i];
-      recent_difference+=delta.reading[i];
-      stable_difference += current.reading[i] - stable.reading[i];
-      previous.reading[i] = current.reading[i];
+      current.reading[i] = load_cell[i].get_units(3); //Take reading
+      current_weight+=current.reading[i]; //Sum all readings to get total weight
+      delta.reading[i] = current.reading[i] - previous.reading[i];  //Find change in readings from previous reading and current
+      recent_difference+=delta.reading[i];  //Sum all changes in sensor readings to find total change in weight
+      stable_difference += current.reading[i] - stable.reading[i];  //Find how much the sensor reading has changed since the mat was last stable
+      previous.reading[i] = current.reading[i]; //Set current reading to previous reading for the next reading
     }
     
-    if (is_stable) {
-      if (abs(recent_difference) > WEIGHT_THRESHOLD) {
+    if (is_stable) {                                      //Checks if board is stable and changes accordingly
+      if (abs(recent_difference) > WEIGHT_THRESHOLD) {    //Stable to unstable
         is_stable = false;
       }
     }
     else {
-      if (abs(recent_difference) < WEIGHT_THRESHOLD) {
+      if (abs(recent_difference) < WEIGHT_THRESHOLD) {    //Unstable to stable
         stable_timer++;
       }
       if (stable_timer > 4){
