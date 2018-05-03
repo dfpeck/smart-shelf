@@ -35,7 +35,7 @@ public class TEST_pi4j_example {
 		try {
 			SerialConfig config = new SerialConfig();
 			
-			config.device(SerialPort.getDefaultPort())
+			config.device(Serial.DEFAULT_COM_PORT)
 				.baud(Baud._38400)
 				.dataBits(DataBits._8)
 				.parity(Parity.NONE)
