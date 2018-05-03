@@ -15,6 +15,7 @@ class NetClientRequest implements Runnable {
    InputStream in = null;
    OutputStream out = null;
    String intent = "";
+   String[] intentSplit = null;
    boolean flag = true;
 
 	/*CONSTRUCTORS*/
@@ -61,19 +62,20 @@ class NetClientRequest implements Runnable {
                    }
                }
                intent = sb.toString();
-               
+               intentSplit = intent.split("");
+               System.out.println(intentSplit[0] + " " + intentSplit[1]);
                /** then checking and responding **/
-               if(intent.compareTo("SendString") == 0){
+               if(intentSplit[0].compareTo("SendString") == 0){
             	   getString();
                	
-               }else if(intent.compareTo("GetIdentity") == 0){
-                   try {        	        
+               }else if(intentSplit[0].compareTo("GetIdentity") == 0){
+                   try {       
+                   netClient.setId(Integer.parseInt(intentSplit[1]));	   
            	       out.flush();
            	       out.write(netClient.getIdentity().getBytes());
            	       out.flush();
            	        
                    } catch (IOException e){
-                	   e.printStackTrace();
                 	   System.err.println("IOException sending identity");
                    }
                    

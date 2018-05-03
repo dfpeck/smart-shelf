@@ -34,6 +34,7 @@ public class NetClient implements Runnable {
     NetClientRequest netClientRequest = null;
     Thread netClientRequestThread = null;
     String identity = "";
+    int id = 0;
 
 	/*CONSTRUCTORS*/
     /**
@@ -48,6 +49,11 @@ public class NetClient implements Runnable {
 		}
     }
 	
+    /*SETTERS*/
+    void setId(int num){
+    	id = num;
+    }
+    
     /*THREAD START*/
     /** @brief Thread execution begins
     *
@@ -144,6 +150,9 @@ public class NetClient implements Runnable {
 	        	out.flush();
 		        
 		        //send string
+	        	out.write(Integer.toString(id).getBytes());
+		        out.flush();
+		        out.write(" ".getBytes());
 		        out.flush();
 	        	out.write(str.getBytes());
 	        	out.flush();

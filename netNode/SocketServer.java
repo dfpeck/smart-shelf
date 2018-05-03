@@ -89,7 +89,7 @@ class SocketServer implements Runnable {
                     /**find identity of socket**/
                     out = sendSocket.getOutputStream();
                     in = sendSocket.getInputStream();
-                    String intent = "GetIdentity~";
+                    String intent = "GetIdentity " + count + "~";
                     
                     try {
                     	out.flush();

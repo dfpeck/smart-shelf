@@ -20,9 +20,7 @@ import netNode.StartServerSocket;
  * 
  */
 class NetServer implements Runnable {
-	/*Properties*/
-    IOException ioException;
-    
+	/*Properties*/ 
     UnknownHostException unknownHostException;
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	Vector<Socket> socket = new Vector();
@@ -88,11 +86,9 @@ class NetServer implements Runnable {
         	count = num;
 
         } catch (UnknownHostException e) {
-            this.unknownHostException = e;
             System.err.println("UnknownHostException in socket creation");
             return;
         } catch (IOException e) {
-            this.ioException = e;
             System.err.println("IOException in socket creation");
             return;
         }
