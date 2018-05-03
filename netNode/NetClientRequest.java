@@ -62,8 +62,8 @@ class NetClientRequest implements Runnable {
                    }
                }
                intent = sb.toString();
-               intentSplit = intent.split("");
-               System.out.println(intentSplit[0] + " " + intentSplit[1]);
+               intentSplit = intent.split(" ");
+
                /** then checking and responding **/
                if(intentSplit[0].compareTo("SendString") == 0){
             	   getString();
