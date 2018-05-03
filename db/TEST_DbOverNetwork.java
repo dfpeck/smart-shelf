@@ -7,10 +7,10 @@ import java.util.Vector;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class TEST_Db {
+public class TEST_DbOverNetwork {
     static String prompt = "> ";
     static String testDbName = "./TEST_inventory";
-    static String testHost = "localhost";
+    static String testHost = "172.27.210.109";
     static int testPort = 1066;
     static File testDbFile = new File(testDbName.substring(2) + ".mv.db");
     static HashMap<Integer, String> tests = new HashMap<Integer, String>();
@@ -24,53 +24,43 @@ public class TEST_Db {
         boolean loop = true;
         Scanner scanner = new Scanner(System.in);
 
-        try {
-            server = Server.createTcpServer("-tcpPort", Integer.toString(testPort), "-tcpAllowOthers");
-            server.start();
+        System.out.println("Testing " + testDbFile.getAbsolutePath());
 
-            System.out.println("Testing " + testDbFile.getAbsolutePath());
+        tests.put(1, "Create Database");
+        tests.put(2, "Open Database");
+        tests.put(3, "Read SQL from File");
+        tests.put(4, "Insert Records into Database");
+        tests.put(5, "Select Records from Database");
 
-            tests.put(1, "Create Database");
-            tests.put(2, "Open Database");
-            tests.put(3, "Read SQL from File");
-            tests.put(4, "Insert Records into Database");
-            tests.put(5, "Select Records from Database");
-            tests.put(6, "Select Items by Mat");
+        while (loop) {
+            System.out.println("==SELECT A TEST==");
+            for (int test : tests.keySet())
+                System.out.format("%2d) %s%n", test, tests.get(test));
+            System.out.format("%2d) Run all tests%n", 0);
+            System.out.format("%2d) Exit\n", -1);
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
 
-            while (loop) {
-                System.out.println("==SELECT A TEST==");
-                for (int test : tests.keySet())
-                    System.out.format("%2d) %s%n", test, tests.get(test));
-                System.out.format("%2d) Run all tests%n", 0);
-                System.out.format("%2d) Exit\n", -1);
-                try {
-                    choice = Integer.parseInt(scanner.nextLine());
-
-                    switch (choice) {
-                    case -1:
-                        loop = false;
-                        break;
-                    case 0:
-                        for (int i=1; i<=tests.size(); i++)
-                            runTest(i);
-                        break;
-                    default:
-                        runTest(choice);
-                        break;
-                    }
-                }
-                catch (NumberFormatException e) {
-                    System.out.println("Please enter a number");
+                switch (choice) {
+                case -1:
+                    loop = false;
+                    break;
+                case 0:
+                    for (int i=1; i<=tests.size(); i++)
+                        runTest(i);
+                    break;
+                default:
+                    runTest(choice);
+                    break;
                 }
             }
+            catch (NumberFormatException e) {
+                System.out.println("Please enter a number");
+            }
+        }
 
-            server.stop();
-            scanner.close();
-            System.out.println("==FINISHED==");
-        }
-        catch (SQLException e) {
-            System.err.println(e);
-        }
+        scanner.close();
+        System.out.println("==FINISHED==");
     }
 
     protected static void runTest (int test) {
@@ -94,10 +84,6 @@ public class TEST_Db {
                 break;
             case 5:
                 success = selectRecords();
-                break;
-            case 6:
-                success = matSelections();
-                break;
             }
         }
         else {
@@ -161,53 +147,32 @@ public class TEST_Db {
             db.open();
 
             System.out.print("Inserting to ItemTypes...");
-            itemTypeId = ItemTypesRecord.insert(db, "On Mat 2", "This item is on a mat", false);
-            ItemTypesRecord offMat = new ItemTypesRecord(db, "Off Mat", "This item is not on a mat", false);
-            ItemTypesRecord onMat1 = new ItemTypesRecord(db, "On Mat 1", "This item is on mat 1", false);
-            offMat.insert(); onMat1.insert();
+            itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
             System.out.println("Inserted ItemTypes record " + Long.toString(itemTypeId));
 
             System.out.print("Inserting to Items...");
             itemId = ItemsRecord.insert(db, itemTypeId);
-            ItemsRecord offMatItem = new ItemsRecord(db, offMat);
-            ItemsRecord mat1item = new ItemsRecord(db, onMat1);
-            offMatItem.insert(); mat1item.insert();
-            System.out.println("Inserted Items record " + Long.toString(itemId));
+            System.out.println("Inserted Items record "+ Long.toString(itemId));
 
             System.out.print("Inserting to MatTypes...");
             matTypeId = MatTypesRecord.insert(db, matTypeId, "Dummy record for testing");
             System.out.println("inserted MatTypes record " + matTypeId);
 
             System.out.print("Inserting to Mats...");
-            matId = MatsRecord.insert(db, 1, matTypeId, "Mat 1");
-            MatsRecord mat2 = new MatsRecord(db, 2, MatTypesRecord.selectById(db, matTypeId), "Mat 2");
-            mat2.insert();
+            matId = MatsRecord.insert(db, matTypeId, "Dummy record for testing");
             System.out.println("inserted Mats record " + matId);
 
             System.out.print("Inserting to History...");
             historyId = HistoryRecord.insert(db, itemId,
                                              new Timestamp(System.currentTimeMillis()),
-                                             matId, EventType.ADDED, new Double[] {1.0, 2.0});
-            
+                                             matId, EventType.ADDED.ordinal(), new Double[] {1.0, 2.0},
+                                             0.0, 0.0);
             if (historyId == null) return false;
-            HistoryRecord.insert(db, itemId, new Timestamp(System.currentTimeMillis()),
-                                 matId, EventType.REMOVED, new Double[] {-1.0, -2.0});
-            HistoryRecord.insert(db, itemId, new Timestamp(System.currentTimeMillis()),
-                                 mat2.getId(), EventType.REPLACED, new Double[] {1.0, 2.0});
-
-            HistoryRecord.insert(db, mat1item.getId(), new Timestamp(System.currentTimeMillis()),
-                                 matId, EventType.ADDED, new Double[] {2.0, 2.0});
-            
-            HistoryRecord.insert(db, offMatItem.getId(), new Timestamp(System.currentTimeMillis()),
-                                 mat2.getId(), EventType.ADDED, new Double[] {3.0, 2.0});
-            HistoryRecord.insert(db, offMatItem.getId(), new Timestamp(System.currentTimeMillis()),
-                                 mat2.getId(), EventType.REMOVED, new Double[] {-3.0, -2.0});
-
             System.out.println("inserted History record " + historyId);
 
             db.close();
         }
-        catch (Exception e) {
+        catch (SQLException e) {
             System.out.println(e);
             return false;
         }
@@ -245,43 +210,6 @@ public class TEST_Db {
             System.out.println("Selected: " + history.toString());
 
             db.close();
-        }
-        catch (SQLException e) {
-            System.out.println(e);
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean matSelections () {
-        Db db = new Db(testDbName, testHost, testPort, "", "");
-        try {
-            db.open();
-
-            System.out.print("Selecting items on any mat...");
-            ItemsRecord[] onMat = ItemsRecord.selectOnMat(db);
-            System.out.println("Selected:");
-            for (ItemsRecord itm : onMat)
-                System.out.println(itm);
-
-            System.out.print("Selecting items on mat 1...");
-            ItemsRecord[] onMat1 = ItemsRecord.selectOnMat(db, 1);
-            System.out.println("Selected:");
-            for (ItemsRecord itm : onMat1)
-                System.out.println(itm);
-
-            MatsRecord mat2 = MatsRecord.selectById(db, 2);
-            System.out.print("Selecting items on mat 2...");
-            ItemsRecord[] onMat2 = ItemsRecord.selectOnMat(db, mat2);
-            System.out.println("Selected:");
-            for (ItemsRecord itm : onMat2)
-                System.out.println(itm);
-
-            System.out.print("Selecting items on no mat...");
-            ItemsRecord[] offMat = ItemsRecord.selectOffMat(db);
-            System.out.println("Selected:");
-            for (ItemsRecord itm : offMat)
-                System.out.println(itm);
         }
         catch (SQLException e) {
             System.out.println(e);
