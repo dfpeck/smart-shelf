@@ -5,72 +5,60 @@ import android.os.Bundle;
 import android.widget.ExpandableListView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import netNode.NetUI;
+
+// import netNode.NetUI;
 
 public class MainActivity extends AppCompatActivity {
+    /**
+     * Called when the activity is first created.
+     */
 
-    private ExpandableListView listView;
-    private ExpandableListAdapter listAdapter;
-    private List<String> listDataHeader;
-    private HashMap<String,List<String>> listHash;
+    private ExpandableListView ExpandList;
+    private ExpandableListAdapter ExpAdapter;
+    private ArrayList<ExpandListGroup> ExpListItems;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Start of network code
-        String ip;
-        String str;
-
-        NetUI netUI = new NetUI(ip);
-        netUI.start();
-
-        // When want a record
-        netUI.SendString("record 1");
-
-        //split the string here
-
-        Boolean flag = false;
-        do {
-            str = netUI.pop();
-            if (str[0] == "record") {
-                weight[str[1]] = str[2];
-                text[str[1]] = str[3];
-                flag = true;
-            }
-            else if (str[0] = "add") {
-                //add new item
-            }
-        } while (flag == false);
-
-        //End of network code
-
-        listView = (ExpandableListView)findViewById(R.id.lvExp);
-        initData();
-        listAdapter = new ExpandableListAdapter(this,listDataHeader,listHash);
-        listView.setAdapter(listAdapter);
-
+        ExpandList = (ExpandableListView) findViewById(R.id.ExpList);
+        ExpListItems = SetStandardGroups();
+        ExpAdapter = new ExpandableListAdapter(MainActivity.this, ExpListItems);
+        ExpandList.setAdapter(ExpAdapter);
     }
 
-    private void initData() {
-        listDataHeader = new ArrayList<>();
-        listHash = new HashMap<>();
+    public ArrayList<ExpandListGroup> SetStandardGroups() {
+        ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
+        ArrayList<ExpandListChild> list2 = new ArrayList<ExpandListChild>();
+        ExpandListGroup gru1 = new ExpandListGroup();
+        gru1.setName("Comedy");
+        ExpandListChild ch1_1 = new ExpandListChild();
+        ch1_1.setName("A movie");
+        ch1_1.setTag(null);
+        list2.add(ch1_1);
+        ExpandListChild ch1_2 = new ExpandListChild();
+        ch1_2.setName("Another movie");
+        ch1_2.setTag(null);
+        list2.add(ch1_2);
+        ExpandListChild ch1_3 = new ExpandListChild();
+        ch1_3.setName("And another movie");
+        ch1_3.setTag("Test?");
+        list2.add(ch1_3);
+        gru1.setItems(list2);
+        list2 = new ArrayList<ExpandListChild>();
 
-        listDataHeader.add("First Item");
-        listDataHeader.add("Second item");
+        ExpandListGroup gru2 = new ExpandListGroup();
+        gru2.setName("Action");
+        ExpandListChild ch2_1 = new ExpandListChild();
+        ch2_1.setTag("Tag");
+        ch2_1.setName("A movie");
+        list2.add(ch2_1);
+        gru2.setItems(list2);
 
-        List<String> item1 = new ArrayList<>();
-        item1.add("This is Expandable ListView");
+        list.add(gru1);
+        list.add(gru2);
 
-        List<String> item2 = new ArrayList<>();
-        item2.add("Item 2 expanded ListView");
-        item2.add("Subpoint 2");
-        item2.add("subpoint 3");
-
-        listHash.put(listDataHeader.get(0),item1);
-        listHash.put(listDataHeader.get(1),item2);
-
+        return list;
     }
 }

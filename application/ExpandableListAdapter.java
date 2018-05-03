@@ -1,91 +1,98 @@
 package com.example.shy16.expandablelistview;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.ArrayList;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
-    private List<String> listDataHeader;
-    private HashMap<String, List<String>> listHashMap;
+    private ArrayList<ExpandListGroup> groups;
 
-    public ExpandableListAdapter (Context context, List<String> listDataHeader, HashMap<String, List<String>> listHashMap) {
+    public ExpandableListAdapter(Context context, ArrayList<ExpandListGroup> groups) {
         this.context = context;
-        this.listDataHeader = listDataHeader;
-        this.listHashMap = listHashMap;
+        this.groups = groups;
     }
 
-    @Override
+    public void addItem(ExpandListChild item, ExpandListGroup group) {
+        if (!groups.contains(group)) {
+            groups.add(group);
+        }
+        int index = groups.indexOf(group);
+        ArrayList<ExpandListChild> ch = groups.get(index).getItems();
+        ch.add(item);
+        groups.get(index).setItems(ch);
+    }
+
+    public Object getChild(int groupPosition, int childPosition) {
+        // TODO Auto-generated method stub
+        ArrayList<ExpandListChild> chList = groups.get(groupPosition).getItems();
+        return chList.get(childPosition);
+    }
+
+    public long getChildId(int groupPosition, int childPosition) {
+        // TODO Auto-generated method stub
+        return childPosition;
+    }
+
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View view, ViewGroup parent) {
+        ExpandListChild child = (ExpandListChild) getChild(groupPosition, childPosition);
+        if (view == null) {
+            LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+            view = infalInflater.inflate(R.layout.expandlist_child_item, null);
+        }
+        TextView tv = (TextView) view.findViewById(R.id.tvChild);
+        tv.setText(child.getName().toString());
+        tv.setTag(child.getTag());
+        // TODO Auto-generated method stub
+        return view;
+    }
+
+    public int getChildrenCount(int groupPosition) {
+        // TODO Auto-generated method stub
+        ArrayList<ExpandListChild> chList = groups.get(groupPosition).getItems();
+        return chList.size();
+    }
+
+    public Object getGroup(int groupPosition) {
+        // TODO Auto-generated method stub
+        return groups.get(groupPosition);
+    }
+
     public int getGroupCount() {
-        return listDataHeader.size();
+        // TODO Auto-generated method stub
+        return groups.size();
     }
 
-    @Override
-    public int getChildrenCount(int i) {
-        return listHashMap.get(listDataHeader.get(i)).size();
+    public long getGroupId(int groupPosition) {
+        //TODO Auto-generated method stub
+        return groupPosition;
     }
 
-    @Override
-    public Object getGroup(int i) {
-        return listDataHeader.get(i);
+    public View getGroupView(int groupPosition, boolean isLastChild, View view, ViewGroup parent) {
+        ExpandListGroup group = (ExpandListGroup) getGroup(groupPosition);
+        if (view == null) {
+            LayoutInflater inf = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+            view = inf.inflate(R.layout.expandlist_group_item, null);
+        }
+        TextView tv = (TextView) view.findViewById(R.id.tvGroup);
+        tv.setText(group.getName());
+        // TODO Auto-generated method stub
+        return view;
     }
 
-    @Override
-    public Object getChild(int i, int i1) {
-        return listHashMap.get(listDataHeader.get(i)).get(i1); //i = Group item, i1 = child item
-    }
-
-    @Override
-    public long getGroupId(int i) {
-        return i;
-    }
-
-    @Override
-    public long getChildId(int i, int i1) {
-        return i1;
-    }
-
-    @Override
     public boolean hasStableIds() {
-        return false;
-    }
-
-    @Override
-    public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
-        String headerTitle = (String)getGroup(i);
-        if(view == null)
-        {
-            LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.list_group,null);
-        }
-        TextView lblListHeader = (TextView)view.findViewById(R.id.lblListHeader);
-        lblListHeader.setTypeface(null, Typeface.BOLD);
-        lblListHeader.setText(headerTitle);
-        return view;
-    }
-
-    @Override
-    public View getChildView(int i, int i1, boolean b, View view, ViewGroup viewGroup) {
-        final String childText = (String)getChild(i, i1);
-        if(view == null)
-        {
-            LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.list_item,null);
-        }
-        TextView txtListChild = (TextView)view.findViewById(R.id.lblListItem);
-        txtListChild.setText(childText);
-        return view;
-    }
-
-    @Override
-    public boolean isChildSelectable(int i, int i1) {
+        // TODO Auto-generated method stub
         return true;
     }
+
+    public boolean isChildSelectable(int arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
 }
