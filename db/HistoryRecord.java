@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.Array;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
+import java.util.concurrent.TimeUnit;
 
 import java.sql.SQLException;
 
@@ -25,17 +26,13 @@ public class HistoryRecord extends TableRecord {
                           Timestamp datetime_,
                           MatsRecord mat_,
                           EventType eventType_,
-                          Double[] sensors_,
-                          Double x_,
-                          Double y_) {
+                          Double[] sensors_) {
         db = db_;
         item = item_;
         datetime = datetime_;
         mat = mat_;
         eventType = eventType_;
         sensors = sensors_;
-        x = x_;
-        y = y_;
     }
 
     public HistoryRecord (Db db_, ResultSet rs) throws SQLException {
@@ -53,8 +50,6 @@ public class HistoryRecord extends TableRecord {
         mat = MatsRecord.selectById(db_, rs.getLong("mat"));
         eventType = EventType.values()[rs.getInt("eventType")];
         sensors = sqlArrayToDoubleArray(rs.getArray("sensors"));
-        x = rs.getDouble("x");
-        y = rs.getDouble("y");
     }
 
     public HistoryRecord (Db db_, ItemsRecord item_, ResultSet rs, int row) throws SQLException {
@@ -190,22 +185,22 @@ public class HistoryRecord extends TableRecord {
                                      long item_,
                                      Timestamp datetime_,
                                      long mat_,
-                                     long eventType_,
-                                     Double[] sensors_,
-                                     Double x_,
-                                     Double y_) throws SQLException {
+                                     EventType eventType_,
+                                     Double[] sensors_) throws SQLException {
         PreparedStatement statement =
             db_.conn.prepareStatement("INSERT INTO History"
                                      + "(item, datetime, mat, eventtype,"
-                                     + " sensors, x, y)"
-                                      + " VALUES (?, ?, ?, ?, ?, ?, ?);");
+                                     + " sensors)"
+                                      + " VALUES (?, ?, ?, ?, ?);");
         statement.setLong(1, item_);
         statement.setTimestamp(2, datetime_);
         statement.setLong(3, mat_);
-        statement.setLong(4, eventType_);
+        statement.setLong(4, eventType_.ordinal());
         statement.setArray(5, db_.conn.createArrayOf("DOUBLE", sensors_));
-        statement.setDouble(6, x_);
-        statement.setDouble(7, y_);
+        // statement.setDouble(6, x_);
+        // statement.setDouble(7, y_);
+        try {TimeUnit.MILLISECONDS.sleep(1);} // pause to ensure unique primary keys
+        catch (InterruptedException e) {}
         statement.executeUpdate();
         return new HistoryKey(item_, datetime_);
     }
@@ -231,12 +226,9 @@ public class HistoryRecord extends TableRecord {
     public static HistoryKey insert (Db db_,
                                      HistoryKey key,
                                      long mat_,
-                                     long eventType_,
-                                     Double[] sensors_,
-                                     Double x_,
-                                     Double y_) throws SQLException {
-        insert(db_, key.itemId(), key.datetime(), mat_, eventType_,
-               sensors_, x_, y_);
+                                     EventType eventType_,
+                                     Double[] sensors_) throws SQLException {
+        insert(db_, key.itemId(), key.datetime(), mat_, eventType_, sensors_);
         return key;
     }
 
@@ -281,23 +273,23 @@ public class HistoryRecord extends TableRecord {
         return Math.abs(weight);
     }
 
-    /** @brief The x-coordinate of the associated item on the associated mat
-     * after the event. */
-    public Double getX () {
-        return x;
-    }
+    // /** @brief The x-coordinate of the associated item on the associated mat
+    //  * after the event. */
+    // public Double getX () {
+    //     return x;
+    // }
 
-    /** @brief The y-coordinate of the associated item on the associated mat
-     * after the event. */
-    public Double getY () {
-        return y;
-    }
+    // /** @brief The y-coordinate of the associated item on the associated mat
+    //  * after the event. */
+    // public Double getY () {
+    //     return y;
+    // }
 
-    /** @brief The coordinates of the associated item on the associated mat
-     * after the event. */
-    public Double[] getCoords () {
-        return new Double[]{x, y};
-    }
+    // /** @brief The coordinates of the associated item on the associated mat
+    //  * after the event. */
+    // public Double[] getCoords () {
+    //     return new Double[]{x, y};
+    // }
 
 
     /* STANDARD METHODS */

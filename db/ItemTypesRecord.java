@@ -12,7 +12,6 @@ public class ItemTypesRecord extends TableRecord {
     protected long itemTypeId;
     protected String itemTypeName, itemTypeComment;
     protected boolean isContainer;
-    protected boolean autoId;
 
 
     /* CONSTRUCTORS */
@@ -21,13 +20,13 @@ public class ItemTypesRecord extends TableRecord {
                             String itemTypeName_,
                             String itemTypeComment_,
                             boolean isContainer_,
-                            boolean autoId_) {
+                            boolean genId_) {
         db = db_;
         itemTypeId = itemTypeId_;
         itemTypeName = itemTypeName_;
         itemTypeComment = itemTypeComment_;
         isContainer = isContainer_;
-        autoId = autoId_;
+        genId = genId_;
     }
 
     public ItemTypesRecord (Db db_,
@@ -43,7 +42,6 @@ public class ItemTypesRecord extends TableRecord {
         itemTypeName = rs.getString("itemTypeName");
         itemTypeComment = rs.getString("itemTypeComment");
         isContainer = rs.getBoolean("isContainer");
-        autoId = true;
     }
 
 
@@ -69,8 +67,7 @@ public class ItemTypesRecord extends TableRecord {
      * ItemType.
      * @param isContainer_ Whether this type of item serves as a container.
      *
-     * @return The primary key of the newly inserted record. If the insert
-     * fails, returns 0.
+     * @return The primary key of the newly inserted record.
      */
     public static long insert (Db db_,
                                String itemTypeName_,
@@ -101,8 +98,7 @@ public class ItemTypesRecord extends TableRecord {
      * ItemType.
      * @param isContainer_ Whether this type of item serves as a container.
      *
-     * @return The primary key of the newly inserted record. If the insert
-     * fails, returns 0.
+     * @return The primary key of the newly inserted record.
      */
     public static long insert (Db db_,
                               long itemTypeId_,
@@ -122,11 +118,12 @@ public class ItemTypesRecord extends TableRecord {
         return insertAndRetrieveLongKey(db_, statement);
     }
 
-    /** @brief Insert a new record based on an object.
+    /** @brief Insert a record representing this ItemType into the table.
      *
+     * @return The primary key of the newly inserted record. 
      */
     public long insert () throws SQLException {
-        if (autoId)
+        if (genId)
             itemTypeId = ItemTypesRecord.insert(db, itemTypeName, itemTypeComment, isContainer);
         else
             ItemTypesRecord.insert(db, itemTypeId, itemTypeName, itemTypeComment, isContainer);

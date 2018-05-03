@@ -3,11 +3,14 @@ package db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Array;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.sql.SQLException;
 
 abstract class TableRecord {
     Db db;
+    boolean genId = false;
 
     protected static long insertAndRetrieveLongKey
         (Db db, PreparedStatement statement) throws SQLException {
@@ -66,5 +69,16 @@ abstract class TableRecord {
         rs.beforeFirst();
 
         return rows;
+    }
+
+    public static <T extends TableRecord> List<T>
+        collectRecords (Db db_, ResultSet rs) throws SQLException {
+        int rows = countRecords(rs);
+        List<T> records = new ArrayList<T>(rows);
+
+        int row = 0;
+        while(rs.next())
+            records.add(new T(db_, rs));
+        return records;
     }
 }

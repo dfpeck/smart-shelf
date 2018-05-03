@@ -90,7 +90,7 @@ public class TEST_Db {
                 success = readSql();
                 break;
             case 4:
-                success = insertRecords() && insertExtraRecords();
+                success = insertRecords();
                 break;
             case 5:
                 success = selectRecords();
@@ -161,65 +161,53 @@ public class TEST_Db {
             db.open();
 
             System.out.print("Inserting to ItemTypes...");
-            itemTypeId = ItemTypesRecord.insert(db, "Item On Mat", "", false);
+            itemTypeId = ItemTypesRecord.insert(db, "On Mat 2", "This item is on a mat", false);
+            ItemTypesRecord offMat = new ItemTypesRecord(db, "Off Mat", "This item is not on a mat", false);
+            ItemTypesRecord onMat1 = new ItemTypesRecord(db, "On Mat 1", "This item is on mat 1", false);
+            offMat.insert(); onMat1.insert();
             System.out.println("Inserted ItemTypes record " + Long.toString(itemTypeId));
 
             System.out.print("Inserting to Items...");
             itemId = ItemsRecord.insert(db, itemTypeId);
-            System.out.println("Inserted Items record "+ Long.toString(itemId));
+            ItemsRecord offMatItem = new ItemsRecord(db, offMat);
+            ItemsRecord mat1item = new ItemsRecord(db, onMat1);
+            offMatItem.insert(); mat1item.insert();
+            System.out.println("Inserted Items record " + Long.toString(itemId));
 
             System.out.print("Inserting to MatTypes...");
             matTypeId = MatTypesRecord.insert(db, matTypeId, "Dummy record for testing");
             System.out.println("inserted MatTypes record " + matTypeId);
 
             System.out.print("Inserting to Mats...");
-            matId = MatsRecord.insert(db, matTypeId, "Dummy record for testing");
+            matId = MatsRecord.insert(db, 1, matTypeId, "Mat 1");
+            MatsRecord mat2 = new MatsRecord(db, 2, MatTypesRecord.selectById(db, matTypeId), "Mat 2");
+            mat2.insert();
             System.out.println("inserted Mats record " + matId);
 
             System.out.print("Inserting to History...");
             historyId = HistoryRecord.insert(db, itemId,
                                              new Timestamp(System.currentTimeMillis()),
-                                             matId, EventType.ADDED.ordinal(), new Double[] {1.0, 2.0},
-                                             0.0, 0.0);
+                                             matId, EventType.ADDED, new Double[] {1.0, 2.0});
+            
             if (historyId == null) return false;
+            HistoryRecord.insert(db, itemId, new Timestamp(System.currentTimeMillis()),
+                                 matId, EventType.REMOVED, new Double[] {-1.0, -2.0});
+            HistoryRecord.insert(db, itemId, new Timestamp(System.currentTimeMillis()),
+                                 mat2.getId(), EventType.REPLACED, new Double[] {1.0, 2.0});
+
+            HistoryRecord.insert(db, mat1item.getId(), new Timestamp(System.currentTimeMillis()),
+                                 matId, EventType.ADDED, new Double[] {2.0, 2.0});
+            
+            HistoryRecord.insert(db, offMatItem.getId(), new Timestamp(System.currentTimeMillis()),
+                                 mat2.getId(), EventType.ADDED, new Double[] {3.0, 2.0});
+            HistoryRecord.insert(db, offMatItem.getId(), new Timestamp(System.currentTimeMillis()),
+                                 mat2.getId(), EventType.REMOVED, new Double[] {-3.0, -2.0});
+
             System.out.println("inserted History record " + historyId);
 
             db.close();
         }
-        catch (SQLException e) {
-            System.out.println(e);
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean insertExtraRecords () {
-        Db db = new Db(testDbName, testHost, testPort, "", "");
-        try {
-            db.open();
-
-            long newMatId = MatsRecord.insert(db, matTypeId, "Another mat for testing");
-            long newItemId = ItemsRecord.insert(db, itemTypeId);
-            HistoryRecord.insert(db, newItemId,
-                                 new Timestamp(System.currentTimeMillis()),
-                                 matId, EventType.ADDED.ordinal(), new Double[] {2.0, 2.0},
-                                 0.0, 0.0);
-            HistoryRecord.insert(db, itemId,
-                                 new Timestamp(System.currentTimeMillis()),
-                                 matId, EventType.REMOVED.ordinal(), new Double[] {-1.0, -2.0},
-                                 0.0, 0.0);
-            HistoryRecord.insert(db, newItemId,
-                                 new Timestamp(System.currentTimeMillis()),
-                                 matId, EventType.REMOVED.ordinal(), new Double[] {-2.0, -2.0},
-                                 0.0, 0.0);
-            HistoryRecord.insert(db, itemId,
-                                 new Timestamp(System.currentTimeMillis()),
-                                 newMatId, EventType.REPLACED.ordinal(), new Double[] {1.0, 2.0},
-                                 0.0, 0.0);
-
-            db.close();
-        }
-        catch (SQLException e) {
+        catch (Exception e) {
             System.out.println(e);
             return false;
         }

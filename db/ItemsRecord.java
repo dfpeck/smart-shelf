@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.ArrayList;
 
 import java.sql.SQLException;
 
@@ -13,7 +14,6 @@ public class ItemsRecord extends TableRecord {
     protected long itemId;
     protected ItemTypesRecord itemType;
     protected HistoryRecord lastHistory;
-    protected boolean autoId;
 
 
     /* CONSTRUCTORS */
@@ -21,12 +21,12 @@ public class ItemsRecord extends TableRecord {
                         long itemId_,
                         ItemTypesRecord itemType_,
                         HistoryRecord lastHistory_,
-                        boolean autoId_) {
+                        boolean genId_) {
         db = db_;
         itemId = itemId_;
         itemType = itemType_;
         lastHistory = lastHistory_;
-        autoId = autoId_;
+        genId = genId_;
     }
 
     public ItemsRecord (Db db_, ItemTypesRecord itemType_) {
@@ -39,7 +39,6 @@ public class ItemsRecord extends TableRecord {
         itemId = rs.getLong("itemId");
         itemType = ItemTypesRecord.selectById(db_, rs.getLong("itemType"));
         lastHistory = HistoryRecord.selectLatestByItem(db, this);
-        autoId = true;
     }
 
     public ItemsRecord (Db db_, ResultSet rs, int row) throws SQLException {
@@ -80,16 +79,32 @@ public class ItemsRecord extends TableRecord {
         return records;
     }
 
-    /** @brief Select all items on a particular mat.
-     *
-     * @param db_ database to select from
-     * @param matId integer ID of the relevant mat
-     * @return List of selected records
-     */
+    // /** @brief Select all items on a particular mat.
+    //  *
+    //  * @param db_ database to select from
+    //  * @param matId integer ID of the relevant mat
+    //  * @return List of selected records
+    //  */
     // public static List<ItemsRecord> selectOnMat (Db db_, long matId) {
     //     PreparedStatement statement =
-    //         db_.conn.prepareStatement("SELECT * FROM Items"
-    //                                   + " "
+    //         db_.conn.prepareStatement("SELECT Items.* FROM"
+    //                                   + " Items, History,"
+    //                                   + " (SELECT item, MAX(datetime) AS maxtime"
+    //                                   + " FROM History GROUP BY item) Latest"
+    //                                   + " WHERE History.item = Latest.item"
+    //                                   + " AND History.datetime = Latest.maxtime"
+    //                                   + " AND Items.itemId = History.item"
+    //                                   + " AND (eventType = 0 OR eventType = 2)",
+    //                                   ResultSet.TYPE_SCROLL_INSENSITIVE,
+    //                                   ResultSet.CONCUR_READ_ONLY);
+    //     ResultSet rs = statement.executeQuery();
+
+    //     int row = 0;
+    //     ItemsRecord[] records = new ItemsRecord[countRecords(rs)];
+    //     while (rs.next())
+    //         records[row++] = new ItemsRecord(db_, rs);
+
+    //     return records;
     // }
 
     /** @brief Select all items on a particular mat.
@@ -114,8 +129,7 @@ public class ItemsRecord extends TableRecord {
      * @param db_ The database into which to insert the record.
      * @param itemType_ `itemTypeId` of the associated ItemTypes record.
      *
-     * @return The primary key of the newly inserted record. If the insert
-     * fails, returns 0.
+     * @return The primary key of the newly inserted record.
      */
     public static long insert (Db db_,
                               long itemType_) throws SQLException {
@@ -139,8 +153,7 @@ public class ItemsRecord extends TableRecord {
      * @param itemId_ The primary key for the record. May not be 0.
      * @param itemType_ `itemTypeId` of the associated ItemTypes record.
      * 
-     * @return The primary key of the newly inserted record. If the insert
-     * fails, returns 0.
+     * @return The primary key of the newly inserted record.
      */
     public static long insert (Db db_,
                               long itemId_,
@@ -155,13 +168,16 @@ public class ItemsRecord extends TableRecord {
         return insertAndRetrieveLongKey(db_, statement);
     }
 
-    /** @brief Insert a record representing an Item object into the Items table.
+    /** @brief Insert a record representing this Item into the Items table.
+     *
+     * @return The primary key of the newly inserted record.
      */
     public long insert () throws SQLException {
-        if (autoId)
+        if (genId)
             itemId = ItemsRecord.insert(db, itemType.getId());
         else
             ItemsRecord.insert(db, itemId, itemType.getId());
+        genId = false;
         return itemId;
     }
 
@@ -203,38 +219,38 @@ public class ItemsRecord extends TableRecord {
         return lastHistory.getWeight();
     }
 
-    /** @brief The x-coordinate of the item on its mat.
-     *
-     * Returns `null` if the item is not on a mat.
-     */
-    public Double getX () {
-        if (isOnMat())
-            return lastHistory.getX();
-        else
-            return null;
-    }
+    // /** @brief The x-coordinate of the item on its mat.
+    //  *
+    //  * Returns `null` if the item is not on a mat.
+    //  */
+    // public Double getX () {
+    //     if (isOnMat())
+    //         return lastHistory.getX();
+    //     else
+    //         return null;
+    // }
 
-    /** @brief The y-coordinate of the item on its mat.
-     *
-     * Returns `null` if the item is not on a mat.
-     */
-    public Double getY () {
-        if (isOnMat())
-            return lastHistory.getY();
-        else
-            return null;
-    }
+    // /** @brief The y-coordinate of the item on its mat.
+    //  *
+    //  * Returns `null` if the item is not on a mat.
+    //  */
+    // public Double getY () {
+    //     if (isOnMat())
+    //         return lastHistory.getY();
+    //     else
+    //         return null;
+    // }
 
-    /** @brief The coordinates of the item on its mat.
-     *
-     * Returns `null` if the item is not on a mat.
-     */
-    public Double[] getCoords () {
-        return lastHistory.getCoords();
-    }
+    // /** @brief The coordinates of the item on its mat.
+    //  *
+    //  * Returns `null` if the item is not on a mat.
+    //  */
+    // public Double[] getCoords () {
+    //     return lastHistory.getCoords();
+    // }
 
     /** @brief The most recent History record associated with the item. */
-    public HistoryRecord lastHistory () {
+    public HistoryRecord getLastHistory () {
         return lastHistory;
     }
 
