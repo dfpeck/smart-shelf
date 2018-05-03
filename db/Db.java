@@ -9,7 +9,7 @@ import java.util.Vector;
 import java.io.FileNotFoundException;
 
 /**
- * @brief Main driver for the database.
+ * @brief Database connection manager.
  */
 public class Db {
     /* PROPERTIES */

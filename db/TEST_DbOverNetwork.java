@@ -162,11 +162,11 @@ public class TEST_DbOverNetwork {
             matId = MatsRecord.insert(db, matTypeId, "Dummy record for testing");
             System.out.println("inserted Mats record " + matId);
 
-            System.out.print("Inserting to History...");
-            historyId = HistoryRecord.insert(db, itemId,
-                                             new Timestamp(System.currentTimeMillis()),
-                                             matId, EventType.ADDED.ordinal(), new Double[] {1.0, 2.0},
-                                             0.0, 0.0);
+            // System.out.print("Inserting to History...");
+            // historyId = HistoryRecord.insert(db, itemId,
+            //                                  new Timestamp(System.currentTimeMillis()),
+            //                                  matId, EventType.ADDED.ordinal(), new Double[] {1.0, 2.0},
+            //                                  0.0, 0.0);
             if (historyId == null) return false;
             System.out.println("inserted History record " + historyId);
 
