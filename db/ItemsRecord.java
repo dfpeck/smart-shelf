@@ -3,6 +3,7 @@ package db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.List;
 
 import java.sql.SQLException;
 
@@ -51,6 +52,55 @@ public class ItemsRecord extends TableRecord {
         throws SQLException {
         return new ItemsRecord(db_, selectByIdLong(db_, itemId_, "Items", "itemId"));
     }
+
+    /** @brief Select all items that are on any mat.
+     *
+     * @param db_ database to select from
+     * @return array of selected records
+     */
+    public static ItemsRecord[] selectOnMat (Db db_) throws SQLException {
+        PreparedStatement statement =
+            db_.conn.prepareStatement("SELECT Items.* FROM"
+                                      + " Items, History,"
+                                      + " (SELECT item, MAX(datetime) AS maxtime"
+                                      + " FROM History GROUP BY item) Latest"
+                                      + " WHERE History.item = Latest.item"
+                                      + " AND History.datetime = Latest.maxtime"
+                                      + " AND Items.itemId = History.item"
+                                      + " AND (eventType = 0 OR eventType = 2)",
+                                      ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                      ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = statement.executeQuery();
+
+        int row = 0;
+        ItemsRecord[] records = new ItemsRecord[countRecords(rs)];
+        while (rs.next())
+            records[row++] = new ItemsRecord(db_, rs);
+
+        return records;
+    }
+
+    /** @brief Select all items on a particular mat.
+     *
+     * @param db_ database to select from
+     * @param matId integer ID of the relevant mat
+     * @return List of selected records
+     */
+    // public static List<ItemsRecord> selectOnMat (Db db_, long matId) {
+    //     PreparedStatement statement =
+    //         db_.conn.prepareStatement("SELECT * FROM Items"
+    //                                   + " "
+    // }
+
+    /** @brief Select all items on a particular mat.
+     *
+     * @param db_ database to select from
+     * @param mat object representation of the relevant mat
+     * @return List of selected records
+     */
+    // public static List<ItemsRecord> selectOnMat (Db db_, MatsRecord mat) {
+        
+    // }
 
 
     /* INSERTION METHODS */

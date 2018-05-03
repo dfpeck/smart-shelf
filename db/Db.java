@@ -22,6 +22,7 @@ public class Db {
     private String userName, password;
     private File file;
     private boolean isOpen;
+    private boolean addWaiting;
 
     /* CONSTRUCTORS */
     /** 
@@ -40,6 +41,8 @@ public class Db {
         password = password_;
         file = new File(dbName + ".mv.db");
         conn = null;
+        isOpen = false;
+        addWaiting = false;
     }
 
     /** @brief For providing `port` as an int. */
@@ -97,7 +100,43 @@ public class Db {
         isOpen = false;
     }
 
+
     /* UPDATE METHODS */
+    // public void newItem (ItemsRecord item) throws SQLException {
+    //     return;
+    // }
+
+    public HistoryKey updateFromSensors (double[] sensors, int matId) {
+        double total = 0;
+        for (double s : sensors)
+            total += s;
+
+        EventType event = null;
+        if (total < 0)
+            event = EventType.REMOVED;
+        else
+            if (addWaiting)
+                System.out.println("!-- implement ADD");
+            else
+                event = EventType.REPLACED;
+
+        switch (event) {
+        case ADDED:
+            break;
+
+        case REPLACED:
+            break;
+
+        case REMOVED:
+            break;
+
+        default:
+            break;
+        }
+
+        return null; // !-- actual method should not return null
+    }
+
 
     /* HELPER FUNCTIONS */
     public static Vector<String> readSqlFromFile (String sqlFileName) {

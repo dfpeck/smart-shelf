@@ -158,10 +158,8 @@ public class HistoryRecord extends TableRecord {
         }
 
         int row = 0;
-        while (rs.next()) {
-            records[row] = new HistoryRecord (db_, item_, rs);
-            row++;
-        }
+        while (rs.next())
+            records[row++] = new HistoryRecord(db_, item_, rs);
 
         return records;
     }

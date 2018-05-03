@@ -35,6 +35,7 @@ public class TEST_Db {
             tests.put(3, "Read SQL from File");
             tests.put(4, "Insert Records into Database");
             tests.put(5, "Select Records from Database");
+            tests.put(6, "Select Items by Mat");
 
             while (loop) {
                 System.out.println("==SELECT A TEST==");
@@ -89,10 +90,14 @@ public class TEST_Db {
                 success = readSql();
                 break;
             case 4:
-                success = insertRecords();
+                success = insertRecords() && insertExtraRecords();
                 break;
             case 5:
                 success = selectRecords();
+                break;
+            case 6:
+                success = matSelections();
+                break;
             }
         }
         else {
@@ -156,7 +161,7 @@ public class TEST_Db {
             db.open();
 
             System.out.print("Inserting to ItemTypes...");
-            itemTypeId = ItemTypesRecord.insert(db, "Testing ItemType", "", false);
+            itemTypeId = ItemTypesRecord.insert(db, "Item On Mat", "", false);
             System.out.println("Inserted ItemTypes record " + Long.toString(itemTypeId));
 
             System.out.print("Inserting to Items...");
@@ -180,6 +185,57 @@ public class TEST_Db {
             System.out.println("inserted History record " + historyId);
 
             db.close();
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean insertExtraRecords () {
+        Db db = new Db(testDbName, testHost, testPort, "", "");
+        try {
+            db.open();
+
+            long newMatId = MatsRecord.insert(db, matTypeId, "Another mat for testing");
+            long newItemId = ItemsRecord.insert(db, itemTypeId);
+            HistoryRecord.insert(db, newItemId,
+                                 new Timestamp(System.currentTimeMillis()),
+                                 matId, EventType.ADDED.ordinal(), new Double[] {2.0, 2.0},
+                                 0.0, 0.0);
+            HistoryRecord.insert(db, itemId,
+                                 new Timestamp(System.currentTimeMillis()),
+                                 matId, EventType.REMOVED.ordinal(), new Double[] {-1.0, -2.0},
+                                 0.0, 0.0);
+            HistoryRecord.insert(db, newItemId,
+                                 new Timestamp(System.currentTimeMillis()),
+                                 matId, EventType.REMOVED.ordinal(), new Double[] {-2.0, -2.0},
+                                 0.0, 0.0);
+            HistoryRecord.insert(db, itemId,
+                                 new Timestamp(System.currentTimeMillis()),
+                                 newMatId, EventType.REPLACED.ordinal(), new Double[] {1.0, 2.0},
+                                 0.0, 0.0);
+
+            db.close();
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean matSelections () {
+        Db db = new Db(testDbName, testHost, testPort, "", "");
+        try {
+            db.open();
+
+            System.out.print("Selecting items that are on mats...");
+            ItemsRecord[] onMat = ItemsRecord.selectOnMat(db);
+            System.out.println("Selected:");
+            for (ItemsRecord itm : onMat)
+                System.out.println(itm);
         }
         catch (SQLException e) {
             System.out.println(e);

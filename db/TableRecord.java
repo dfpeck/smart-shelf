@@ -56,4 +56,15 @@ abstract class TableRecord {
 
         return  dblArr;
     }
+
+    public static int countRecords (ResultSet rs) throws SQLException {
+        int rows;
+        if (rs.last())
+             rows = rs.getRow();
+        else
+            rows = 0;
+        rs.beforeFirst();
+
+        return rows;
+    }
 }
