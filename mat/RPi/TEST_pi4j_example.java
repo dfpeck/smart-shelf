@@ -54,6 +54,12 @@ public class TEST_pi4j_example {
 		catch (IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
+			
+		Thread me = Thread.currentThread();
+		  synchronized (me)
+		  {
+			me.wait();
+		  }
 		}
 		catch (SerialPortException ex)
 		{
