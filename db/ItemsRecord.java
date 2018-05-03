@@ -47,6 +47,11 @@ public class ItemsRecord extends TableRecord {
 
 
     /* QUERY METHODS */
+    /**
+     * @param db_ The database to select from.
+     * @param itemId_ The primary key of the Item to select.
+     * @return ItemsRecord representing the selected record.
+     */
     public static ItemsRecord selectById (Db db_, long itemId_)
         throws SQLException {
         return new ItemsRecord(db_, selectByIdLong(db_, itemId_, "Items", "itemId"));
@@ -55,7 +60,7 @@ public class ItemsRecord extends TableRecord {
     /** @brief Select all items that are on any mat.
      *
      * @param db_ database to select from
-     * @return array of selected records
+     * @return Array of selected records.
      */
     public static ItemsRecord[] selectOnMat (Db db_) throws SQLException {
         PreparedStatement statement =
@@ -77,7 +82,7 @@ public class ItemsRecord extends TableRecord {
      *
      * @param db_ database to select from
      * @param matId integer ID of the relevant mat
-     * @return List of selected records
+     * @return Array of selected records.
      */
     public static ItemsRecord[] selectOnMat (Db db_, long matId) throws SQLException {
         PreparedStatement statement =
@@ -100,15 +105,37 @@ public class ItemsRecord extends TableRecord {
         return ItemsRecord.collect(db_, rs);
     }
 
-
     /** @brief Select all items on a particular mat.
      *
      * @param db_ database to select from
      * @param mat object representation of the relevant mat
-     * @return List of selected records
+     * @return Array of selected records.
      */
     public static ItemsRecord[] selectOnMat (Db db_, MatsRecord mat) throws SQLException {
         return ItemsRecord.selectOnMat(db_, mat.getId());
+    }
+
+    /** @brief Select all items not on any mat.
+     *
+     * @param db_ The database to select from.
+     * @return Array of selected records.
+     */
+    public static ItemsRecord[] selectOffMat (Db db_) throws SQLException {
+        PreparedStatement statement =
+            db_.conn.prepareStatement("SELECT Items.* FROM"
+                                      + " Items, History,"
+                                      + " (SELECT item, MAX(datetime) AS maxtime"
+                                      + " FROM History GROUP BY item) Latest"
+                                      + " WHERE History.item = Latest.item"
+                                      + " AND History.datetime = Latest.maxtime"
+                                      + " AND Items.itemId = History.item"
+                                      + " AND (eventType = ?);",
+                                      ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                      ResultSet.CONCUR_READ_ONLY);
+        statement.setLong(1, EventType.REMOVED.ordinal());
+
+        ResultSet rs = statement.executeQuery();
+        return ItemsRecord.collect(db_, rs);
     }
 
 

@@ -276,6 +276,12 @@ public class TEST_Db {
             System.out.println("Selected:");
             for (ItemsRecord itm : onMat2)
                 System.out.println(itm);
+
+            System.out.print("Selecting items on no mat...");
+            ItemsRecord[] offMat = ItemsRecord.selectOffMat(db);
+            System.out.println("Selected:");
+            for (ItemsRecord itm : offMat)
+                System.out.println(itm);
         }
         catch (SQLException e) {
             System.out.println(e);
