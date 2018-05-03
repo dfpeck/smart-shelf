@@ -214,24 +214,6 @@ public class TEST_Db {
         return true;
     }
 
-    public static boolean matSelections () {
-        Db db = new Db(testDbName, testHost, testPort, "", "");
-        try {
-            db.open();
-
-            System.out.print("Selecting items that are on mats...");
-            ItemsRecord[] onMat = ItemsRecord.selectOnMat(db);
-            System.out.println("Selected:");
-            for (ItemsRecord itm : onMat)
-                System.out.println(itm);
-        }
-        catch (SQLException e) {
-            System.out.println(e);
-            return false;
-        }
-        return true;
-    }
-
     public static boolean selectRecords () {
         Db db = new Db(testDbName, testHost, testPort, "", "");
         try {
@@ -263,6 +245,37 @@ public class TEST_Db {
             System.out.println("Selected: " + history.toString());
 
             db.close();
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean matSelections () {
+        Db db = new Db(testDbName, testHost, testPort, "", "");
+        try {
+            db.open();
+
+            System.out.print("Selecting items on any mat...");
+            ItemsRecord[] onMat = ItemsRecord.selectOnMat(db);
+            System.out.println("Selected:");
+            for (ItemsRecord itm : onMat)
+                System.out.println(itm);
+
+            System.out.print("Selecting items on mat 1...");
+            ItemsRecord[] onMat1 = ItemsRecord.selectOnMat(db, 1);
+            System.out.println("Selected:");
+            for (ItemsRecord itm : onMat1)
+                System.out.println(itm);
+
+            MatsRecord mat2 = MatsRecord.selectById(db, 2);
+            System.out.print("Selecting items on mat 2...");
+            ItemsRecord[] onMat2 = ItemsRecord.selectOnMat(db, mat2);
+            System.out.println("Selected:");
+            for (ItemsRecord itm : onMat2)
+                System.out.println(itm);
         }
         catch (SQLException e) {
             System.out.println(e);

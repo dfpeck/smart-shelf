@@ -36,7 +36,7 @@ public class MatsRecord extends TableRecord {
                        long matId_,
                        MatTypesRecord matType_,
                        String matComment_) {
-        this(db_, 0, matType_, matComment_, false);
+        this(db_, matId_, matType_, matComment_, false);
     }
 
     public MatsRecord (Db db_, ResultSet rs) throws SQLException {

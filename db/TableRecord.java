@@ -70,15 +70,4 @@ abstract class TableRecord {
 
         return rows;
     }
-
-    public static <T extends TableRecord> List<T>
-        collectRecords (Db db_, ResultSet rs) throws SQLException {
-        int rows = countRecords(rs);
-        List<T> records = new ArrayList<T>(rows);
-
-        int row = 0;
-        while(rs.next())
-            records.add(new T(db_, rs));
-        return records;
-    }
 }
