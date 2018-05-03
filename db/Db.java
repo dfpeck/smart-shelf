@@ -105,11 +105,27 @@ public class Db {
 
 
     /* UPDATE METHODS */
+    /** @brief Stage a new item for addition to the system.
+     *
+     * Call this method before brand new Items are placed on the mat. The new
+     * Item will be added to the database and the system will be prepped for
+     * taking data from the Item after it is placed on a mat.
+     *
+     * @param item The Item to add.
+     */
     public void newItem (ItemsRecord item) throws SQLException {
-        item.insert(this);
+        item.insert();
         addWaiting = item;
     }
 
+    /** @brief Update the system based on changes in sensor readings.
+     *
+     * This will add a new record to History to track the change in the system
+     * that corresponds to a change in sensor readings.
+     *
+     * @param sensors The change in the sensor readings.
+     * @param matId The mat on which the change occurred.
+     */
     public HistoryKey updateFromSensors (Double[] sensors, int matId) throws SQLException {
         ItemsRecord item = null;
         ItemsRecord[] candidates = null;
