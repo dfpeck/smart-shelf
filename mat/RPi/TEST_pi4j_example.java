@@ -9,9 +9,9 @@ public class TEST_pi4j_example {
 	public static void main(String args[]) throws InterruptedException, IOException {
 		final Console console = new Console();
 		
-		console.rirle("Arduino to Pi Test", "Test 1");
+		console.title("Arduino to Pi Test", "Test 1");
 		
-		console.promtForExit();
+		console.promptForExit();
 		
 		final Serial serial = SerialFactory.createInstance();
 		
@@ -51,7 +51,7 @@ public class TEST_pi4j_example {
 			
 		
 		try {serial.open(config);}
-		catch (IO ioe) {
+		catch (IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
 			
