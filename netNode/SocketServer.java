@@ -108,7 +108,11 @@ class SocketServer implements Runnable {
                             if (byteRead == 126){
                                 byteRead = -1;
                             }else {
-                                sb.append((char) byteRead);
+				if(byteRead == -1){
+					sb.append("mat");
+				}else{
+                               		sb.append((char) byteRead);
+				}
                             }
                         }           	        
                     } catch (IOException e){
