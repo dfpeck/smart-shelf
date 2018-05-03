@@ -57,6 +57,18 @@ public class ItemsRecord extends TableRecord {
         return new ItemsRecord(db_, selectByIdLong(db_, itemId_, "Items", "itemId"));
     }
 
+    /** @brief Select all Items.
+     *
+     * @param db_ The database to select from.
+     * @return Array of selected records.
+     */
+    public static ItemsRecord[] selectAll (Db db_) throws SQLException {
+        PreparedStatement statement =
+            db_.conn.prepareStatement("SELECT * FROM Items;");
+        ResultSet rs = statement.executeQuery();
+        return ItemsRecord.collect(db_, rs);
+    }
+
     /** @brief Select all items that are on any mat.
      *
      * @param db_ database to select from
