@@ -152,7 +152,7 @@ public class Db {
 
         case REPLACED: // use the Items whose weight is nearest our sensor readings
             candidates = ItemsRecord.selectOffMat(this);
-            item = candidates[0];
+            if (candidates.length != 0) {item = candidates[0];}
             for (ItemsRecord candidate : candidates)
                 if (total - candidate.getWeight() < total - item.getWeight())
                     item = candidate;
