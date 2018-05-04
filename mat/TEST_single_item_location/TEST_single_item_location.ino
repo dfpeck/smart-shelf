@@ -7,7 +7,7 @@ HX711 load_cell[4]; //Load cell array
 const int MAT_LENGTH = 24;            //Length of mat in inches
 const int MAT_HEIGHT = 20;            //Height of mat in inches
 const float WEIGHT_THRESHOLD = .1;    //Threshold to determine change in mat weight
-const float CALIBRATION_WEIGHT = 72;  //How much weight to put on the mat for calibration
+const float CALIBRATION_WEIGHT = 25;  //How much weight to put on the mat for calibration
 
 struct readings {
   float reading[4];
@@ -87,7 +87,7 @@ void loop() {
   recent_difference = 0;
   stable_difference = 0;
 
-  if (millis() > t+50) {
+  if ( t < millis()-50) {
     //Serial.print("Current readings: ");
     for (int i = 0; i < 4; i++) { //Loop to get sensor readings and put them into readings array
       current.reading[i] = load_cell[i].get_units(3);
