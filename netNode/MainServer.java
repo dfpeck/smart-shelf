@@ -1,82 +1,40 @@
 package netNode;
 
-import java.sql.*;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Scanner;
 
 import db.*;
 
 public class MainServer {
     String dbName = "./inventory";
     File dbFile = new File(dbName + ".mv.db");
-    static HashMap<Integer, String> tests = new HashMap<Integer, String>();
     Db db = null;
     
 	public void main(NetServer netServer, Db db) {
 		this.db = db;
-		int choice = 0;
-		int choice2 = 0;
-		Boolean success = false;
-        boolean loop = true;
-		Scanner scanner = new Scanner(System.in);
-		int count = 0;
+		String reading = null;
+		String[] readings = null;
 		
-        tests.put(1, "Send string to Client");
-        tests.put(2, "Retrieve string from queue");
-        
-        while (loop) {
-            System.out.println("==SELECT A TEST==");
-            for (int test : tests.keySet())
-                System.out.format("%2d) %s%n", test, tests.get(test));
-            System.out.format("%2d) Exit\n", -1);
-            try{
- 	    		choice = Integer.parseInt(scanner.nextLine());
-            } catch(NumberFormatException e){
- 	    		System.out.println("Not an number, try again.");
- 	        }
-            
-            switch (choice) {
-            case -1:
-                loop = false;
-                try {
-					db.close();
-					success = true;
-				} catch (SQLException e) {
-					System.out.println("SQLException closing database.");
-					success = false;
+		while(true){
+			
+			reading = netServer.pop();
+			System.out.println("String popped: " + reading);
+			
+			if(reading != null){
+				readings = reading.split(" ");
+				
+				if(readings[1].compareTo("Record") == 0){
+					System.out.println("Id: " + readings[0] + "App wants record " + readings[1]);
 				}
-				netServer.exit();
-                break;
-            case 1:
-            	System.out.println("Which socket?");
-            	if(netServer.getCount() < 0){
-            		System.out.println("No sockets connected yet.");
-            	}else{
-	            	for(count = netServer.getCount(); count >= 0; count--){
-	            		System.out.println(count +") " + netServer.getIdentity(count));
-	            	}
-	            	choice2 = Integer.parseInt(scanner.nextLine());
-	            	if(choice2 <= netServer.getCount() && choice2 >= 0){
-	            		success = netServer.sendString("This is from the server.", choice2);
-	            	}else{
-	            		System.out.println("Not a valid socket.");
-	            		success = false;
-	            	}	
-            	}
-            	break;
-            case 2:
-            	System.out.println(netServer.pop());
-            	success = true;
-            	break;
-            }
-            
-            if(success)
-        		System.out.println("==SUCCESS==");
-        	else
-        		System.out.println("==FAILED==");
-        }
-        
+			}
+			
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				System.out.println("Thread sleep interrupted.");
+			}
+			
+		}
+		
         /* EMULATION FUNCTIONS */
         /*
          * 1) Simulate request DB from mat: Server sends string to Mat asking for DB update,
@@ -89,8 +47,5 @@ public class MainServer {
          *    1) Every so much time.
          *    2) First time UI requests a update to a record in a certain amount of time.
          */
-
-        System.out.println("==FINISHED==");
-        scanner.close();
     }	
 }

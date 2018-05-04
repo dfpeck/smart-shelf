@@ -8,6 +8,7 @@ public class TEST_MainUI {
    public static void main(String[] args) {
 	   String ip = "";
 	   int choice = 0;
+	   int choice2 = 0;
 	   Scanner scanner = new Scanner(System.in);
 	   NetUI netUI = null;
 	   Thread netUIThread = null;
@@ -21,18 +22,27 @@ public class TEST_MainUI {
 	   netUIThread.start();
        
        while(choice != 3){
-	       System.out.println("(1) Send String, (2) Strings Retrieved, (3) End server communication: ");
+	       System.out.println("(1) Ask for ItemRecord, (2) Strings Retrieved, (3) End server communication: ");
 	       try{
 	    	   choice = Integer.parseInt(scanner.nextLine());
 	       } catch(NumberFormatException e){
 	    	   System.out.println("Not an number, try again.");
 	       }
-	       if(choice == 1){
-	    	   netUI.sendString("This is sent from TEST_NetUI.");
-	       }else if(choice == 2){
+	       switch(choice){
+	       case 1:
+	    	   try{
+	    		   choice2 = Integer.parseInt(scanner.nextLine());
+	    	   } catch(NumberFormatException e){
+		    	   System.out.println("Not an number.");
+		       }
+	    	   netUI.sendString("Record " + choice2);
+	    	   break;
+	       case 2:
 	    	   System.out.println(netUI.pop());
-	       }else if(choice == 3){
+	    	   break;
+	       case 3:
 	    	   netUI.close();
+	    	   break;
 	       }
        }
        
