@@ -154,7 +154,8 @@ public class Db {
             candidates = ItemsRecord.selectOffMat(this);
             if (candidates.length != 0) {item = candidates[0];}
             for (ItemsRecord candidate : candidates)
-                if (Math.abs(total) - candidate.getWeight() < Math.abs(total) - item.getWeight())
+                if (Math.abs(Math.abs(total) - candidate.getWeight())
+                    < Math.abs(Math.abs(total) - item.getWeight()))
                     item = candidate;
             break;
 
