@@ -179,6 +179,10 @@ public class Db {
             break;
         }
 
+        // no items found
+        if (item == null)
+            return null;
+
         // insert record and return key
         return HistoryRecord.insert(this, item.getId(), time, matId, event, sensors);
     }
