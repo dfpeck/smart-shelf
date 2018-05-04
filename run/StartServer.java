@@ -1,13 +1,15 @@
 package run;
 
+import java.io.File;
 import java.sql.SQLException;
 import org.h2.tools.Server;
 
-import db.Db;
+import db.*;
 import netNode.StartServerSocket;
 
 public class StartServer {
 	static String dbName = "./inventory";
+	static File dbFile = new File(dbName + ".mv.db");
     static String host = "localhost";
     static int port = 1066;
     
@@ -22,10 +24,18 @@ public class StartServer {
 	   }
 	   
 	   //create server's db object
+	   dbFile.delete();
 	   Db db = new Db(dbName, host, port, "", "");
+	   
 	   
 	   try {
 		   db.open();
+		   
+		   // Initialize Mats
+		   String matTypeId = MatTypesRecord.insert(db,  "PROTO",  "Prototype Mat");
+		   MatsRecord.insert(db, 0, matTypeId, "Mat 0");
+		   MatsRecord.insert(db, 1,  matTypeId, "Mat 1");
+		   
 		   System.out.println("DB Object created/opened.");
 	   } catch (SQLException e) {
 		   System.out.println("SQLException opening database");

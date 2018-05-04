@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Vector;
 
-import db.Db;
+import db.*;
+
 import netNode.StartServerSocket;
 
 /** @brief Main driver for server functions.
@@ -69,7 +71,9 @@ class NetServer implements Runnable {
     public void run() {
     	MainServer mainServer = new MainServer();
     	mainServer.main(this, db);
-    }
+    	
+    	
+	}
     
     /** @brief sets up new sockets
      * 
