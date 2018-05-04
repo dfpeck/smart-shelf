@@ -22,7 +22,7 @@ public class MainServerThread implements Runnable{
 			String[] interReading = null;
 			
 			reading = netServer.pop();
-			System.out.println("String popped: " + reading);
+			//System.out.println("String popped: " + reading);
 			
 			if(reading != null){
 				interReading = reading.split(" ");
