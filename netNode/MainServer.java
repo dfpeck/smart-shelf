@@ -14,7 +14,7 @@ public class MainServer {
 		this.db = db;
 		String reading = null;
 		String[] readings = null;
-		double[] sensors = null;
+		double[] sensors = new double[4];
 		String[] interReading = null;
 		
 		while(true){
@@ -32,10 +32,12 @@ public class MainServer {
 					System.out.println("Id: " + readings[0] + " App wants record " + readings[2]);	
 				}*/
 				
+				System.out.println("before sensor setting.");
 				sensors[0] = Double.parseDouble(readings[0]);
-				sensors[2] = Double.parseDouble(readings[1]);
-				sensors[3] = Double.parseDouble(readings[2]);
-				sensors[4] = Double.parseDouble(readings[3]);
+				sensors[1] = Double.parseDouble(readings[1]);
+				sensors[2] = Double.parseDouble(readings[2]);
+				sensors[3] = Double.parseDouble(readings[3]);
+				System.out.println("after sensor setting.");
 				
 				try {
 					db.updateFromSensors(sensors, Integer.parseInt(interReading[0]));
