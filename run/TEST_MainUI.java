@@ -39,7 +39,7 @@ public class TEST_MainUI {
 	    	   netUI.sendString("Record " + choice2);
 	    	   break;
 	       case 2:
-	    	   netUI.sendString("0 1.25,0.35,4.56,0.23");
+	    	   netUI.sendString("1.25,0.35,4.56,0.23");
 	    	   break;
 	       case 3:
 	    	   netUI.close();
