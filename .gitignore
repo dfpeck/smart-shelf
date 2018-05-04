@@ -21,6 +21,9 @@
 # Java Class Files
 *.class
 
+# Python Class Files
+*.pyc
+
 # Database Files
 *.db
 

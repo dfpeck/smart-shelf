@@ -189,6 +189,10 @@ public class Db {
             sensorsD[i] = (Double) sensors[i];
         return updateFromSensors(sensorsD, matId);
     }
+	
+    public void copy_contents(Db db){
+    	System.out.println("copy contents of new_db into db");
+    }
 
     /* HELPER FUNCTIONS */
     public static Vector<String> readSqlFromFile (String sqlFileName) {
