@@ -166,7 +166,7 @@ public class Db {
                 // get the sum of the squares of difference in sensor values
                 for (int i=0; i < sensors.length; i++)
                     candidate_sum_of_squares +=
-                        Math.pow(sensors[i]-candidate.getSensors()[i], 2);
+                        Math.pow(-sensors[i]-candidate.getSensors()[i], 2);
                 // if our candidate is close than our current best, replace
                 if (candidate_sum_of_squares < least_sum_of_squares) {
                     least_sum_of_squares = candidate_sum_of_squares;
