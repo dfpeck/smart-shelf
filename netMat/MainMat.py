@@ -7,7 +7,7 @@ IP = raw_input('Input ip to connect to:')
 net_client = NetClient.NetClient(IP)
 net_client.start()
 
-get_serial = GetSerial.GetSerial
+get_serial = GetSerial.GetSerial(net_client)
 get_serial.start()
 
 choice = 0
