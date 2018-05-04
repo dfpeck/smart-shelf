@@ -1,6 +1,7 @@
 package netNode;
 
 import java.io.File;
+import java.sql.SQLException;
 
 import db.*;
 
@@ -13,6 +14,8 @@ public class MainServer {
 		this.db = db;
 		String reading = null;
 		String[] readings = null;
+		double[] sensors = null;
+		String[] interReading = null;
 		
 		while(true){
 			
@@ -20,11 +23,28 @@ public class MainServer {
 			System.out.println("String popped: " + reading);
 			
 			if(reading != null){
-				readings = reading.split(" ");
-				
+				interReading = reading.split(" ");
+				System.out.println("split[0]: " + interReading[0] + ", split[1]: " + interReading[1]);
+				readings = interReading[1].split(",");
+				System.out.println("split[0]: " + readings[0] + ", split[1]: " + readings[1] + "split[2]: " + readings[2] + ", split[3]: " + readings[3]);
+				/*
 				if(readings[1].compareTo("Record") == 0){
-					System.out.println("Id: " + readings[0] + "App wants record " + readings[1]);
+					System.out.println("Id: " + readings[0] + " App wants record " + readings[2]);	
+				}*/
+				
+				sensors[0] = Double.parseDouble(readings[0]);
+				sensors[2] = Double.parseDouble(readings[1]);
+				sensors[3] = Double.parseDouble(readings[2]);
+				sensors[4] = Double.parseDouble(readings[3]);
+				
+				try {
+					db.updateFromSensors(sensors, Integer.parseInt(interReading[0]));
+				} catch (NumberFormatException e) {
+					System.out.println("NumberFormatException");
+				} catch (SQLException e) {
+					System.out.println("SQLException");
 				}
+				
 			}
 			
 			try {

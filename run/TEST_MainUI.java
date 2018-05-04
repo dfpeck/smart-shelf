@@ -22,7 +22,7 @@ public class TEST_MainUI {
 	   netUIThread.start();
        
        while(choice != 3){
-	       System.out.println("(1) Ask for ItemRecord, (2) Strings Retrieved, (3) End server communication: ");
+	       System.out.println("(1) Ask for ItemRecord, (2) send mat data, (3) End server communication: ");
 	       try{
 	    	   choice = Integer.parseInt(scanner.nextLine());
 	       } catch(NumberFormatException e){
@@ -31,6 +31,7 @@ public class TEST_MainUI {
 	       switch(choice){
 	       case 1:
 	    	   try{
+	    		   System.out.println("Enter a record number");
 	    		   choice2 = Integer.parseInt(scanner.nextLine());
 	    	   } catch(NumberFormatException e){
 		    	   System.out.println("Not an number.");
@@ -38,7 +39,7 @@ public class TEST_MainUI {
 	    	   netUI.sendString("Record " + choice2);
 	    	   break;
 	       case 2:
-	    	   System.out.println(netUI.pop());
+	    	   netUI.sendString("0 1.25,0.35,4.56,0.23");
 	    	   break;
 	       case 3:
 	    	   netUI.close();
